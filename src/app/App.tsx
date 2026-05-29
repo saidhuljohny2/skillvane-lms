@@ -1,140 +1,636 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import {
-  ChevronDown, Star, Users, Clock, Award, Check, Menu, X,
-  ArrowRight, Shield, Zap, Database, Cloud, BookOpen,
-  Play, TrendingUp, Code2, Layers, GitBranch,
+  ChevronDown,
+  Star,
+  Users,
+  Clock,
+  Award,
+  Check,
+  Menu,
+  X,
+  Shield,
+  Zap,
+  Database,
+  Cloud,
+  Play,
+  TrendingUp,
+  Code2,
+  Layers,
+  GitBranch,
+  Video,
+  BookOpen,
+  Briefcase,
+  Heart,
+  ShoppingCart,
+  ArrowRight,
+  MonitorPlay,
+  FileText,
+  MessageCircle,
+  Mail,
+  Phone,
+  User,
+  Download,
+  CheckCircle2,
+  Copy,
 } from "lucide-react";
 
-const MODULES = [
+// ─────────────────────────────────────────────────────────────────
+// CONFIG — Update these two values after setup (see guide below)
+// ─────────────────────────────────────────────────────────────────
+const RAZORPAY_KEY = "rzp_live_Sv3MUrxi5JxgDU";
+
+// Paste your Google Apps Script deployment URL here after setup:
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
+
+// Paste your EmailJS credentials here after setup:
+const EMAILJS_SERVICE_ID  = "service_huss9yj";
+const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
+const EMAILJS_PUBLIC_KEY  = "xC4HlrScSivWvpXtz";
+
+// ─────────────────────────────────────────────────────────────────
+// COURSE DATA — Add a new course here and it appears on the site
+// ─────────────────────────────────────────────────────────────────
+type CourseType = "live" | "recording" | "course" | "project";
+
+interface Course {
+  id: string;
+  type: CourseType;
+  badge: string;
+  icon: React.ElementType;
+  accentFrom: string;
+  accentTo: string;
+  title: string;
+  subtitle: string;
+  price: number;
+  originalPrice?: number;
+  duration?: string;
+  timings?: string;
+  highlights: string[];
+  curriculum: { module: string; topics: string[] }[];
+  tag?: string;
+}
+
+const COURSES: Course[] = [
+  // ── Course 1 ────────────────────────────────────────────────────
   {
-    id: 1,
-    title: "GCP Fundamentals & Cloud Architecture",
-    duration: "4 hrs",
-    lessons: 12,
-    topics: [
-      "GCP Console, IAM & Resource Hierarchy",
-      "Compute Engine, Cloud Storage, Networking basics",
-      "GCP Pricing, Billing & Cost Optimization",
-      "Setting up your data engineering environment",
+    id: "gcp-live",
+    type: "live",
+    badge: "LIVE BATCH",
+    icon: MonitorPlay,
+    accentFrom: "#4361ee",
+    accentTo: "#3bc9db",
+    title: "GCP Data Engineering",
+    subtitle: "Full Course — Live Batch",
+    price: 12000,
+    originalPrice: 20000,
+    duration: "3 Months",
+    timings: "7:30 AM – 8:30 AM (Mon – Fri)",
+    tag: "Most Popular",
+    highlights: [
+      "Daily live sessions (Mon–Fri, 7:30–8:30 AM)",
+      "Same-day recordings shared after every session",
+      "Structured notes for every module",
+      "Resume assistance & career guidance",
+      "Live doubt-clearing in every session",
+      "Private student community access",
+    ],
+    curriculum: [
+      // ── PASTE YOUR CURRICULUM HERE ──
+      // Format: { module: "Module Name", topics: ["Topic 1", "Topic 2"] }
+      {
+        module: "GCP Cloud Basics",
+        topics: [
+          "GCP Introduction",
+          "GCP Interfaces",
+          "GCP Locations",
+          "GCP IAM & Admin",
+          "Linux Basics on Cloud Shell",
+          "Python for Data Engineer",
+        ],
+      },
+      {
+        module: "Google Cloud Storage",
+        topics: [
+          "Cloud Storage Overview",
+          "Buckets and Objects",
+          "Bucket Management",
+          "Data Transfer and Lifecycle Management",
+          "Versioning and Object Versioning",
+          "Integration with GCP Services",
+          "Security and Access Controls",
+          "Monitoring and Logging",
+        ],
+      },
+      {
+        module: "Cloud SQL",
+        topics: [
+          "Introduction to Cloud SQL",
+          "Creating and Managing Cloud SQL Instances",
+          "Database Configuration and Access Control",
+          "Connecting using SQL Studio and Workbenches",
+          "Import and Export Operations",
+          "Backups and High Availability",
+          "Database Migration Service (DMS)",
+          "End-to-End Database Migration Project",
+        ],
+      },
+      {
+        module: "BigQuery (SQL Development)",
+        topics: [
+          "Introduction to BigQuery",
+          "BigQuery Architecture",
+          "BigQuery Tables and File Formats",
+          "Native and External Tables",
+          "SQL Query Optimization",
+          "Partitioning and Clustering",
+          "Data Loading and Export",
+          "Real-time Streaming",
+          "BigQuery Views",
+          "Integration with GCP Services",
+          "Spotify Case Study",
+          "Social Media Case Study",
+        ],
+      },
+      {
+        module: "DataProc (PySpark Development)",
+        topics: [
+          "Introduction to Hadoop and Spark",
+          "Spark vs MapReduce",
+          "PySpark Fundamentals",
+          "DataProc Overview",
+          "Cluster Creation and Configuration",
+          "Running Spark and Hadoop Jobs",
+          "Integration with GCS and BigQuery",
+          "Job Scheduling and Automation",
+          "Employee Travel Records Case Study",
+          "End-to-End Batch Pipeline",
+        ],
+      },
+      {
+        module: "Databricks on GCP",
+        topics: [
+          "Lakehouse Platform Overview",
+          "Databricks Architecture",
+          "Workspace Administration",
+          "Delta Lake",
+          "Unity Catalog",
+          "Notebooks and Clusters",
+          "Spark SQL and Python",
+          "Performance Optimization",
+          "Incremental Data Processing",
+          "Delta Live Tables",
+          "End-to-End Workflow Case Study",
+        ],
+      },
+      {
+        module: "DataFlow (Apache Beam Development)",
+        topics: [
+          "Introduction to DataFlow",
+          "Spark vs Apache Beam",
+          "DataFlow vs DataProc",
+          "Building Apache Beam Pipelines",
+          "Batch and Stream Processing",
+          "Windowing Concepts",
+          "Integration with GCP Services",
+          "Streaming Pipeline Project",
+          "Template-based Pipelines",
+        ],
+      },
+      {
+        module: "Cloud Pub/Sub",
+        topics: [
+          "Introduction to Pub/Sub",
+          "Topics and Subscriptions",
+          "Publishing and Consuming Messages",
+          "Message Retention and Acknowledgements",
+          "Integration with Cloud Functions",
+          "Integration with Dataflow",
+          "Streaming Use Cases",
+        ],
+      },
+      {
+        module: "Cloud Composer (Airflow DAG Creation)",
+        topics: [
+          "Introduction to Composer and Airflow",
+          "Airflow Architecture",
+          "Workflow Creation and Scheduling",
+          "Workflow Monitoring",
+          "Integration with BigQuery and DataFlow",
+          "Error Handling and Troubleshooting",
+          "BigQuery DAGs",
+          "DataProc DAGs",
+          "DataFlow DAGs",
+          "CI/CD with Cloud Build and GitHub",
+        ],
+      },
+      {
+        module: "Data Fusion",
+        topics: [
+          "Introduction to Data Fusion",
+          "Building ETL Pipelines",
+          "Visual Pipeline Design",
+          "Transformations and Sinks",
+          "Pre-built Templates",
+          "Integration with BigQuery and GCS",
+          "End-to-End Data Fusion Pipeline",
+        ],
+      },
+      {
+        module: "Cloud Functions",
+        topics: [
+          "Cloud Functions Introduction",
+          "Event-driven Architecture",
+          "Deploying Cloud Functions",
+          "HTTP Triggers",
+          "Pub/Sub Triggers",
+          "Cloud Storage Triggers",
+          "Monitoring and Logging",
+          "GCS to BigQuery Automation Use Case",
+        ],
+      },
+      {
+        module: "Terraform",
+        topics: [
+          "Terraform Introduction",
+          "Terraform Installation and Setup",
+          "Infrastructure Provisioning",
+          "Terraform Commands",
+          "Creating GCP Resources",
+          "Provisioning GCS Buckets",
+          "Provisioning Dataproc Clusters",
+          "Provisioning BigQuery Resources",
+        ],
+      },
     ],
   },
+
+  // ── Course 2 ────────────────────────────────────────────────────
   {
-    id: 2,
-    title: "BigQuery — Serverless Data Warehouse",
-    duration: "8 hrs",
-    lessons: 20,
-    topics: [
-      "BigQuery architecture & columnar storage internals",
-      "Advanced SQL: window functions, nested records, arrays",
-      "Partitioning, clustering & query performance optimization",
-      "BigQuery ML, BI Engine & Omni multi-cloud",
+    id: "gcp-recordings",
+    type: "recording",
+    badge: "SELF-PACED",
+    icon: Video,
+    accentFrom: "#7c3aed",
+    accentTo: "#a855f7",
+    title: "GCP Data Engineering",
+    subtitle: "Course — Recordings",
+    price: 1,
+    originalPrice: 12000,
+    highlights: [
+      "Latest batch recordings (full course)",
+      "Watch at your own pace, anytime",
+      "Same curriculum as the live batch",
+      "1 year access to all recordings",
+      "Notes included with every module",
+      "Community access for doubt resolution",
+    ],
+    curriculum: [
+      // ── PASTE YOUR CURRICULUM HERE ──
+      {
+        module: "GCP Cloud Basics",
+        topics: [
+          "GCP Introduction",
+          "GCP Interfaces",
+          "GCP Locations",
+          "GCP IAM & Admin",
+          "Linux Basics on Cloud Shell",
+          "Python for Data Engineer",
+        ],
+      },
+      {
+        module: "Google Cloud Storage",
+        topics: [
+          "Cloud Storage Overview",
+          "Buckets and Objects",
+          "Bucket Management",
+          "Data Transfer and Lifecycle Management",
+          "Versioning and Object Versioning",
+          "Integration with GCP Services",
+          "Security and Access Controls",
+          "Monitoring and Logging",
+        ],
+      },
+      {
+        module: "Cloud SQL",
+        topics: [
+          "Introduction to Cloud SQL",
+          "Creating and Managing Cloud SQL Instances",
+          "Database Configuration and Access Control",
+          "Connecting using SQL Studio and Workbenches",
+          "Import and Export Operations",
+          "Backups and High Availability",
+          "Database Migration Service (DMS)",
+          "End-to-End Database Migration Project",
+        ],
+      },
+      {
+        module: "BigQuery (SQL Development)",
+        topics: [
+          "Introduction to BigQuery",
+          "BigQuery Architecture",
+          "BigQuery Tables and File Formats",
+          "Native and External Tables",
+          "SQL Query Optimization",
+          "Partitioning and Clustering",
+          "Data Loading and Export",
+          "Real-time Streaming",
+          "BigQuery Views",
+          "Integration with GCP Services",
+          "Spotify Case Study",
+          "Social Media Case Study",
+        ],
+      },
+      {
+        module: "DataProc (PySpark Development)",
+        topics: [
+          "Introduction to Hadoop and Spark",
+          "Spark vs MapReduce",
+          "PySpark Fundamentals",
+          "DataProc Overview",
+          "Cluster Creation and Configuration",
+          "Running Spark and Hadoop Jobs",
+          "Integration with GCS and BigQuery",
+          "Job Scheduling and Automation",
+          "Employee Travel Records Case Study",
+          "End-to-End Batch Pipeline",
+        ],
+      },
+      {
+        module: "Databricks on GCP",
+        topics: [
+          "Lakehouse Platform Overview",
+          "Databricks Architecture",
+          "Workspace Administration",
+          "Delta Lake",
+          "Unity Catalog",
+          "Notebooks and Clusters",
+          "Spark SQL and Python",
+          "Performance Optimization",
+          "Incremental Data Processing",
+          "Delta Live Tables",
+          "End-to-End Workflow Case Study",
+        ],
+      },
+      {
+        module: "DataFlow (Apache Beam Development)",
+        topics: [
+          "Introduction to DataFlow",
+          "Spark vs Apache Beam",
+          "DataFlow vs DataProc",
+          "Building Apache Beam Pipelines",
+          "Batch and Stream Processing",
+          "Windowing Concepts",
+          "Integration with GCP Services",
+          "Streaming Pipeline Project",
+          "Template-based Pipelines",
+        ],
+      },
+      {
+        module: "Cloud Pub/Sub",
+        topics: [
+          "Introduction to Pub/Sub",
+          "Topics and Subscriptions",
+          "Publishing and Consuming Messages",
+          "Message Retention and Acknowledgements",
+          "Integration with Cloud Functions",
+          "Integration with Dataflow",
+          "Streaming Use Cases",
+        ],
+      },
+      {
+        module: "Cloud Composer (Airflow DAG Creation)",
+        topics: [
+          "Introduction to Composer and Airflow",
+          "Airflow Architecture",
+          "Workflow Creation and Scheduling",
+          "Workflow Monitoring",
+          "Integration with BigQuery and DataFlow",
+          "Error Handling and Troubleshooting",
+          "BigQuery DAGs",
+          "DataProc DAGs",
+          "DataFlow DAGs",
+          "CI/CD with Cloud Build and GitHub",
+        ],
+      },
+      {
+        module: "Data Fusion",
+        topics: [
+          "Introduction to Data Fusion",
+          "Building ETL Pipelines",
+          "Visual Pipeline Design",
+          "Transformations and Sinks",
+          "Pre-built Templates",
+          "Integration with BigQuery and GCS",
+          "End-to-End Data Fusion Pipeline",
+        ],
+      },
+      {
+        module: "Cloud Functions",
+        topics: [
+          "Cloud Functions Introduction",
+          "Event-driven Architecture",
+          "Deploying Cloud Functions",
+          "HTTP Triggers",
+          "Pub/Sub Triggers",
+          "Cloud Storage Triggers",
+          "Monitoring and Logging",
+          "GCS to BigQuery Automation Use Case",
+        ],
+      },
+      {
+        module: "Terraform",
+        topics: [
+          "Terraform Introduction",
+          "Terraform Installation and Setup",
+          "Infrastructure Provisioning",
+          "Terraform Commands",
+          "Creating GCP Resources",
+          "Provisioning GCS Buckets",
+          "Provisioning Dataproc Clusters",
+          "Provisioning BigQuery Resources",
+        ],
+      },
     ],
   },
+
+  // ── Course 3 ────────────────────────────────────────────────────
   {
-    id: 3,
-    title: "Cloud Dataflow — Streaming & Batch Pipelines",
-    duration: "6 hrs",
-    lessons: 16,
-    topics: [
-      "Apache Beam unified programming model",
-      "Building batch pipelines with Dataflow templates",
-      "Streaming pipelines, windowing & triggers",
-      "Autoscaling, monitoring & cost management",
+    id: "python-de",
+    type: "course",
+    badge: "FOUNDATION",
+    icon: Code2,
+    accentFrom: "#059669",
+    accentTo: "#10b981",
+    title: "Python for Data Engineering",
+    subtitle: "Hands-On Foundation Course",
+    price: 599,
+    originalPrice: 2000,
+    highlights: [
+      "Python fundamentals for data engineers",
+      "File handling, I/O operations",
+      "Exceptional Handling",
+      "Beginner-friendly, no prior coding needed",
+    ],
+    curriculum: [
+      {
+        module: "Module 1: Data Types",
+        topics: [
+          "Strings",
+          "Operators",
+          "Numbers (Int, Float)",
+          "Booleans",
+          "None",
+        ],
+      },
+      {
+        module: "Module 2: Data Structures",
+        topics: ["Lists", "Tuples", "Dictionaries", "Sets"],
+      },
+      {
+        module: "Module 3: Python Programming Constructs",
+        topics: [
+          "if, elif, else statements",
+          "for loops and while loops",
+          "Exception Handling",
+          "File I/O Operations",
+        ],
+      },
+      {
+        module: "Module 4: Modular Programming in Python",
+        topics: [
+          "Functions",
+          "Lambda Functions",
+          "Classes",
+          "Modules and Packages",
+        ],
+      },
     ],
   },
+
+  // ── Course 4 ────────────────────────────────────────────────────
   {
-    id: 4,
-    title: "Dataproc — Managed Spark & Hadoop",
-    duration: "5 hrs",
-    lessons: 14,
-    topics: [
-      "Dataproc cluster setup, autoscaling, and preemptibles",
-      "PySpark for large-scale data transformations",
-      "Hive metastore & integration with BigQuery",
-      "Dataproc Serverless Spark and cost strategies",
+    id: "project-healthcare",
+    type: "project",
+    badge: "REAL PROJECT",
+    icon: Heart,
+    accentFrom: "#dc2626",
+    accentTo: "#f87171",
+    title: "Health Care GCP",
+    subtitle: "Data Engineering Project",
+    price: 1499,
+    originalPrice: 3000,
+    highlights: [
+      "End-to-end real-world healthcare dataset",
+      "Ingest, transform & serve patient data pipelines",
+      "BigQuery + Dataflow + Composer stack",
+      "HIPAA-aware data design patterns",
+      "Portfolio-ready project with full code",
+      "Architecture walkthrough & code review",
+    ],
+    curriculum: [
+      // ── PASTE YOUR CURRICULUM HERE ──
+      {
+        module: "Project Overview & Architecture",
+        topics: [
+          "Healthcare Data Landscape on GCP",
+          "Solution Architecture Design",
+          "GCP Services Selection & Setup",
+        ],
+      },
+      {
+        module: "Data Ingestion Pipeline",
+        topics: [
+          "Ingesting HL7/FHIR Healthcare Records",
+          "Pub/Sub → Dataflow Streaming Ingestion",
+          "Raw Layer Design in Cloud Storage",
+        ],
+      },
+      {
+        module: "Transformation & Serving",
+        topics: [
+          "Data Cleansing & Transformation with Dataflow",
+          "BigQuery Schema Design for Healthcare",
+          "Looker Studio Dashboard for Analytics",
+        ],
+      },
+      {
+        module: "Orchestration & Monitoring",
+        topics: [
+          "Airflow DAG for End-to-End Orchestration",
+          "Cloud Monitoring & Alerting Setup",
+          "Final Code Review & Portfolio Prep",
+        ],
+      },
     ],
   },
+
+  // ── Course 5 ────────────────────────────────────────────────────
   {
-    id: 5,
-    title: "Cloud Composer / Apache Airflow Orchestration",
-    duration: "5 hrs",
-    lessons: 14,
-    topics: [
-      "Airflow concepts: DAGs, Operators, XComs, Sensors",
-      "Building production-grade orchestrated pipelines",
-      "Cloud Composer environment setup and upgrades",
-      "Scheduling, alerting, and SLA monitoring",
+    id: "project-retail",
+    type: "project",
+    badge: "REAL PROJECT",
+    icon: ShoppingCart,
+    accentFrom: "#d97706",
+    accentTo: "#f59e0b",
+    title: "Retailer GCP",
+    subtitle: "Data Engineering Project",
+    price: 1499,
+    originalPrice: 3000,
+    highlights: [
+      "End-to-end real-world retail/e-commerce dataset",
+      "Sales, inventory & customer analytics pipelines",
+      "BigQuery + Dataflow + Composer stack",
+      "Near-real-time dashboard with Looker Studio",
+      "Portfolio-ready project with full code",
+      "Architecture walkthrough & code review",
+    ],
+    curriculum: [
+      // ── PASTE YOUR CURRICULUM HERE ──
+      {
+        module: "Project Overview & Architecture",
+        topics: [
+          "Retail Data Engineering Challenges",
+          "Solution Architecture on GCP",
+          "Dataset Walkthrough: Orders, Inventory, Customers",
+        ],
+      },
+      {
+        module: "Batch Ingestion Pipeline",
+        topics: [
+          "Loading Retail Data from GCS to BigQuery",
+          "Dataproc Spark Transformations",
+          "Slowly Changing Dimensions (SCD) Design",
+        ],
+      },
+      {
+        module: "Streaming & Real-Time Analytics",
+        topics: [
+          "Pub/Sub → Dataflow for Live Order Events",
+          "Real-Time Sales Dashboard in Looker Studio",
+          "Alerting on Inventory Threshold Breaches",
+        ],
+      },
+      {
+        module: "Orchestration & Delivery",
+        topics: [
+          "Airflow DAG for Full Pipeline Orchestration",
+          "Data Quality Checks & Validation",
+          "Final Code Review & Portfolio Prep",
+        ],
+      },
     ],
   },
-  {
-    id: 6,
-    title: "Pub/Sub — Event-Driven Architecture",
-    duration: "4 hrs",
-    lessons: 10,
-    topics: [
-      "Pub/Sub topics, subscriptions, and delivery guarantees",
-      "Push vs pull delivery and ordering semantics",
-      "Integration with Dataflow streaming pipelines",
-      "Dead letter queues, retries, and error handling",
-    ],
-  },
-  {
-    id: 7,
-    title: "Real-Time Pipelines & Streaming Analytics",
-    duration: "6 hrs",
-    lessons: 16,
-    topics: [
-      "End-to-end streaming architecture on GCP",
-      "Pub/Sub → Dataflow → BigQuery reference pipeline",
-      "Looker Studio real-time dashboards",
-      "Monitoring with Cloud Monitoring, Logging & Alerting",
-    ],
-  },
-  {
-    id: 8,
-    title: "Capstone Project & Career Preparation",
-    duration: "8 hrs",
-    lessons: 8,
-    topics: [
-      "Design a complete data engineering solution on GCP",
-      "Ingest, transform, and serve real-world datasets",
-      "Architecture review and code walkthroughs",
-      "Resume prep, mock interviews & GCP DE exam guidance",
-    ],
-  },
+
+  // ── ADD A NEW COURSE HERE ────────────────────────────────────────
+  // Copy any block above, change the id, content, price, and colors.
+  // The card will appear automatically on the site.
 ];
 
-const TESTIMONIALS = [
-  {
-    name: "Arjun Sharma",
-    role: "Data Engineer at Infosys",
-    avatar: "AS",
-    color: "from-blue-500 to-indigo-600",
-    text: "The BigQuery and Dataflow modules were incredibly in-depth. I landed my first Data Engineering role within 2 months of completing this course. Real-world examples made complex concepts click instantly.",
-  },
-  {
-    name: "Priya Nair",
-    role: "Cloud Architect at TCS",
-    avatar: "PN",
-    color: "from-violet-500 to-purple-600",
-    text: "Coming from a traditional DBA background, this course was my bridge to the cloud. The Airflow and Pub/Sub sections alone are worth the entire fee. Highly structured and genuinely practical.",
-  },
-  {
-    name: "Rahul Verma",
-    role: "Senior Data Analyst at Wipro",
-    avatar: "RV",
-    color: "from-cyan-500 to-blue-600",
-    text: "I cleared the Google Professional Data Engineer certification on my first attempt. The capstone project gave me a real portfolio piece I now showcase in every interview. Incredible value.",
-  },
-  {
-    name: "Sneha Patil",
-    role: "ML Engineer at Flipkart",
-    avatar: "SP",
-    color: "from-emerald-500 to-teal-600",
-    text: "The live doubt-clearing sessions with the instructor made this feel like a bootcamp. You get real answers, not pre-recorded scripts. Best investment I have made in my tech career.",
-  },
-];
-
+// ─────────────────────────────────────────────────────────────────
+// Static data
+// ─────────────────────────────────────────────────────────────────
 const TICKER = [
   "Rohan from Mumbai just enrolled",
   "Divya from Bangalore just enrolled",
@@ -145,363 +641,1242 @@ const TICKER = [
   "Vijay from Kolkata just enrolled",
 ];
 
-const FAQS = [
+const TESTIMONIALS = [
   {
-    q: "Do I need prior GCP experience to join?",
-    a: "No prior GCP experience is needed. The course starts from cloud fundamentals and builds up progressively. Basic SQL and Python familiarity is helpful but not mandatory.",
+    name: "Arjun Sharma",
+    role: "Data Engineer at Infosys",
+    initials: "AS",
+    color: "from-blue-500 to-indigo-600",
+    text: "The live batch format is incredible. Getting to ask questions in real time saved me weeks of confusion. Landed a Data Engineering role within 2 months of completing the course.",
   },
   {
-    q: "Is this a live or self-paced course?",
-    a: "Both. You get 46+ hours of recorded HD video for self-paced study, plus scheduled live doubt-clearing sessions with the instructor every weekend.",
+    name: "Priya Nair",
+    role: "Cloud Architect at TCS",
+    initials: "PN",
+    color: "from-violet-500 to-purple-600",
+    text: "I started with the Python course and then upgraded to the GCP live batch. The progression was seamless and very well structured. The instructor explains complex concepts with remarkable clarity.",
   },
   {
-    q: "Will I receive a certificate on completion?",
-    a: "Yes. You receive a SkillVane IT Academy completion certificate. The curriculum is also aligned with the Google Professional Data Engineer certification exam.",
+    name: "Rahul Verma",
+    role: "Senior Analyst at Wipro",
+    initials: "RV",
+    color: "from-cyan-500 to-blue-600",
+    text: "Cleared the Google Professional Data Engineer exam on my first attempt. The Healthcare project gave me a standout portfolio piece that every interviewer asks about.",
   },
   {
-    q: "What is the refund policy?",
-    a: "We offer a 7-day no-questions-asked refund if you are not satisfied after accessing up to Module 2 of the course.",
-  },
-  {
-    q: "Is EMI available?",
-    a: "Yes. Razorpay offers 0% EMI on most major Indian credit cards. The EMI option appears automatically during checkout.",
+    name: "Sneha Patil",
+    role: "ML Engineer at Flipkart",
+    initials: "SP",
+    color: "from-emerald-500 to-teal-600",
+    text: "The Retailer project course was worth every rupee. It bridged the gap between theory and production-grade engineering. I used the exact architecture in my current job.",
   },
 ];
 
-const FEATURES = [
-  { icon: Database, title: "BigQuery Mastery", desc: "Serverless DW, SQL optimization, ML & BI Engine" },
-  { icon: Zap, title: "Real-Time Streaming", desc: "Pub/Sub ingestion & Dataflow streaming pipelines" },
-  { icon: Layers, title: "Batch Processing", desc: "Dataproc Spark jobs & large-scale transformations" },
-  { icon: GitBranch, title: "Pipeline Orchestration", desc: "Cloud Composer, Airflow DAGs & monitoring" },
-  { icon: Cloud, title: "GCP Architecture", desc: "IAM, networking, cost optimization & resource mgmt" },
-  { icon: Code2, title: "Python & PySpark", desc: "Data engineering scripts, Beam & automation" },
-  { icon: TrendingUp, title: "Real-World Projects", desc: "Portfolio-grade end-to-end pipeline capstone" },
-  { icon: Shield, title: "Certification Prep", desc: "Google Professional DE exam strategies & mocks" },
-];
+const TYPE_LABELS: Record<CourseType, string> = {
+  live: "Live Batch",
+  recording: "Self-Paced",
+  course: "Foundation",
+  project: "Project",
+};
 
-export default function App() {
-  const [openModule, setOpenModule] = useState<number | null>(null);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [ticker, setTicker] = useState(0);
-  const [payLoading, setPayLoading] = useState(false);
-  const [payDone, setPayDone] = useState(false);
+// ─────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────
+function formatINR(n: number) {
+  return `₹${n.toLocaleString("en-IN")}`;
+}
+
+function GradientText({
+  from,
+  to,
+  children,
+  className = "",
+}: {
+  from: string;
+  to: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={className}
+      style={{
+        background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)`,
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Course Modal
+// ─────────────────────────────────────────────────────────────────
+function CourseModal({
+  course,
+  onClose,
+  onEnroll,
+}: {
+  course: Course;
+  onClose: () => void;
+  onEnroll: (course: Course) => void;
+}) {
+  const [openModule, setOpenModule] = useState<number | null>(
+    0,
+  );
+  const Icon = course.icon;
 
   useEffect(() => {
-    const t = setInterval(() => setTicker((i) => (i + 1) % TICKER.length), 2800);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () =>
+      document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <div className="relative w-full sm:max-w-2xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div
+          className="px-5 sm:px-6 py-5 flex items-start justify-between gap-4 flex-shrink-0"
+          style={{
+            background: `linear-gradient(135deg, ${course.accentFrom}22 0%, ${course.accentTo}11 100%)`,
+            borderBottom: `1px solid ${course.accentFrom}30`,
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{
+                background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
+              }}
+            >
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p
+                className="text-xs font-mono uppercase tracking-widest mb-0.5"
+                style={{ color: course.accentFrom }}
+              >
+                {course.badge}
+              </p>
+              <h2
+                className="text-base sm:text-lg font-bold leading-tight text-white"
+                style={{
+                  fontFamily: "'Outfit', system-ui, sans-serif",
+                }}
+              >
+                {course.title}
+              </h2>
+              <p className="text-xs text-white/50">
+                {course.subtitle}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/60 hover:text-white flex-shrink-0"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="overflow-y-auto flex-1 px-5 sm:px-6 py-5 space-y-6">
+          {/* Price + meta */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span
+                  className="text-3xl font-extrabold text-white"
+                  style={{
+                    fontFamily:
+                      "'Outfit', system-ui, sans-serif",
+                  }}
+                >
+                  {formatINR(course.price)}
+                </span>
+                {course.originalPrice && (
+                  <span className="text-white/40 line-through text-base">
+                    {formatINR(course.originalPrice)}
+                  </span>
+                )}
+              </div>
+              {course.originalPrice && (
+                <p className="text-xs text-emerald-400 font-semibold mt-0.5">
+                  Save{" "}
+                  {formatINR(
+                    course.originalPrice - course.price,
+                  )}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs text-white/50">
+              {course.duration && (
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  {course.duration}
+                </span>
+              )}
+              {course.timings && (
+                <span className="flex items-center gap-1.5">
+                  <MonitorPlay className="w-3.5 h-3.5" />
+                  {course.timings}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Highlights */}
+          <div>
+            <h3
+              className="text-sm font-bold text-white mb-3"
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
+            >
+              What&apos;s Included
+            </h3>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {course.highlights.map((h) => (
+                <li
+                  key={h}
+                  className="flex items-start gap-2.5 text-sm text-white/70"
+                >
+                  <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Curriculum */}
+          <div>
+            <h3
+              className="text-sm font-bold text-white mb-3"
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
+            >
+              Curriculum
+            </h3>
+            <div className="space-y-1.5">
+              {course.curriculum.map((mod, i) => (
+                <div
+                  key={i}
+                  className="border border-white/8 rounded-xl overflow-hidden"
+                >
+                  <button
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
+                    onClick={() =>
+                      setOpenModule(openModule === i ? null : i)
+                    }
+                  >
+                    <span className="text-sm font-semibold text-white/90">
+                      {mod.module}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-white/40 flex-shrink-0 transition-transform duration-200 ${
+                        openModule === i ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openModule === i && (
+                    <ul className="px-4 pb-3 border-t border-white/5 space-y-2 pt-3">
+                      {mod.topics.map((t) => (
+                        <li
+                          key={t}
+                          className="flex items-start gap-2.5 text-sm text-white/55"
+                        >
+                          <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer CTA */}
+        <div className="flex-shrink-0 px-5 sm:px-6 py-4 border-t border-white/8 bg-[#080d1a]">
+          <button
+            onClick={() => onEnroll(course)}
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 active:scale-[0.99] transition-all shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
+              boxShadow: `0 8px 30px ${course.accentFrom}40`,
+            }}
+          >
+            Enroll Now · {formatINR(course.price)}
+          </button>
+          <p className="text-center text-xs text-white/30 mt-2.5">
+            Secure payment via Razorpay · UPI · Net Banking ·
+            Cards · EMI
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────
+interface StudentDetails {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface EnrollmentRecord {
+  invoiceNo: string;
+  paymentId: string;
+  student: StudentDetails;
+  course: Course;
+  paidAt: Date;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────
+function generateInvoiceNo() {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `SV-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
+}
+
+async function loadRazorpay(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if ((window as any).Razorpay) { resolve(); return; }
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Failed to load Razorpay"));
+    document.body.appendChild(s);
+  });
+}
+
+async function loadEmailJs(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if ((window as any).emailjs) { resolve(); return; }
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("EmailJS not loaded"));
+    document.body.appendChild(s);
+  });
+}
+
+async function saveToGoogleSheet(record: EnrollmentRecord) {
+  if (GOOGLE_SHEET_WEBHOOK_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL") return;
+  await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      invoice_no: record.invoiceNo,
+      payment_id: record.paymentId,
+      name: record.student.name,
+      email: record.student.email,
+      phone: record.student.phone,
+      course: record.course.title,
+      course_type: record.course.subtitle,
+      amount: record.course.price,
+      paid_at: record.paidAt.toISOString(),
+    }),
+  });
+}
+
+async function sendInvoiceEmail(record: EnrollmentRecord) {
+  if (EMAILJS_SERVICE_ID === "YOUR_EMAILJS_SERVICE_ID") return;
+  await loadEmailJs();
+  const ejs = (window as any).emailjs;
+  ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_name:     record.student.name,
+    to_email:    record.student.email,
+    invoice_no:  record.invoiceNo,
+    payment_id:  record.paymentId,
+    course_name: `${record.course.title} — ${record.course.subtitle}`,
+    amount:      `₹${record.course.price.toLocaleString("en-IN")}`,
+    paid_at:     record.paidAt.toLocaleDateString("en-IN", {
+                   day: "2-digit", month: "long", year: "numeric",
+                   hour: "2-digit", minute: "2-digit",
+                 }),
+    academy_name: "SkillVane IT Academy",
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Enrollment Form Modal
+// ─────────────────────────────────────────────────────────────────
+function EnrollmentFormModal({
+  course,
+  onClose,
+  onSubmit,
+}: {
+  course: Course;
+  onClose: () => void;
+  onSubmit: (student: StudentDetails) => void;
+}) {
+  const [form, setForm] = useState<StudentDetails>({ name: "", email: "", phone: "" });
+  const [errors, setErrors] = useState<Partial<StudentDetails>>({});
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { nameRef.current?.focus(); }, []);
+
+  const validate = () => {
+    const e: Partial<StudentDetails> = {};
+    if (!form.name.trim())                       e.name  = "Full name is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email is required";
+    if (!/^[6-9]\d{9}$/.test(form.phone))        e.phone = "Valid 10-digit mobile number required";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) onSubmit(form);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-md bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div
+          className="px-6 py-4 flex items-center justify-between border-b border-white/8"
+          style={{ background: `linear-gradient(135deg, ${course.accentFrom}22, ${course.accentTo}11)` }}
+        >
+          <div>
+            <p className="text-xs font-mono uppercase tracking-widest mb-0.5" style={{ color: course.accentFrom }}>
+              Step 1 of 2 — Your Details
+            </p>
+            <h2 className="font-bold text-white text-base" style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}>
+              {course.title}
+            </h2>
+            <p className="text-xs text-white/40">{course.subtitle} · ₹{course.price.toLocaleString("en-IN")}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
+          {/* Name */}
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">Full Name *</label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <input
+                ref={nameRef}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Enter your full name"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+              />
+            </div>
+            {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">Email Address * <span className="text-white/30 font-normal">(invoice will be sent here)</span></label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="you@example.com"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+              />
+            </div>
+            {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">Mobile Number * <span className="text-white/30 font-normal">(10 digits, Indian)</span></label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <div className="absolute left-9 top-1/2 -translate-y-1/2 text-sm text-white/40 border-r border-white/10 pr-2.5">+91</div>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                placeholder="9876543210"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+              />
+            </div>
+            {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
+          </div>
+
+          <p className="text-xs text-white/30 leading-relaxed">
+            Your details are used only for sending your course access and invoice. We do not share your information.
+          </p>
+
+          <button
+            type="submit"
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-all shadow-lg"
+            style={{ background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`, boxShadow: `0 8px 24px ${course.accentFrom}40` }}
+          >
+            Continue to Payment →
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Invoice Modal
+// ─────────────────────────────────────────────────────────────────
+function InvoiceModal({
+  record,
+  onClose,
+}: {
+  record: EnrollmentRecord;
+  onClose: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const [emailSent, setEmailSent] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await Promise.all([
+          saveToGoogleSheet(record),
+          sendInvoiceEmail(record),
+        ]);
+        setEmailSent(true);
+      } catch {
+        setEmailSent(false);
+      }
+    })();
+  }, [record]);
+
+  const copyPaymentId = () => {
+    navigator.clipboard.writeText(record.paymentId).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-lg bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-emerald-500/30 shadow-2xl overflow-hidden">
+        {/* Success header */}
+        <div className="px-6 pt-8 pb-6 text-center border-b border-white/8 bg-emerald-500/5">
+          <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}>
+            Enrollment Successful!
+          </h2>
+          <p className="text-sm text-white/50">
+            Welcome to SkillVane IT Academy, {record.student.name.split(" ")[0]}!
+          </p>
+          {emailSent === true && (
+            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
+              <Mail className="w-3.5 h-3.5" /> Invoice sent to {record.student.email}
+            </div>
+          )}
+          {emailSent === false && (
+            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full">
+              Invoice email setup pending — see guide below
+            </div>
+          )}
+        </div>
+
+        {/* Invoice body */}
+        <div className="px-6 py-5 space-y-4">
+          {/* Invoice number */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
+            <div>
+              <p className="text-xs text-white/40 mb-0.5">Invoice Number</p>
+              <p className="font-mono font-bold text-white text-sm">{record.invoiceNo}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-white/40 mb-0.5">Date & Time</p>
+              <p className="text-xs text-white/70">
+                {record.paidAt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })},{" "}
+                {record.paidAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
+          </div>
+
+          {/* Student + Course */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 rounded-xl bg-white/4 border border-white/8">
+              <p className="text-xs text-white/40 mb-1">Student</p>
+              <p className="text-sm font-semibold text-white">{record.student.name}</p>
+              <p className="text-xs text-white/50 mt-0.5">{record.student.email}</p>
+              <p className="text-xs text-white/50">+91 {record.student.phone}</p>
+            </div>
+            <div className="p-3 rounded-xl bg-white/4 border border-white/8">
+              <p className="text-xs text-white/40 mb-1">Course Enrolled</p>
+              <p className="text-sm font-semibold text-white">{record.course.title}</p>
+              <p className="text-xs text-white/50 mt-0.5">{record.course.subtitle}</p>
+              <p className="text-xs font-bold text-emerald-400 mt-1">₹{record.course.price.toLocaleString("en-IN")} paid</p>
+            </div>
+          </div>
+
+          {/* Payment ID */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
+            <div>
+              <p className="text-xs text-white/40 mb-0.5">Razorpay Payment ID</p>
+              <p className="font-mono text-xs text-white/80">{record.paymentId}</p>
+            </div>
+            <button
+              onClick={copyPaymentId}
+              className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/8 transition-all"
+            >
+              {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+
+          <p className="text-xs text-white/30 text-center">
+            Please save your Payment ID for any refund or support requests.
+          </p>
+        </div>
+
+        <div className="px-6 pb-6">
+          <button
+            onClick={onClose}
+            className="w-full py-3 rounded-xl border border-white/15 text-white/70 hover:bg-white/5 hover:text-white font-semibold text-sm transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Course Card
+// ─────────────────────────────────────────────────────────────────
+function CourseCard({
+  course,
+  onViewDetails,
+  onEnroll,
+}: {
+  course: Course;
+  onViewDetails: (c: Course) => void;
+  onEnroll: (c: Course) => void;
+}) {
+  const Icon = course.icon;
+
+  return (
+    <div className="group relative flex flex-col rounded-2xl border border-white/8 bg-card overflow-hidden hover:border-white/20 transition-all duration-300">
+      {/* Accent top bar */}
+      <div
+        className="h-1 w-full"
+        style={{
+          background: `linear-gradient(90deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
+        }}
+      />
+
+      {/* Tag */}
+      {course.tag && (
+        <div
+          className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-1 rounded-full text-white"
+          style={{
+            background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
+          }}
+        >
+          {course.tag}
+        </div>
+      )}
+
+      <div className="p-5 sm:p-6 flex flex-col flex-1">
+        {/* Icon + badge */}
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{
+              background: `linear-gradient(135deg, ${course.accentFrom}22 0%, ${course.accentTo}11 100%)`,
+              border: `1px solid ${course.accentFrom}40`,
+            }}
+          >
+            <Icon
+              className="w-5 h-5"
+              style={{ color: course.accentFrom }}
+            />
+          </div>
+          <span
+            className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded-full border"
+            style={{
+              color: course.accentFrom,
+              borderColor: `${course.accentFrom}40`,
+              background: `${course.accentFrom}12`,
+            }}
+          >
+            {course.badge}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3
+          className="text-lg font-bold text-white leading-tight mb-0.5"
+          style={{
+            fontFamily: "'Outfit', system-ui, sans-serif",
+          }}
+        >
+          {course.title}
+        </h3>
+        <p className="text-xs text-white/40 mb-4">
+          {course.subtitle}
+        </p>
+
+        {/* Meta pills */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {course.duration && (
+            <span className="flex items-center gap-1 text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full">
+              <Clock className="w-3 h-3" />
+              {course.duration}
+            </span>
+          )}
+          {course.timings && (
+            <span className="flex items-center gap-1 text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full">
+              <MonitorPlay className="w-3 h-3" />
+              Live
+            </span>
+          )}
+          <span className="flex items-center gap-1 text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full">
+            <BookOpen className="w-3 h-3" />
+            {TYPE_LABELS[course.type]}
+          </span>
+        </div>
+
+        {/* Highlights (top 4) */}
+        <ul className="space-y-2 mb-6 flex-1">
+          {course.highlights.slice(0, 4).map((h) => (
+            <li
+              key={h}
+              className="flex items-start gap-2.5 text-xs text-white/60"
+            >
+              <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
+              {h}
+            </li>
+          ))}
+        </ul>
+
+        {/* Price */}
+        <div className="flex items-baseline gap-2 mb-4">
+          <span
+            className="text-2xl font-extrabold text-white"
+            style={{
+              fontFamily: "'Outfit', system-ui, sans-serif",
+            }}
+          >
+            {formatINR(course.price)}
+          </span>
+          {course.originalPrice && (
+            <span className="text-white/30 line-through text-sm">
+              {formatINR(course.originalPrice)}
+            </span>
+          )}
+          {course.originalPrice && (
+            <span className="text-xs text-emerald-400 font-semibold">
+              {Math.round(
+                ((course.originalPrice - course.price) /
+                  course.originalPrice) *
+                  100,
+              )}
+              % off
+            </span>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => onEnroll(course)}
+            className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 active:scale-[0.99] transition-all"
+            style={{
+              background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
+            }}
+          >
+            Enroll Now
+          </button>
+          <button
+            onClick={() => onViewDetails(course)}
+            className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-white/15 text-white/70 hover:bg-white/5 hover:text-white transition-all"
+          >
+            Details
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Main App
+// ─────────────────────────────────────────────────────────────────
+export default function App() {
+  const [ticker, setTicker] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<
+    "all" | CourseType
+  >("all");
+  const [modalCourse, setModalCourse] = useState<Course | null>(
+    null,
+  );
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [payLoading, setPayLoading] = useState<string | null>(null);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [formCourse, setFormCourse] = useState<Course | null>(null);
+  const [invoice, setInvoice] = useState<EnrollmentRecord | null>(null);
+
+  useEffect(() => {
+    const t = setInterval(
+      () => setTicker((i) => (i + 1) % TICKER.length),
+      2800,
+    );
     return () => clearInterval(t);
   }, []);
 
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    const anyOpen = !!(modalCourse || formCourse || invoice);
+    document.body.style.overflow = anyOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [modalCourse, formCourse, invoice]);
+
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
   };
 
-  const handleBuyNow = () => {
-    setPayLoading(true);
-    setTimeout(() => {
-      setPayLoading(false);
-      setPayDone(true);
-      setTimeout(() => setPayDone(false), 4000);
-    }, 1000);
+  // Step 1: Enroll button → show student details form
+  const handleEnroll = (course: Course) => {
+    setModalCourse(null);
+    setFormCourse(course);
   };
+
+  // Step 2: Form submitted → open Razorpay
+  const handleFormSubmit = async (student: StudentDetails) => {
+    if (!formCourse) return;
+    const course = formCourse;
+    setFormCourse(null);
+    setPayLoading(course.id);
+    setPayError(null);
+
+    try {
+      await loadRazorpay();
+
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: course.price * 100,
+        currency: "INR",
+        name: "SkillVane IT Academy",
+        description: `${course.title} — ${course.subtitle}`,
+        handler: (response: any) => {
+          setPayLoading(null);
+          const record: EnrollmentRecord = {
+            invoiceNo: generateInvoiceNo(),
+            paymentId: response.razorpay_payment_id || "PAY_" + Date.now(),
+            student,
+            course,
+            paidAt: new Date(),
+          };
+          setInvoice(record);
+        },
+        prefill: {
+          name: student.name,
+          email: student.email,
+          contact: "+91" + student.phone,
+        },
+        notes: { course_id: course.id, student_email: student.email },
+        theme: { color: course.accentFrom },
+        modal: { ondismiss: () => setPayLoading(null) },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", (resp: any) => {
+        setPayLoading(null);
+        setPayError(`Payment failed: ${resp.error.description}`);
+        setTimeout(() => setPayError(null), 6000);
+      });
+      rzp.open();
+    } catch {
+      setPayLoading(null);
+      setPayError("Could not load payment gateway. Please try again.");
+      setTimeout(() => setPayError(null), 6000);
+    }
+  };
+
+  const FILTERS: {
+    label: string;
+    value: "all" | CourseType;
+  }[] = [
+    { label: "All Courses", value: "all" },
+    { label: "Live Batch", value: "live" },
+    { label: "Recordings", value: "recording" },
+    { label: "Foundation", value: "course" },
+    { label: "Projects", value: "project" },
+  ];
+
+  const visibleCourses =
+    activeFilter === "all"
+      ? COURSES
+      : COURSES.filter((c) => c.type === activeFilter);
+
+  const faqs = [
+    {
+      q: "Do I need prior GCP experience?",
+      a: "No. The GCP courses start from cloud fundamentals. For the project courses, basic GCP knowledge is helpful. The Python course has no prerequisites at all.",
+    },
+    {
+      q: "What is the difference between the Live Batch and Recordings course?",
+      a: "The Live Batch gives you real-time interaction with the instructor (Mon–Fri, 7:30–8:30 AM) plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
+    },
+    {
+      q: "Can I buy the project courses without the main GCP course?",
+      a: "Yes. The project courses are standalone. However, they are most effective if you have some GCP fundamentals. We recommend completing the Recordings course first if you are new to GCP.",
+    },
+    {
+      q: "Is there a refund policy?",
+      a: "Yes — 7-day no-questions-asked refund if you are not satisfied after accessing up to the first two modules of any course.",
+    },
+    {
+      q: "Is EMI or instalment payment available?",
+      a: "Yes. Razorpay offers 0% EMI on most major credit cards. The option appears automatically at checkout.",
+    },
+  ];
 
   return (
     <div
       className="min-h-screen bg-background text-foreground overflow-x-hidden"
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
-      {/* ── Navbar ── */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+      {/* ── Navbar ──────────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/40">
+            <div className="w-8 h-8 rounded-lg bg-[#4361ee] flex items-center justify-center shadow-lg shadow-[#4361ee]/40">
               <Cloud className="w-4 h-4 text-white" />
             </div>
             <span
               className="font-bold text-sm tracking-tight"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
             >
               SkillVane{" "}
-              <span className="text-primary">IT Academy</span>
+              <span className="text-[#4361ee]">IT Academy</span>
             </span>
           </div>
 
           <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
-            {["curriculum", "instructor", "testimonials", "pricing"].map((s) => (
-              <button
-                key={s}
-                onClick={() => scrollTo(s)}
-                className="capitalize hover:text-foreground transition-colors"
-              >
-                {s === "testimonials" ? "Reviews" : s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
-            ))}
+            <button
+              onClick={() => scrollTo("courses")}
+              className="hover:text-foreground transition-colors"
+            >
+              Courses
+            </button>
+            <button
+              onClick={() => scrollTo("instructor")}
+              className="hover:text-foreground transition-colors"
+            >
+              Instructor
+            </button>
+            <button
+              onClick={() => scrollTo("testimonials")}
+              className="hover:text-foreground transition-colors"
+            >
+              Reviews
+            </button>
+            <button
+              onClick={() => scrollTo("faq")}
+              className="hover:text-foreground transition-colors"
+            >
+              FAQ
+            </button>
           </div>
 
           <button
-            onClick={() => scrollTo("pricing")}
-            className="hidden md:block px-5 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-primary/30"
+            onClick={() => scrollTo("courses")}
+            className="hidden md:block px-5 py-2 rounded-lg bg-[#4361ee] text-white text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-[#4361ee]/30"
           >
-            Enroll Now →
+            View Courses →
           </button>
 
-          <button className="md:hidden p-2 text-muted-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <button
+            className="md:hidden p-2 text-muted-foreground"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
         </div>
 
         {mobileOpen && (
           <div className="md:hidden bg-card border-t border-border px-4 py-4 flex flex-col gap-1">
-            {["curriculum", "instructor", "testimonials", "pricing"].map((s) => (
+            {[
+              "courses",
+              "instructor",
+              "testimonials",
+              "faq",
+            ].map((s) => (
               <button
                 key={s}
                 onClick={() => scrollTo(s)}
                 className="capitalize text-sm text-muted-foreground hover:text-foreground py-2.5 text-left border-b border-border/40 last:border-0"
               >
-                {s === "testimonials" ? "Reviews" : s.charAt(0).toUpperCase() + s.slice(1)}
+                {s === "faq"
+                  ? "FAQ"
+                  : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
             <button
-              onClick={() => scrollTo("pricing")}
-              className="mt-3 w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold"
+              onClick={() => scrollTo("courses")}
+              className="mt-3 w-full py-3 rounded-lg bg-[#4361ee] text-white text-sm font-semibold"
             >
-              Enroll Now →
+              View Courses →
             </button>
           </div>
         )}
       </nav>
 
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden pb-24 pt-16 sm:pt-24">
-        {/* Dot-grid background */}
+      {/* ── Hero ────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden pt-16 sm:pt-24 pb-20 sm:pb-28">
         <div
-          className="pointer-events-none absolute inset-0 opacity-20"
+          className="pointer-events-none absolute inset-0 opacity-[0.15]"
           style={{
             backgroundImage:
-              "radial-gradient(circle, rgba(67,97,238,0.35) 1px, transparent 1px)",
+              "radial-gradient(circle, rgba(67,97,238,0.5) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
         />
-        {/* Glow orbs */}
-        <div className="pointer-events-none absolute top-24 left-1/3 w-[500px] h-[500px] rounded-full bg-primary/15 blur-[140px]" />
-        <div className="pointer-events-none absolute top-48 right-1/4 w-80 h-80 rounded-full bg-cyan-500/10 blur-[100px]" />
+        <div className="pointer-events-none absolute top-20 left-1/3 w-[600px] h-[600px] rounded-full bg-[#4361ee]/15 blur-[160px]" />
+        <div className="pointer-events-none absolute top-48 right-1/4 w-80 h-80 rounded-full bg-cyan-500/8 blur-[120px]" />
 
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
-          {/* Pill badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-xs font-mono text-primary mb-8">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#4361ee]/30 bg-[#4361ee]/10 text-xs font-mono text-[#4361ee] mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            New Batch Starting Soon · Limited Seats Available
+            New Batch Starting From 1st July 2026 at 7.30 am IST
           </div>
 
           <h1
-            className="text-4xl sm:text-5xl lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.1] mb-6"
-            style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5"
+            style={{
+              fontFamily: "'Outfit', system-ui, sans-serif",
+            }}
           >
-            Master{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #4361ee 0%, #3bc9db 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
+            Learn{" "}
+            <GradientText from="#4361ee" to="#3bc9db">
               GCP Data Engineering
-            </span>
+            </GradientText>
             <br />
             <span className="text-muted-foreground font-semibold text-3xl sm:text-4xl lg:text-5xl">
-              from Zero to Production
+              from Shaik Saidhul
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-            A hands-on, instructor-led program covering BigQuery, Dataflow, Dataproc, Pub/Sub &
-            Composer — taught by a working GCP Solution Architect. Build real pipelines, crack
-            interviews, and pass the Google Professional Data Engineer certification.
+            Live batches, self-paced recordings, foundation
+            courses, and real-world project courses — everything
+            you need to become a job-ready GCP Data Engineer.
           </p>
 
-          {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
             <button
-              onClick={() => scrollTo("pricing")}
-              className="px-8 py-4 rounded-xl bg-primary text-white font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-xl shadow-primary/30"
+              onClick={() => scrollTo("courses")}
+              className="px-8 py-4 rounded-xl bg-[#4361ee] text-white font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-xl shadow-[#4361ee]/30"
             >
-              Enroll Now — ₹15,000
+              Browse All Courses
             </button>
             <button
-              onClick={() => scrollTo("curriculum")}
+              onClick={() => scrollTo("instructor")}
               className="px-8 py-4 rounded-xl border border-border text-foreground font-semibold text-base hover:bg-accent transition-all flex items-center gap-2 justify-center"
             >
-              <Play className="w-4 h-4 text-primary" />
-              View Curriculum
+              <Play className="w-4 h-4 text-[#4361ee]" />
+              Meet the Instructor
             </button>
           </div>
 
-          {/* Social proof row */}
-          <div className="flex flex-wrap justify-center gap-5 sm:gap-8 text-sm text-muted-foreground mb-10">
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 text-sm text-muted-foreground mb-10">
             {[
-              { icon: Users, color: "text-primary", label: "500+", sub: "Students Enrolled" },
-              { icon: Star, color: "text-yellow-400", label: "4.9/5", sub: "Average Rating" },
-              { icon: Award, color: "text-emerald-400", label: "GCP Certified", sub: "Instructor" },
-              { icon: Clock, color: "text-cyan-400", label: "46+ Hours", sub: "of HD Content" },
-            ].map(({ icon: Icon, color, label, sub }) => (
-              <div key={label} className="flex items-center gap-2">
-                <Icon className={`w-4 h-4 ${color}`} />
+              {
+                icon: Users,
+                color: "text-[#4361ee]",
+                val: "1500+",
+                sub: "Students",
+              },
+              {
+                icon: Star,
+                color: "text-yellow-400",
+                val: "4.9/5",
+                sub: "Rating",
+              },
+              {
+                icon: Award,
+                color: "text-emerald-400",
+                val: "GCP Certified",
+                sub: "Instructor",
+              },
+              {
+                icon: BookOpen,
+                color: "text-cyan-400",
+                val: "5 Courses",
+                sub: "Available",
+              },
+            ].map(({ icon: Ic, color, val, sub }) => (
+              <div
+                key={val}
+                className="flex items-center gap-2"
+              >
+                <Ic className={`w-4 h-4 ${color}`} />
                 <span>
-                  <strong className="text-foreground">{label}</strong> {sub}
+                  <strong className="text-foreground">
+                    {val}
+                  </strong>{" "}
+                  {sub}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Enrollment ticker */}
+          {/* Ticker */}
           <div className="flex items-center justify-center gap-4">
             <div className="h-px w-16 bg-border" />
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs text-muted-foreground min-w-[220px] justify-center">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-              <span className="transition-all duration-500">{TICKER[ticker]}</span>
+              {TICKER[ticker]}
             </div>
             <div className="h-px w-16 bg-border" />
           </div>
         </div>
       </section>
 
-      {/* ── What You Will Learn ── */}
-      <section className="bg-card border-y border-border py-16 sm:py-20">
+      {/* ── Courses ─────────────────────────────────────────────── */}
+      <section
+        id="courses"
+        className="py-16 sm:py-20 bg-card border-y border-border"
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <span className="text-xs font-mono text-primary tracking-widest uppercase">
-              Learning Outcomes
-            </span>
-            <h2
-              className="text-2xl sm:text-3xl font-bold mt-2"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
-            >
-              Everything a GCP Data Engineer Needs
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <div
-                key={title}
-                className="group p-5 rounded-xl border border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 transition-all cursor-default"
-              >
-                <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                  <Icon className="w-4 h-4 text-primary" />
-                </div>
-                <h3
-                  className="font-semibold text-sm mb-1"
-                  style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
-                >
-                  {title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Curriculum ── */}
-      <section id="curriculum" className="py-16 sm:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <span className="text-xs font-mono text-primary tracking-widest uppercase">
-              Course Curriculum
+          <div className="text-center mb-10">
+            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+              All Courses
             </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2 mb-3"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
             >
-              8 Modules · 46+ Hours · 110+ Lessons
+              Choose Your Learning Path
             </h2>
             <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-              Structured from fundamentals to production deployment. Every module includes theory,
-              hands-on GCP labs, and quizzes.
+              From live instructor-led batches to self-paced
+              recordings and hands-on project courses — pick
+              what fits your schedule and goals.
             </p>
           </div>
 
-          <div className="space-y-2">
-            {MODULES.map((mod) => (
-              <div
-                key={mod.id}
-                className="border border-border/60 rounded-xl overflow-hidden"
+          {/* Filter tabs */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {FILTERS.map(({ label, value }) => (
+              <button
+                key={value}
+                onClick={() => setActiveFilter(value)}
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                  activeFilter === value
+                    ? "bg-[#4361ee] text-white shadow-lg shadow-[#4361ee]/30"
+                    : "border border-border text-muted-foreground hover:text-foreground hover:border-white/20"
+                }`}
               >
-                <button
-                  className="w-full flex items-center justify-between p-4 sm:p-5 text-left hover:bg-accent/60 transition-colors"
-                  onClick={() => setOpenModule(openModule === mod.id ? null : mod.id)}
-                >
-                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-mono flex items-center justify-center">
-                      {String(mod.id).padStart(2, "0")}
-                    </span>
-                    <span
-                      className="font-semibold text-sm sm:text-base truncate"
-                      style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
-                    >
-                      {mod.title}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0 ml-3">
-                    <span className="hidden sm:block text-xs text-muted-foreground whitespace-nowrap">
-                      {mod.lessons} lessons · {mod.duration}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
-                        openModule === mod.id ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-                </button>
-
-                {openModule === mod.id && (
-                  <div className="px-4 sm:px-5 pb-5 border-t border-border/40 bg-card/60">
-                    <p className="sm:hidden text-xs text-muted-foreground pt-3 pb-1">
-                      {mod.lessons} lessons · {mod.duration}
-                    </p>
-                    <ul className="mt-3 space-y-2.5">
-                      {mod.topics.map((topic) => (
-                        <li key={topic} className="flex items-start gap-3 text-sm text-muted-foreground">
-                          <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                          {topic}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+                {label}
+              </button>
             ))}
           </div>
+
+          {/* Payment error banner */}
+          {payError && (
+            <div className="mb-6 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm text-center font-semibold">
+              ❌ {payError}
+            </div>
+          )}
+
+          {/* Course grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                course={course}
+                onViewDetails={setModalCourse}
+                onEnroll={handleEnroll}
+              />
+            ))}
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground mt-8">
+            More courses coming soon · All prices in INR
+            inclusive of taxes
+          </p>
         </div>
       </section>
 
-      {/* ── Instructor ── */}
-      <section id="instructor" className="py-16 sm:py-20 bg-card border-y border-border">
+      {/* ── Instructor ──────────────────────────────────────────── */}
+      <section id="instructor" className="py-16 sm:py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-primary tracking-widest uppercase">
+            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
               Your Instructor
             </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
             >
-              Learn From a Working Practitioner
+              Learn From a Working Professional
             </h2>
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
-            <div className="flex-shrink-0 flex flex-col items-center gap-4">
-              <div
-                className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-bold shadow-2xl shadow-primary/30"
-                style={{ background: "linear-gradient(135deg, #4361ee 0%, #3bc9db 100%)" }}
-              >
-                SV
+            <div className="flex-shrink-0 flex flex-col items-center gap-3">
+              <div className="relative w-36 h-44 sm:w-44 sm:h-56 rounded-2xl overflow-hidden shadow-2xl shadow-[#4361ee]/30 ring-2 ring-[#4361ee]/30">
+                <ImageWithFallback
+                  src={instructorPhoto}
+                  alt="SkillVane IT Academy — GCP Data Engineering Instructor"
+                  className="w-full h-full object-cover object-top"
+                />
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  <Star
+                    key={i}
+                    className="w-4 h-4 text-yellow-400 fill-yellow-400"
+                  />
                 ))}
               </div>
             </div>
@@ -509,20 +1884,26 @@ export default function App() {
             <div className="flex-1 text-center md:text-left">
               <h3
                 className="text-xl sm:text-2xl font-bold mb-1"
-                style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+                style={{
+                  fontFamily: "'Outfit', system-ui, sans-serif",
+                }}
               >
-                GCP Data Engineering Trainer
+                Shaik Saidhul
               </h3>
-              <p className="text-primary font-semibold text-sm mb-5">
+              <p className="text-[#4361ee] font-semibold text-sm mb-5">
                 Solution Architect · SkillVane IT Academy
               </p>
               <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-xl">
-                With over 8 years of hands-on experience designing large-scale data pipelines on
-                Google Cloud Platform, your instructor has architected solutions for Fortune 500
-                enterprises across BFSI, e-commerce, and logistics. As a Google Certified
-                Professional Data Engineer and Cloud Architect, they bring real-world war stories,
-                battle-tested patterns, and current industry practices directly into every lesson —
-                no filler, no theory-only slides.
+                With over 9+ years of hands-on experience
+                designing large-scale data pipelines on Google
+                Cloud Platform, your instructor has architected
+                solutions for Fortune 500 enterprises across
+                BFSI, e-commerce, and logistics. As a Google
+                Certified Professional Data Engineer and Cloud
+                Architect, they bring real-world war stories,
+                battle-tested patterns, and current industry
+                practices into every lesson — no filler, no
+                theory-only slides.
               </p>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -534,15 +1915,20 @@ export default function App() {
                 ].map(({ value, label }) => (
                   <div
                     key={label}
-                    className="p-3 sm:p-4 rounded-xl bg-background border border-border/60 text-center"
+                    className="p-3 sm:p-4 rounded-xl bg-card border border-border text-center"
                   >
                     <div
-                      className="text-xl sm:text-2xl font-bold text-primary"
-                      style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+                      className="text-xl sm:text-2xl font-bold text-[#4361ee]"
+                      style={{
+                        fontFamily:
+                          "'Outfit', system-ui, sans-serif",
+                      }}
                     >
                       {value}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">{label}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {label}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -551,24 +1937,34 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section id="testimonials" className="py-16 sm:py-20">
+      {/* ── Testimonials ────────────────────────────────────────── */}
+      <section
+        id="testimonials"
+        className="py-16 sm:py-20 bg-card border-y border-border"
+      >
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-primary tracking-widest uppercase">
-              Student Reviews
+            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+              Reviews
             </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2 mb-3"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
             >
               Trusted by Professionals Across India
             </h2>
-            <div className="flex items-center justify-center gap-1 mt-2">
+            <div className="flex items-center justify-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                <Star
+                  key={i}
+                  className="w-5 h-5 text-yellow-400 fill-yellow-400"
+                />
               ))}
-              <span className="ml-2 text-muted-foreground text-sm">4.9 out of 5 · 500+ ratings</span>
+              <span className="ml-2 text-muted-foreground text-sm">
+                4.9 / 5 · 500+ ratings
+              </span>
             </div>
           </div>
 
@@ -576,28 +1972,38 @@ export default function App() {
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.name}
-                className="p-6 rounded-xl border border-border/60 bg-card hover:border-primary/40 transition-colors"
+                className="p-6 rounded-xl border border-border bg-background hover:border-[#4361ee]/30 transition-colors"
               >
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    <Star
+                      key={i}
+                      className="w-4 h-4 text-yellow-400 fill-yellow-400"
+                    />
                   ))}
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">"{t.text}"</p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-5">
+                  "{t.text}"
+                </p>
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
                   >
-                    {t.avatar}
+                    {t.initials}
                   </div>
                   <div>
                     <div
                       className="font-semibold text-sm"
-                      style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+                      style={{
+                        fontFamily:
+                          "'Outfit', system-ui, sans-serif",
+                      }}
                     >
                       {t.name}
                     </div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {t.role}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -606,144 +2012,38 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
-      <section id="pricing" className="py-16 sm:py-20 bg-card border-y border-border">
-        <div className="max-w-xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <span className="text-xs font-mono text-primary tracking-widest uppercase">Pricing</span>
-            <h2
-              className="text-2xl sm:text-3xl font-bold mt-2"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
-            >
-              One Price. Full Lifetime Access.
-            </h2>
-          </div>
-
-          {payDone && (
-            <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm text-center font-semibold">
-              ✓ In the live site, Razorpay checkout opens here. See the deployment guide below.
-            </div>
-          )}
-
-          <div className="rounded-2xl border-2 border-primary/50 bg-background overflow-hidden shadow-2xl shadow-primary/15">
-            <div className="bg-primary px-6 py-4 flex items-center justify-between">
-              <span
-                className="font-bold text-white"
-                style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
-              >
-                GCP Data Engineering Program
-              </span>
-              <span className="text-xs font-mono bg-white/20 px-2.5 py-1 rounded-full text-white">
-                Most Popular
-              </span>
-            </div>
-
-            <div className="p-6 sm:p-8">
-              <div className="flex items-baseline gap-3 mb-1">
-                <span
-                  className="text-5xl font-extrabold"
-                  style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
-                >
-                  ₹15,000
-                </span>
-                <span className="text-muted-foreground line-through text-xl">₹25,000</span>
-              </div>
-              <p className="text-xs text-emerald-400 font-semibold mb-8">
-                Save ₹10,000 · Limited time launch offer
-              </p>
-
-              <ul className="space-y-3 mb-8">
-                {[
-                  "46+ hours of recorded HD video lessons",
-                  "8 modules from fundamentals to production",
-                  "Hands-on labs with real GCP resources",
-                  "Lifetime access + all future updates",
-                  "Weekend live doubt-clearing sessions",
-                  "SkillVane IT Academy completion certificate",
-                  "Resume preparation + mock interview Q&A",
-                  "Private student community (Slack + WhatsApp)",
-                  "Google Professional DE exam prep & mock tests",
-                ].map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm">
-                    <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={handleBuyNow}
-                disabled={payLoading}
-                className="w-full py-4 rounded-xl bg-primary text-white font-bold text-base hover:opacity-90 active:scale-[0.99] transition-all shadow-lg shadow-primary/30 disabled:opacity-60"
-              >
-                {payLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8z"
-                      />
-                    </svg>
-                    Creating order…
-                  </span>
-                ) : (
-                  "Buy Now · Pay Securely via Razorpay"
-                )}
-              </button>
-
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5 text-primary" /> SSL Secured
-                </span>
-                <span className="flex items-center gap-1">
-                  <ArrowRight className="w-3.5 h-3.5 rotate-180 text-primary" /> 7-day Refund
-                </span>
-                <span className="flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5 text-primary" /> Instant Access
-                </span>
-              </div>
-              <p className="text-center text-xs text-muted-foreground mt-3">
-                0% EMI available on major credit cards · UPI · Net Banking · Wallets
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ── */}
-      <section className="py-16 sm:py-20">
+      {/* ── FAQ ─────────────────────────────────────────────────── */}
+      <section id="faq" className="py-16 sm:py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-primary tracking-widest uppercase">FAQ</span>
+            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+              FAQ
+            </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
             >
-              Frequently Asked Questions
+              Common Questions
             </h2>
           </div>
 
           <div className="space-y-2">
-            {FAQS.map((faq, i) => (
-              <div key={i} className="border border-border/60 rounded-xl overflow-hidden">
+            {faqs.map((faq, i) => (
+              <div
+                key={i}
+                className="border border-border rounded-xl overflow-hidden"
+              >
                 <button
                   className="w-full flex items-center justify-between p-5 text-left hover:bg-accent/60 transition-colors"
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  onClick={() =>
+                    setOpenFaq(openFaq === i ? null : i)
+                  }
                 >
-                  <span className="font-semibold text-sm pr-4">{faq.q}</span>
+                  <span className="font-semibold text-sm pr-4">
+                    {faq.q}
+                  </span>
                   <ChevronDown
                     className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
                       openFaq === i ? "rotate-180" : ""
@@ -752,7 +2052,9 @@ export default function App() {
                 </button>
                 {openFaq === i && (
                   <div className="px-5 pb-5 border-t border-border/40 bg-card/60">
-                    <p className="text-sm text-muted-foreground pt-4 leading-relaxed">{faq.a}</p>
+                    <p className="text-sm text-muted-foreground pt-4 leading-relaxed">
+                      {faq.a}
+                    </p>
                   </div>
                 )}
               </div>
@@ -761,49 +2063,99 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Footer CTA ── */}
+      {/* ── Footer CTA ──────────────────────────────────────────── */}
       <section className="py-16 border-t border-border bg-card">
         <div className="max-w-xl mx-auto px-4 sm:px-6 text-center">
           <h2
             className="text-2xl sm:text-3xl font-bold mb-3"
-            style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+            style={{
+              fontFamily: "'Outfit', system-ui, sans-serif",
+            }}
           >
-            Ready to become a GCP Data Engineer?
+            Start your GCP journey today
           </h2>
           <p className="text-muted-foreground text-sm mb-8">
-            Join 500+ professionals who have transformed their careers with SkillVane IT Academy.
+            5 courses. Live batch, recordings, foundation &
+            projects. One academy, trusted by 500+
+            professionals.
           </p>
           <button
-            onClick={() => scrollTo("pricing")}
-            className="px-10 py-4 rounded-xl bg-primary text-white font-bold text-base hover:opacity-90 transition-all shadow-xl shadow-primary/30"
+            onClick={() => scrollTo("courses")}
+            className="px-10 py-4 rounded-xl bg-[#4361ee] text-white font-bold text-base hover:opacity-90 transition-all shadow-xl shadow-[#4361ee]/30"
           >
-            Enroll Now — ₹15,000 →
+            Browse All Courses →
           </button>
         </div>
       </section>
 
-      {/* ── Footer ── */}
+      {/* ── Footer ──────────────────────────────────────────────── */}
       <footer className="py-8 border-t border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
+            <div className="w-6 h-6 rounded-md bg-[#4361ee] flex items-center justify-center">
               <Cloud className="w-3 h-3 text-white" />
             </div>
             <span
               className="font-bold text-foreground"
-              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
             >
               SkillVane IT Academy
             </span>
           </div>
-          <span>© {new Date().getFullYear()} SkillVane IT Academy. All rights reserved.</span>
+          <span>
+            © {new Date().getFullYear()} SkillVane IT Academy.
+            All rights reserved.
+          </span>
           <div className="flex gap-5">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+            <a
+              href="#"
+              className="hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="#"
+              className="hover:text-foreground transition-colors"
+            >
+              Terms
+            </a>
+            <a
+              href="#"
+              className="hover:text-foreground transition-colors"
+            >
+              Contact
+            </a>
           </div>
         </div>
       </footer>
+
+      {/* ── Course Detail Modal ──────────────────────────────────── */}
+      {modalCourse && (
+        <CourseModal
+          course={modalCourse}
+          onClose={() => setModalCourse(null)}
+          onEnroll={handleEnroll}
+        />
+      )}
+
+      {/* ── Enrollment Form Modal ────────────────────────────────── */}
+      {formCourse && (
+        <EnrollmentFormModal
+          course={formCourse}
+          onClose={() => setFormCourse(null)}
+          onSubmit={handleFormSubmit}
+        />
+      )}
+
+      {/* ── Invoice / Success Modal ──────────────────────────────── */}
+      {invoice && (
+        <InvoiceModal
+          record={invoice}
+          onClose={() => setInvoice(null)}
+        />
+      )}
     </div>
   );
 }
