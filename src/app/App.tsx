@@ -1,58 +1,24 @@
-import { useState, useEffect, useRef } from "react";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
-import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
+import { useState, useEffect } from "react";
 import {
-  ChevronDown,
-  Star,
-  Users,
-  Clock,
-  Award,
-  Check,
-  Menu,
-  X,
-  Shield,
-  Zap,
-  Database,
-  Cloud,
-  Play,
-  TrendingUp,
-  Code2,
-  Layers,
-  GitBranch,
-  Video,
-  BookOpen,
-  Briefcase,
-  Heart,
-  ShoppingCart,
-  ArrowRight,
-  MonitorPlay,
-  FileText,
-  MessageCircle,
-  Mail,
-  Phone,
-  User,
-  Download,
-  CheckCircle2,
-  Copy,
+  ChevronDown, Star, Users, Clock, Award, Check, Menu, X,
+  Shield, Zap, Database, Cloud, Play, TrendingUp, Code2,
+  Layers, GitBranch, Video, BookOpen, Briefcase, Heart,
+  ShoppingCart, ArrowRight, MonitorPlay, FileText, MessageCircle,
 } from "lucide-react";
-
-// ─────────────────────────────────────────────────────────────────
-// CONFIG — Update these two values after setup (see guide below)
-// ─────────────────────────────────────────────────────────────────
-const RAZORPAY_KEY = "rzp_live_Sv3MUrxi5JxgDU";
-
-// Paste your Google Apps Script deployment URL here after setup:
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
-
-// Paste your EmailJS credentials here after setup:
-const EMAILJS_SERVICE_ID  = "service_huss9yj";
-const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
-const EMAILJS_PUBLIC_KEY  = "xC4HlrScSivWvpXtz";
+import CourseContentPage, { CourseContent } from "./components/CourseContentPage";
+import LoginPage, { Student } from "./components/LoginPage";
+import StudentDashboard from "./components/StudentDashboard";
 
 // ─────────────────────────────────────────────────────────────────
 // COURSE DATA — Add a new course here and it appears on the site
 // ─────────────────────────────────────────────────────────────────
 type CourseType = "live" | "recording" | "course" | "project";
+
+interface CurriculumTopic {
+  title: string;
+  duration?: string;
+  videoUrl?: string; // Google Drive video link — add per topic
+}
 
 interface Course {
   id: string;
@@ -68,7 +34,7 @@ interface Course {
   duration?: string;
   timings?: string;
   highlights: string[];
-  curriculum: { module: string; topics: string[] }[];
+  curriculum: { module: string; topics: CurriculumTopic[] }[];
   tag?: string;
 }
 
@@ -90,7 +56,7 @@ const COURSES: Course[] = [
     tag: "Most Popular",
     highlights: [
       "Daily live sessions (Mon–Fri, 7:30–8:30 AM)",
-      "Same-day recordings shared after every session",
+      "Same-day recordings shared after every class",
       "Structured notes for every module",
       "Resume assistance & career guidance",
       "Live doubt-clearing in every session",
@@ -98,169 +64,72 @@ const COURSES: Course[] = [
     ],
     curriculum: [
       // ── PASTE YOUR CURRICULUM HERE ──
-      // Format: { module: "Module Name", topics: ["Topic 1", "Topic 2"] }
+      // Format: { module: "Module Name", topics: [{ title: "Topic", duration: "45m", videoUrl: "https://drive.google.com/file/d/YOUR_FILE_ID/view" }] }
       {
-        module: "GCP Cloud Basics",
+        module: "Module 1 — GCP Fundamentals",
         topics: [
-          "GCP Introduction",
-          "GCP Interfaces",
-          "GCP Locations",
-          "GCP IAM & Admin",
-          "Linux Basics on Cloud Shell",
-          "Python for Data Engineer",
+          { title: "GCP Console, IAM & Resource Hierarchy", duration: "52m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Compute Engine, Cloud Storage, Networking", duration: "48m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Billing, Cost Optimization & Quotas", duration: "35m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Google Cloud Storage",
+        module: "Module 2 — BigQuery",
         topics: [
-          "Cloud Storage Overview",
-          "Buckets and Objects",
-          "Bucket Management",
-          "Data Transfer and Lifecycle Management",
-          "Versioning and Object Versioning",
-          "Integration with GCP Services",
-          "Security and Access Controls",
-          "Monitoring and Logging",
+          { title: "BigQuery Architecture & Columnar Storage", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Advanced SQL, Window Functions, Arrays", duration: "60m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Partitioning, Clustering & Query Optimization", duration: "58m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "BigQuery ML & BI Engine", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Cloud SQL",
+        module: "Module 3 — Cloud Dataflow",
         topics: [
-          "Introduction to Cloud SQL",
-          "Creating and Managing Cloud SQL Instances",
-          "Database Configuration and Access Control",
-          "Connecting using SQL Studio and Workbenches",
-          "Import and Export Operations",
-          "Backups and High Availability",
-          "Database Migration Service (DMS)",
-          "End-to-End Database Migration Project",
+          { title: "Apache Beam Programming Model", duration: "50m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Batch & Streaming Pipeline Design", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Windowing, Triggers & Watermarks", duration: "48m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Dataflow Templates & Autoscaling", duration: "42m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "BigQuery (SQL Development)",
+        module: "Module 4 — Dataproc",
         topics: [
-          "Introduction to BigQuery",
-          "BigQuery Architecture",
-          "BigQuery Tables and File Formats",
-          "Native and External Tables",
-          "SQL Query Optimization",
-          "Partitioning and Clustering",
-          "Data Loading and Export",
-          "Real-time Streaming",
-          "BigQuery Views",
-          "Integration with GCP Services",
-          "Spotify Case Study",
-          "Social Media Case Study",
+          { title: "Managed Spark & Hadoop on GCP", duration: "52m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "PySpark for Large-Scale Transformations", duration: "65m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Hive Metastore & BigQuery Integration", duration: "44m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Dataproc Serverless & Cost Strategies", duration: "38m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "DataProc (PySpark Development)",
+        module: "Module 5 — Cloud Composer / Airflow",
         topics: [
-          "Introduction to Hadoop and Spark",
-          "Spark vs MapReduce",
-          "PySpark Fundamentals",
-          "DataProc Overview",
-          "Cluster Creation and Configuration",
-          "Running Spark and Hadoop Jobs",
-          "Integration with GCS and BigQuery",
-          "Job Scheduling and Automation",
-          "Employee Travel Records Case Study",
-          "End-to-End Batch Pipeline",
+          { title: "DAGs, Operators, XComs & Sensors", duration: "58m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Production-Grade Pipeline Orchestration", duration: "62m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Scheduling, Alerting & SLA Monitoring", duration: "40m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Databricks on GCP",
+        module: "Module 6 — Pub/Sub",
         topics: [
-          "Lakehouse Platform Overview",
-          "Databricks Architecture",
-          "Workspace Administration",
-          "Delta Lake",
-          "Unity Catalog",
-          "Notebooks and Clusters",
-          "Spark SQL and Python",
-          "Performance Optimization",
-          "Incremental Data Processing",
-          "Delta Live Tables",
-          "End-to-End Workflow Case Study",
+          { title: "Topics, Subscriptions & Delivery Guarantees", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Push vs Pull & Ordering Semantics", duration: "38m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Dead Letter Queues & Error Handling", duration: "35m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "DataFlow (Apache Beam Development)",
+        module: "Module 7 — Real-Time Pipelines",
         topics: [
-          "Introduction to DataFlow",
-          "Spark vs Apache Beam",
-          "DataFlow vs DataProc",
-          "Building Apache Beam Pipelines",
-          "Batch and Stream Processing",
-          "Windowing Concepts",
-          "Integration with GCP Services",
-          "Streaming Pipeline Project",
-          "Template-based Pipelines",
+          { title: "End-to-End Streaming Architecture on GCP", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Pub/Sub → Dataflow → BigQuery Pipeline", duration: "70m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Looker Studio Real-Time Dashboards", duration: "42m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Cloud Pub/Sub",
+        module: "Module 8 — Capstone & Career Prep",
         topics: [
-          "Introduction to Pub/Sub",
-          "Topics and Subscriptions",
-          "Publishing and Consuming Messages",
-          "Message Retention and Acknowledgements",
-          "Integration with Cloud Functions",
-          "Integration with Dataflow",
-          "Streaming Use Cases",
-        ],
-      },
-      {
-        module: "Cloud Composer (Airflow DAG Creation)",
-        topics: [
-          "Introduction to Composer and Airflow",
-          "Airflow Architecture",
-          "Workflow Creation and Scheduling",
-          "Workflow Monitoring",
-          "Integration with BigQuery and DataFlow",
-          "Error Handling and Troubleshooting",
-          "BigQuery DAGs",
-          "DataProc DAGs",
-          "DataFlow DAGs",
-          "CI/CD with Cloud Build and GitHub",
-        ],
-      },
-      {
-        module: "Data Fusion",
-        topics: [
-          "Introduction to Data Fusion",
-          "Building ETL Pipelines",
-          "Visual Pipeline Design",
-          "Transformations and Sinks",
-          "Pre-built Templates",
-          "Integration with BigQuery and GCS",
-          "End-to-End Data Fusion Pipeline",
-        ],
-      },
-      {
-        module: "Cloud Functions",
-        topics: [
-          "Cloud Functions Introduction",
-          "Event-driven Architecture",
-          "Deploying Cloud Functions",
-          "HTTP Triggers",
-          "Pub/Sub Triggers",
-          "Cloud Storage Triggers",
-          "Monitoring and Logging",
-          "GCS to BigQuery Automation Use Case",
-        ],
-      },
-      {
-        module: "Terraform",
-        topics: [
-          "Terraform Introduction",
-          "Terraform Installation and Setup",
-          "Infrastructure Provisioning",
-          "Terraform Commands",
-          "Creating GCP Resources",
-          "Provisioning GCS Buckets",
-          "Provisioning Dataproc Clusters",
-          "Provisioning BigQuery Resources",
+          { title: "End-to-End Project Design & Review", duration: "75m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Resume Building & Portfolio Prep", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Mock Interviews & GCP DE Exam Guidance", duration: "60m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
     ],
@@ -276,180 +145,61 @@ const COURSES: Course[] = [
     accentTo: "#a855f7",
     title: "GCP Data Engineering",
     subtitle: "Course — Recordings",
-    price: 1,
+    price: 6000,
     originalPrice: 12000,
     highlights: [
       "Latest batch recordings (full course)",
       "Watch at your own pace, anytime",
       "Same curriculum as the live batch",
-      "1 year access to all recordings",
+      "Lifetime access to all recordings",
       "Notes included with every module",
       "Community access for doubt resolution",
     ],
     curriculum: [
       // ── PASTE YOUR CURRICULUM HERE ──
       {
-        module: "GCP Cloud Basics",
+        module: "Module 1 — GCP Fundamentals",
         topics: [
-          "GCP Introduction",
-          "GCP Interfaces",
-          "GCP Locations",
-          "GCP IAM & Admin",
-          "Linux Basics on Cloud Shell",
-          "Python for Data Engineer",
+          { title: "GCP Console, IAM & Resource Hierarchy", duration: "52m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Compute Engine, Cloud Storage, Networking", duration: "48m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Billing, Cost Optimization & Quotas", duration: "35m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Google Cloud Storage",
+        module: "Module 2 — BigQuery",
         topics: [
-          "Cloud Storage Overview",
-          "Buckets and Objects",
-          "Bucket Management",
-          "Data Transfer and Lifecycle Management",
-          "Versioning and Object Versioning",
-          "Integration with GCP Services",
-          "Security and Access Controls",
-          "Monitoring and Logging",
+          { title: "BigQuery Architecture & Columnar Storage", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Advanced SQL, Window Functions, Arrays", duration: "60m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Partitioning, Clustering & Query Optimization", duration: "58m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Cloud SQL",
+        module: "Module 3 — Cloud Dataflow",
         topics: [
-          "Introduction to Cloud SQL",
-          "Creating and Managing Cloud SQL Instances",
-          "Database Configuration and Access Control",
-          "Connecting using SQL Studio and Workbenches",
-          "Import and Export Operations",
-          "Backups and High Availability",
-          "Database Migration Service (DMS)",
-          "End-to-End Database Migration Project",
+          { title: "Apache Beam Programming Model", duration: "50m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Batch & Streaming Pipeline Design", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Dataflow Templates & Autoscaling", duration: "42m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "BigQuery (SQL Development)",
+        module: "Module 4 — Dataproc",
         topics: [
-          "Introduction to BigQuery",
-          "BigQuery Architecture",
-          "BigQuery Tables and File Formats",
-          "Native and External Tables",
-          "SQL Query Optimization",
-          "Partitioning and Clustering",
-          "Data Loading and Export",
-          "Real-time Streaming",
-          "BigQuery Views",
-          "Integration with GCP Services",
-          "Spotify Case Study",
-          "Social Media Case Study",
+          { title: "Managed Spark & Hadoop on GCP", duration: "52m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "PySpark for Large-Scale Transformations", duration: "65m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "DataProc (PySpark Development)",
+        module: "Module 5 — Cloud Composer / Airflow",
         topics: [
-          "Introduction to Hadoop and Spark",
-          "Spark vs MapReduce",
-          "PySpark Fundamentals",
-          "DataProc Overview",
-          "Cluster Creation and Configuration",
-          "Running Spark and Hadoop Jobs",
-          "Integration with GCS and BigQuery",
-          "Job Scheduling and Automation",
-          "Employee Travel Records Case Study",
-          "End-to-End Batch Pipeline",
+          { title: "DAGs, Operators & Sensors", duration: "58m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Production Pipeline Orchestration", duration: "62m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Databricks on GCP",
+        module: "Module 6 — Pub/Sub & Real-Time",
         topics: [
-          "Lakehouse Platform Overview",
-          "Databricks Architecture",
-          "Workspace Administration",
-          "Delta Lake",
-          "Unity Catalog",
-          "Notebooks and Clusters",
-          "Spark SQL and Python",
-          "Performance Optimization",
-          "Incremental Data Processing",
-          "Delta Live Tables",
-          "End-to-End Workflow Case Study",
-        ],
-      },
-      {
-        module: "DataFlow (Apache Beam Development)",
-        topics: [
-          "Introduction to DataFlow",
-          "Spark vs Apache Beam",
-          "DataFlow vs DataProc",
-          "Building Apache Beam Pipelines",
-          "Batch and Stream Processing",
-          "Windowing Concepts",
-          "Integration with GCP Services",
-          "Streaming Pipeline Project",
-          "Template-based Pipelines",
-        ],
-      },
-      {
-        module: "Cloud Pub/Sub",
-        topics: [
-          "Introduction to Pub/Sub",
-          "Topics and Subscriptions",
-          "Publishing and Consuming Messages",
-          "Message Retention and Acknowledgements",
-          "Integration with Cloud Functions",
-          "Integration with Dataflow",
-          "Streaming Use Cases",
-        ],
-      },
-      {
-        module: "Cloud Composer (Airflow DAG Creation)",
-        topics: [
-          "Introduction to Composer and Airflow",
-          "Airflow Architecture",
-          "Workflow Creation and Scheduling",
-          "Workflow Monitoring",
-          "Integration with BigQuery and DataFlow",
-          "Error Handling and Troubleshooting",
-          "BigQuery DAGs",
-          "DataProc DAGs",
-          "DataFlow DAGs",
-          "CI/CD with Cloud Build and GitHub",
-        ],
-      },
-      {
-        module: "Data Fusion",
-        topics: [
-          "Introduction to Data Fusion",
-          "Building ETL Pipelines",
-          "Visual Pipeline Design",
-          "Transformations and Sinks",
-          "Pre-built Templates",
-          "Integration with BigQuery and GCS",
-          "End-to-End Data Fusion Pipeline",
-        ],
-      },
-      {
-        module: "Cloud Functions",
-        topics: [
-          "Cloud Functions Introduction",
-          "Event-driven Architecture",
-          "Deploying Cloud Functions",
-          "HTTP Triggers",
-          "Pub/Sub Triggers",
-          "Cloud Storage Triggers",
-          "Monitoring and Logging",
-          "GCS to BigQuery Automation Use Case",
-        ],
-      },
-      {
-        module: "Terraform",
-        topics: [
-          "Terraform Introduction",
-          "Terraform Installation and Setup",
-          "Infrastructure Provisioning",
-          "Terraform Commands",
-          "Creating GCP Resources",
-          "Provisioning GCS Buckets",
-          "Provisioning Dataproc Clusters",
-          "Provisioning BigQuery Resources",
+          { title: "Pub/Sub Topics & Subscriptions", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "End-to-End Streaming Architecture", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
     ],
@@ -469,41 +219,35 @@ const COURSES: Course[] = [
     originalPrice: 2000,
     highlights: [
       "Python fundamentals for data engineers",
-      "File handling, I/O operations",
-      "Exceptional Handling",
+      "File handling, APIs & automation scripts",
+      "Pandas, NumPy & data manipulation",
+      "Working with JSON, CSV & Parquet",
+      "Connecting Python with GCP services",
       "Beginner-friendly, no prior coding needed",
     ],
     curriculum: [
       {
-        module: "Module 1: Data Types",
+        module: "Module 1 — Python Basics",
         topics: [
-          "Strings",
-          "Operators",
-          "Numbers (Int, Float)",
-          "Booleans",
-          "None",
+          { title: "Variables, Data Types & Control Flow", duration: "40m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Functions, Modules & Packages", duration: "38m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Error Handling & Debugging", duration: "32m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Module 2: Data Structures",
-        topics: ["Lists", "Tuples", "Dictionaries", "Sets"],
-      },
-      {
-        module: "Module 3: Python Programming Constructs",
+        module: "Module 2 — Data Handling",
         topics: [
-          "if, elif, else statements",
-          "for loops and while loops",
-          "Exception Handling",
-          "File I/O Operations",
+          { title: "File I/O: CSV, JSON, Parquet", duration: "42m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Pandas for Data Manipulation", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "NumPy for Numerical Computing", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
-        module: "Module 4: Modular Programming in Python",
+        module: "Module 3 — Python for Engineering",
         topics: [
-          "Functions",
-          "Lambda Functions",
-          "Classes",
-          "Modules and Packages",
+          { title: "REST APIs & HTTP Requests", duration: "38m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Automation Scripts & Scheduling", duration: "35m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Connecting Python with GCP (BigQuery, GCS)", duration: "50m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
     ],
@@ -530,37 +274,36 @@ const COURSES: Course[] = [
       "Architecture walkthrough & code review",
     ],
     curriculum: [
-      // ── PASTE YOUR CURRICULUM HERE ──
       {
         module: "Project Overview & Architecture",
         topics: [
-          "Healthcare Data Landscape on GCP",
-          "Solution Architecture Design",
-          "GCP Services Selection & Setup",
+          { title: "Healthcare Data Landscape on GCP", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Solution Architecture Design", duration: "50m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "GCP Services Selection & Setup", duration: "38m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
         module: "Data Ingestion Pipeline",
         topics: [
-          "Ingesting HL7/FHIR Healthcare Records",
-          "Pub/Sub → Dataflow Streaming Ingestion",
-          "Raw Layer Design in Cloud Storage",
+          { title: "Ingesting HL7/FHIR Healthcare Records", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Pub/Sub → Dataflow Streaming Ingestion", duration: "60m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Raw Layer Design in Cloud Storage", duration: "42m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
         module: "Transformation & Serving",
         topics: [
-          "Data Cleansing & Transformation with Dataflow",
-          "BigQuery Schema Design for Healthcare",
-          "Looker Studio Dashboard for Analytics",
+          { title: "Data Cleansing & Transformation with Dataflow", duration: "58m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "BigQuery Schema Design for Healthcare", duration: "52m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Looker Studio Dashboard for Analytics", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
         module: "Orchestration & Monitoring",
         topics: [
-          "Airflow DAG for End-to-End Orchestration",
-          "Cloud Monitoring & Alerting Setup",
-          "Final Code Review & Portfolio Prep",
+          { title: "Airflow DAG for End-to-End Orchestration", duration: "62m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Cloud Monitoring & Alerting Setup", duration: "40m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Final Code Review & Portfolio Prep", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
     ],
@@ -587,37 +330,36 @@ const COURSES: Course[] = [
       "Architecture walkthrough & code review",
     ],
     curriculum: [
-      // ── PASTE YOUR CURRICULUM HERE ──
       {
         module: "Project Overview & Architecture",
         topics: [
-          "Retail Data Engineering Challenges",
-          "Solution Architecture on GCP",
-          "Dataset Walkthrough: Orders, Inventory, Customers",
+          { title: "Retail Data Engineering Challenges", duration: "42m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Solution Architecture on GCP", duration: "48m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Dataset Walkthrough: Orders, Inventory, Customers", duration: "38m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
         module: "Batch Ingestion Pipeline",
         topics: [
-          "Loading Retail Data from GCS to BigQuery",
-          "Dataproc Spark Transformations",
-          "Slowly Changing Dimensions (SCD) Design",
+          { title: "Loading Retail Data from GCS to BigQuery", duration: "52m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Dataproc Spark Transformations", duration: "60m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Slowly Changing Dimensions (SCD) Design", duration: "45m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
         module: "Streaming & Real-Time Analytics",
         topics: [
-          "Pub/Sub → Dataflow for Live Order Events",
-          "Real-Time Sales Dashboard in Looker Studio",
-          "Alerting on Inventory Threshold Breaches",
+          { title: "Pub/Sub → Dataflow for Live Order Events", duration: "58m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Real-Time Sales Dashboard in Looker Studio", duration: "50m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Alerting on Inventory Threshold Breaches", duration: "35m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
       {
         module: "Orchestration & Delivery",
         topics: [
-          "Airflow DAG for Full Pipeline Orchestration",
-          "Data Quality Checks & Validation",
-          "Final Code Review & Portfolio Prep",
+          { title: "Airflow DAG for Full Pipeline Orchestration", duration: "62m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Data Quality Checks & Validation", duration: "40m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
+          { title: "Final Code Review & Portfolio Prep", duration: "55m", videoUrl: "https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" },
         ],
       },
     ],
@@ -724,9 +466,7 @@ function CourseModal({
   onClose: () => void;
   onEnroll: (course: Course) => void;
 }) {
-  const [openModule, setOpenModule] = useState<number | null>(
-    0,
-  );
+  const [openModule, setOpenModule] = useState<number | null>(0);
   const Icon = course.icon;
 
   useEffect(() => {
@@ -734,8 +474,7 @@ function CourseModal({
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handler);
-    return () =>
-      document.removeEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
   return (
@@ -743,10 +482,7 @@ function CourseModal({
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       <div className="relative w-full sm:max-w-2xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
         {/* Header */}
@@ -775,15 +511,11 @@ function CourseModal({
               </p>
               <h2
                 className="text-base sm:text-lg font-bold leading-tight text-white"
-                style={{
-                  fontFamily: "'Outfit', system-ui, sans-serif",
-                }}
+                style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
               >
                 {course.title}
               </h2>
-              <p className="text-xs text-white/50">
-                {course.subtitle}
-              </p>
+              <p className="text-xs text-white/50">{course.subtitle}</p>
             </div>
           </div>
           <button
@@ -802,10 +534,7 @@ function CourseModal({
               <div className="flex items-baseline gap-2">
                 <span
                   className="text-3xl font-extrabold text-white"
-                  style={{
-                    fontFamily:
-                      "'Outfit', system-ui, sans-serif",
-                  }}
+                  style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
                 >
                   {formatINR(course.price)}
                 </span>
@@ -817,10 +546,7 @@ function CourseModal({
               </div>
               {course.originalPrice && (
                 <p className="text-xs text-emerald-400 font-semibold mt-0.5">
-                  Save{" "}
-                  {formatINR(
-                    course.originalPrice - course.price,
-                  )}
+                  Save {formatINR(course.originalPrice - course.price)}
                 </p>
               )}
             </div>
@@ -844,18 +570,13 @@ function CourseModal({
           <div>
             <h3
               className="text-sm font-bold text-white mb-3"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               What&apos;s Included
             </h3>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {course.highlights.map((h) => (
-                <li
-                  key={h}
-                  className="flex items-start gap-2.5 text-sm text-white/70"
-                >
+                <li key={h} className="flex items-start gap-2.5 text-sm text-white/70">
                   <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                   {h}
                 </li>
@@ -867,9 +588,7 @@ function CourseModal({
           <div>
             <h3
               className="text-sm font-bold text-white mb-3"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               Curriculum
             </h3>
@@ -881,13 +600,9 @@ function CourseModal({
                 >
                   <button
                     className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
-                    onClick={() =>
-                      setOpenModule(openModule === i ? null : i)
-                    }
+                    onClick={() => setOpenModule(openModule === i ? null : i)}
                   >
-                    <span className="text-sm font-semibold text-white/90">
-                      {mod.module}
-                    </span>
+                    <span className="text-sm font-semibold text-white/90">{mod.module}</span>
                     <ChevronDown
                       className={`w-4 h-4 text-white/40 flex-shrink-0 transition-transform duration-200 ${
                         openModule === i ? "rotate-180" : ""
@@ -897,12 +612,9 @@ function CourseModal({
                   {openModule === i && (
                     <ul className="px-4 pb-3 border-t border-white/5 space-y-2 pt-3">
                       {mod.topics.map((t) => (
-                        <li
-                          key={t}
-                          className="flex items-start gap-2.5 text-sm text-white/55"
-                        >
+                        <li key={t.title} className="flex items-start gap-2.5 text-sm text-white/55">
                           <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                          {t}
+                          {t.title}
                         </li>
                       ))}
                     </ul>
@@ -926,346 +638,8 @@ function CourseModal({
             Enroll Now · {formatINR(course.price)}
           </button>
           <p className="text-center text-xs text-white/30 mt-2.5">
-            Secure payment via Razorpay · UPI · Net Banking ·
-            Cards · EMI
+            Secure payment via Razorpay · UPI · Net Banking · Cards · EMI
           </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────
-interface StudentDetails {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-interface EnrollmentRecord {
-  invoiceNo: string;
-  paymentId: string;
-  student: StudentDetails;
-  course: Course;
-  paidAt: Date;
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────
-function generateInvoiceNo() {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `SV-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
-}
-
-async function loadRazorpay(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if ((window as any).Razorpay) { resolve(); return; }
-    const s = document.createElement("script");
-    s.src = "https://checkout.razorpay.com/v1/checkout.js";
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Razorpay"));
-    document.body.appendChild(s);
-  });
-}
-
-async function loadEmailJs(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if ((window as any).emailjs) { resolve(); return; }
-    const s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("EmailJS not loaded"));
-    document.body.appendChild(s);
-  });
-}
-
-async function saveToGoogleSheet(record: EnrollmentRecord) {
-  if (GOOGLE_SHEET_WEBHOOK_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL") return;
-  await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      invoice_no: record.invoiceNo,
-      payment_id: record.paymentId,
-      name: record.student.name,
-      email: record.student.email,
-      phone: record.student.phone,
-      course: record.course.title,
-      course_type: record.course.subtitle,
-      amount: record.course.price,
-      paid_at: record.paidAt.toISOString(),
-    }),
-  });
-}
-
-async function sendInvoiceEmail(record: EnrollmentRecord) {
-  if (EMAILJS_SERVICE_ID === "YOUR_EMAILJS_SERVICE_ID") return;
-  await loadEmailJs();
-  const ejs = (window as any).emailjs;
-  ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_name:     record.student.name,
-    to_email:    record.student.email,
-    invoice_no:  record.invoiceNo,
-    payment_id:  record.paymentId,
-    course_name: `${record.course.title} — ${record.course.subtitle}`,
-    amount:      `₹${record.course.price.toLocaleString("en-IN")}`,
-    paid_at:     record.paidAt.toLocaleDateString("en-IN", {
-                   day: "2-digit", month: "long", year: "numeric",
-                   hour: "2-digit", minute: "2-digit",
-                 }),
-    academy_name: "SkillVane IT Academy",
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Enrollment Form Modal
-// ─────────────────────────────────────────────────────────────────
-function EnrollmentFormModal({
-  course,
-  onClose,
-  onSubmit,
-}: {
-  course: Course;
-  onClose: () => void;
-  onSubmit: (student: StudentDetails) => void;
-}) {
-  const [form, setForm] = useState<StudentDetails>({ name: "", email: "", phone: "" });
-  const [errors, setErrors] = useState<Partial<StudentDetails>>({});
-  const nameRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => { nameRef.current?.focus(); }, []);
-
-  const validate = () => {
-    const e: Partial<StudentDetails> = {};
-    if (!form.name.trim())                       e.name  = "Full name is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email is required";
-    if (!/^[6-9]\d{9}$/.test(form.phone))        e.phone = "Valid 10-digit mobile number required";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) onSubmit(form);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full sm:max-w-md bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div
-          className="px-6 py-4 flex items-center justify-between border-b border-white/8"
-          style={{ background: `linear-gradient(135deg, ${course.accentFrom}22, ${course.accentTo}11)` }}
-        >
-          <div>
-            <p className="text-xs font-mono uppercase tracking-widest mb-0.5" style={{ color: course.accentFrom }}>
-              Step 1 of 2 — Your Details
-            </p>
-            <h2 className="font-bold text-white text-base" style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}>
-              {course.title}
-            </h2>
-            <p className="text-xs text-white/40">{course.subtitle} · ₹{course.price.toLocaleString("en-IN")}</p>
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">Full Name *</label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                ref={nameRef}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Enter your full name"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
-              />
-            </div>
-            {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">Email Address * <span className="text-white/30 font-normal">(invoice will be sent here)</span></label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
-              />
-            </div>
-            {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">Mobile Number * <span className="text-white/30 font-normal">(10 digits, Indian)</span></label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <div className="absolute left-9 top-1/2 -translate-y-1/2 text-sm text-white/40 border-r border-white/10 pr-2.5">+91</div>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
-                placeholder="9876543210"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
-              />
-            </div>
-            {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
-          </div>
-
-          <p className="text-xs text-white/30 leading-relaxed">
-            Your details are used only for sending your course access and invoice. We do not share your information.
-          </p>
-
-          <button
-            type="submit"
-            className="w-full py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-all shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`, boxShadow: `0 8px 24px ${course.accentFrom}40` }}
-          >
-            Continue to Payment →
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Invoice Modal
-// ─────────────────────────────────────────────────────────────────
-function InvoiceModal({
-  record,
-  onClose,
-}: {
-  record: EnrollmentRecord;
-  onClose: () => void;
-}) {
-  const [copied, setCopied] = useState(false);
-  const [emailSent, setEmailSent] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        await Promise.all([
-          saveToGoogleSheet(record),
-          sendInvoiceEmail(record),
-        ]);
-        setEmailSent(true);
-      } catch {
-        setEmailSent(false);
-      }
-    })();
-  }, [record]);
-
-  const copyPaymentId = () => {
-    navigator.clipboard.writeText(record.paymentId).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full sm:max-w-lg bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-emerald-500/30 shadow-2xl overflow-hidden">
-        {/* Success header */}
-        <div className="px-6 pt-8 pb-6 text-center border-b border-white/8 bg-emerald-500/5">
-          <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}>
-            Enrollment Successful!
-          </h2>
-          <p className="text-sm text-white/50">
-            Welcome to SkillVane IT Academy, {record.student.name.split(" ")[0]}!
-          </p>
-          {emailSent === true && (
-            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
-              <Mail className="w-3.5 h-3.5" /> Invoice sent to {record.student.email}
-            </div>
-          )}
-          {emailSent === false && (
-            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full">
-              Invoice email setup pending — see guide below
-            </div>
-          )}
-        </div>
-
-        {/* Invoice body */}
-        <div className="px-6 py-5 space-y-4">
-          {/* Invoice number */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
-            <div>
-              <p className="text-xs text-white/40 mb-0.5">Invoice Number</p>
-              <p className="font-mono font-bold text-white text-sm">{record.invoiceNo}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-white/40 mb-0.5">Date & Time</p>
-              <p className="text-xs text-white/70">
-                {record.paidAt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })},{" "}
-                {record.paidAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-              </p>
-            </div>
-          </div>
-
-          {/* Student + Course */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-white/4 border border-white/8">
-              <p className="text-xs text-white/40 mb-1">Student</p>
-              <p className="text-sm font-semibold text-white">{record.student.name}</p>
-              <p className="text-xs text-white/50 mt-0.5">{record.student.email}</p>
-              <p className="text-xs text-white/50">+91 {record.student.phone}</p>
-            </div>
-            <div className="p-3 rounded-xl bg-white/4 border border-white/8">
-              <p className="text-xs text-white/40 mb-1">Course Enrolled</p>
-              <p className="text-sm font-semibold text-white">{record.course.title}</p>
-              <p className="text-xs text-white/50 mt-0.5">{record.course.subtitle}</p>
-              <p className="text-xs font-bold text-emerald-400 mt-1">₹{record.course.price.toLocaleString("en-IN")} paid</p>
-            </div>
-          </div>
-
-          {/* Payment ID */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
-            <div>
-              <p className="text-xs text-white/40 mb-0.5">Razorpay Payment ID</p>
-              <p className="font-mono text-xs text-white/80">{record.paymentId}</p>
-            </div>
-            <button
-              onClick={copyPaymentId}
-              className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/8 transition-all"
-            >
-              {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? "Copied!" : "Copy"}
-            </button>
-          </div>
-
-          <p className="text-xs text-white/30 text-center">
-            Please save your Payment ID for any refund or support requests.
-          </p>
-        </div>
-
-        <div className="px-6 pb-6">
-          <button
-            onClick={onClose}
-            className="w-full py-3 rounded-xl border border-white/15 text-white/70 hover:bg-white/5 hover:text-white font-semibold text-sm transition-all"
-          >
-            Close
-          </button>
         </div>
       </div>
     </div>
@@ -1300,9 +674,7 @@ function CourseCard({
       {course.tag && (
         <div
           className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-1 rounded-full text-white"
-          style={{
-            background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
-          }}
+          style={{ background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})` }}
         >
           {course.tag}
         </div>
@@ -1318,10 +690,7 @@ function CourseCard({
               border: `1px solid ${course.accentFrom}40`,
             }}
           >
-            <Icon
-              className="w-5 h-5"
-              style={{ color: course.accentFrom }}
-            />
+            <Icon className="w-5 h-5" style={{ color: course.accentFrom }} />
           </div>
           <span
             className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded-full border"
@@ -1338,15 +707,11 @@ function CourseCard({
         {/* Title */}
         <h3
           className="text-lg font-bold text-white leading-tight mb-0.5"
-          style={{
-            fontFamily: "'Outfit', system-ui, sans-serif",
-          }}
+          style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
         >
           {course.title}
         </h3>
-        <p className="text-xs text-white/40 mb-4">
-          {course.subtitle}
-        </p>
+        <p className="text-xs text-white/40 mb-4">{course.subtitle}</p>
 
         {/* Meta pills */}
         <div className="flex flex-wrap gap-2 mb-5">
@@ -1371,10 +736,7 @@ function CourseCard({
         {/* Highlights (top 4) */}
         <ul className="space-y-2 mb-6 flex-1">
           {course.highlights.slice(0, 4).map((h) => (
-            <li
-              key={h}
-              className="flex items-start gap-2.5 text-xs text-white/60"
-            >
+            <li key={h} className="flex items-start gap-2.5 text-xs text-white/60">
               <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
               {h}
             </li>
@@ -1385,9 +747,7 @@ function CourseCard({
         <div className="flex items-baseline gap-2 mb-4">
           <span
             className="text-2xl font-extrabold text-white"
-            style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
-            }}
+            style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
           >
             {formatINR(course.price)}
           </span>
@@ -1398,12 +758,7 @@ function CourseCard({
           )}
           {course.originalPrice && (
             <span className="text-xs text-emerald-400 font-semibold">
-              {Math.round(
-                ((course.originalPrice - course.price) /
-                  course.originalPrice) *
-                  100,
-              )}
-              % off
+              {Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}% off
             </span>
           )}
         </div>
@@ -1434,105 +789,92 @@ function CourseCard({
 // ─────────────────────────────────────────────────────────────────
 // Main App
 // ─────────────────────────────────────────────────────────────────
+// ─── Build CourseContent from a Course ────────────────────────────────────
+function buildCourseContent(course: Course): CourseContent {
+  return {
+    id: course.id,
+    title: course.title,
+    subtitle: course.subtitle,
+    accentFrom: course.accentFrom,
+    accentTo: course.accentTo,
+    modules: course.curriculum.map((mod) => ({
+      module: mod.module,
+      topics: mod.topics.map((t) => ({
+        title: t.title,
+        duration: t.duration,
+        videoUrl: t.videoUrl,
+      })),
+    })),
+  };
+}
+
+// ─── Total lessons & duration helpers ─────────────────────────────────────
+function courseTotalLessons(course: Course) {
+  return course.curriculum.reduce((s, m) => s + m.topics.length, 0);
+}
+
+function courseTotalDuration(course: Course) {
+  let mins = 0;
+  course.curriculum.forEach((m) =>
+    m.topics.forEach((t) => {
+      if (t.duration) mins += parseInt(t.duration) || 0;
+    })
+  );
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Main App
+// ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [ticker, setTicker] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<
-    "all" | CourseType
-  >("all");
-  const [modalCourse, setModalCourse] = useState<Course | null>(
-    null,
-  );
+  const [activeFilter, setActiveFilter] = useState<"all" | CourseType>("all");
+  const [modalCourse, setModalCourse] = useState<Course | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [payLoading, setPayLoading] = useState<string | null>(null);
-  const [payError, setPayError] = useState<string | null>(null);
-  const [formCourse, setFormCourse] = useState<Course | null>(null);
-  const [invoice, setInvoice] = useState<EnrollmentRecord | null>(null);
+  const [payDone, setPayDone] = useState<string | null>(null);
+
+  // ── Auth state ──
+  const [currentStudent, setCurrentStudent] = useState<Student | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
+  const [watchingCourse, setWatchingCourse] = useState<CourseContent | null>(null);
 
   useEffect(() => {
-    const t = setInterval(
-      () => setTicker((i) => (i + 1) % TICKER.length),
-      2800,
-    );
+    const t = setInterval(() => setTicker((i) => (i + 1) % TICKER.length), 2800);
     return () => clearInterval(t);
   }, []);
 
-  // Lock body scroll when any modal is open
+  // Lock body scroll when modal is open
   useEffect(() => {
-    const anyOpen = !!(modalCourse || formCourse || invoice);
-    document.body.style.overflow = anyOpen ? "hidden" : "";
+    document.body.style.overflow = modalCourse ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [modalCourse, formCourse, invoice]);
+  }, [modalCourse]);
 
   const scrollTo = (id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
   };
 
-  // Step 1: Enroll button → show student details form
   const handleEnroll = (course: Course) => {
-    setModalCourse(null);
-    setFormCourse(course);
-  };
-
-  // Step 2: Form submitted → open Razorpay
-  const handleFormSubmit = async (student: StudentDetails) => {
-    if (!formCourse) return;
-    const course = formCourse;
-    setFormCourse(null);
-    setPayLoading(course.id);
-    setPayError(null);
-
-    try {
-      await loadRazorpay();
-
-      const options = {
-        key: RAZORPAY_KEY,
-        amount: course.price * 100,
-        currency: "INR",
-        name: "SkillVane IT Academy",
-        description: `${course.title} — ${course.subtitle}`,
-        handler: (response: any) => {
-          setPayLoading(null);
-          const record: EnrollmentRecord = {
-            invoiceNo: generateInvoiceNo(),
-            paymentId: response.razorpay_payment_id || "PAY_" + Date.now(),
-            student,
-            course,
-            paidAt: new Date(),
-          };
-          setInvoice(record);
-        },
-        prefill: {
-          name: student.name,
-          email: student.email,
-          contact: "+91" + student.phone,
-        },
-        notes: { course_id: course.id, student_email: student.email },
-        theme: { color: course.accentFrom },
-        modal: { ondismiss: () => setPayLoading(null) },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", (resp: any) => {
-        setPayLoading(null);
-        setPayError(`Payment failed: ${resp.error.description}`);
-        setTimeout(() => setPayError(null), 6000);
-      });
-      rzp.open();
-    } catch {
-      setPayLoading(null);
-      setPayError("Could not load payment gateway. Please try again.");
-      setTimeout(() => setPayError(null), 6000);
+    // If not logged in, show login page instead
+    if (!currentStudent) {
+      setModalCourse(null);
+      setShowLogin(true);
+      return;
     }
+    setModalCourse(null);
+    setPayLoading(course.id);
+    setTimeout(() => {
+      setPayLoading(null);
+      setPayDone(course.id);
+      setTimeout(() => setPayDone(null), 4000);
+    }, 900);
   };
 
-  const FILTERS: {
-    label: string;
-    value: "all" | CourseType;
-  }[] = [
+  const FILTERS: { label: string; value: "all" | CourseType }[] = [
     { label: "All Courses", value: "all" },
     { label: "Live Batch", value: "live" },
     { label: "Recordings", value: "recording" },
@@ -1568,6 +910,56 @@ export default function App() {
     },
   ];
 
+  // ── Login page ──
+  if (showLogin) {
+    return (
+      <LoginPage
+        onLogin={(student) => {
+          setCurrentStudent(student);
+          setShowLogin(false);
+        }}
+        onBack={() => setShowLogin(false)}
+      />
+    );
+  }
+
+  // ── Student dashboard (logged in, not watching a specific course) ──
+  if (currentStudent && !watchingCourse) {
+    const dashboardCourses = COURSES.map((course) => ({
+      id: course.id,
+      title: course.title,
+      subtitle: course.subtitle,
+      badge: course.badge,
+      accentFrom: course.accentFrom,
+      accentTo: course.accentTo,
+      icon: course.icon,
+      totalLessons: courseTotalLessons(course),
+      totalDuration: courseTotalDuration(course),
+      enrolled: currentStudent.enrolledCourseIds.includes(course.id),
+      content: buildCourseContent(course),
+    }));
+
+    return (
+      <StudentDashboard
+        student={currentStudent}
+        courses={dashboardCourses}
+        onWatchCourse={(content) => setWatchingCourse(content)}
+        onLogout={() => { setCurrentStudent(null); setWatchingCourse(null); }}
+        onBrowse={() => {}}
+      />
+    );
+  }
+
+  // ── Course content player (enrolled student watching a course) ──
+  if (currentStudent && watchingCourse) {
+    return (
+      <CourseContentPage
+        content={watchingCourse}
+        onBack={() => setWatchingCourse(null)}
+      />
+    );
+  }
+
   return (
     <div
       className="min-h-screen bg-background text-foreground overflow-x-hidden"
@@ -1582,9 +974,7 @@ export default function App() {
             </div>
             <span
               className="font-bold text-sm tracking-tight"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               SkillVane{" "}
               <span className="text-[#4361ee]">IT Academy</span>
@@ -1592,72 +982,55 @@ export default function App() {
           </div>
 
           <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
-            <button
-              onClick={() => scrollTo("courses")}
-              className="hover:text-foreground transition-colors"
-            >
-              Courses
-            </button>
-            <button
-              onClick={() => scrollTo("instructor")}
-              className="hover:text-foreground transition-colors"
-            >
-              Instructor
-            </button>
-            <button
-              onClick={() => scrollTo("testimonials")}
-              className="hover:text-foreground transition-colors"
-            >
-              Reviews
-            </button>
-            <button
-              onClick={() => scrollTo("faq")}
-              className="hover:text-foreground transition-colors"
-            >
-              FAQ
-            </button>
+            <button onClick={() => scrollTo("courses")} className="hover:text-foreground transition-colors">Courses</button>
+            <button onClick={() => scrollTo("instructor")} className="hover:text-foreground transition-colors">Instructor</button>
+            <button onClick={() => scrollTo("testimonials")} className="hover:text-foreground transition-colors">Reviews</button>
+            <button onClick={() => scrollTo("faq")} className="hover:text-foreground transition-colors">FAQ</button>
           </div>
 
-          <button
-            onClick={() => scrollTo("courses")}
-            className="hidden md:block px-5 py-2 rounded-lg bg-[#4361ee] text-white text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-[#4361ee]/30"
-          >
-            View Courses →
-          </button>
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              onClick={() => setShowLogin(true)}
+              className="px-4 py-2 rounded-lg border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
+            >
+              Student Login
+            </button>
+            <button
+              onClick={() => scrollTo("courses")}
+              className="px-5 py-2 rounded-lg bg-[#4361ee] text-white text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-[#4361ee]/30"
+            >
+              View Courses →
+            </button>
+          </div>
 
           <button
             className="md:hidden p-2 text-muted-foreground"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
-            {mobileOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
         {mobileOpen && (
           <div className="md:hidden bg-card border-t border-border px-4 py-4 flex flex-col gap-1">
-            {[
-              "courses",
-              "instructor",
-              "testimonials",
-              "faq",
-            ].map((s) => (
+            {["courses", "instructor", "testimonials", "faq"].map((s) => (
               <button
                 key={s}
                 onClick={() => scrollTo(s)}
                 className="capitalize text-sm text-muted-foreground hover:text-foreground py-2.5 text-left border-b border-border/40 last:border-0"
               >
-                {s === "faq"
-                  ? "FAQ"
-                  : s.charAt(0).toUpperCase() + s.slice(1)}
+                {s === "faq" ? "FAQ" : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
             <button
+              onClick={() => { setShowLogin(true); setMobileOpen(false); }}
+              className="mt-3 w-full py-3 rounded-lg border border-border text-foreground text-sm font-semibold"
+            >
+              Student Login
+            </button>
+            <button
               onClick={() => scrollTo("courses")}
-              className="mt-3 w-full py-3 rounded-lg bg-[#4361ee] text-white text-sm font-semibold"
+              className="mt-2 w-full py-3 rounded-lg bg-[#4361ee] text-white text-sm font-semibold"
             >
               View Courses →
             </button>
@@ -1670,8 +1043,7 @@ export default function App() {
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.15]"
           style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(67,97,238,0.5) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, rgba(67,97,238,0.5) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
         />
@@ -1681,14 +1053,12 @@ export default function App() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#4361ee]/30 bg-[#4361ee]/10 text-xs font-mono text-[#4361ee] mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            New Batch Starting From 1st July 2026 at 7.30 am IST
+            New Batch Starting Soon · 5 Courses Available
           </div>
 
           <h1
             className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5"
-            style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
-            }}
+            style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
           >
             Learn{" "}
             <GradientText from="#4361ee" to="#3bc9db">
@@ -1696,14 +1066,13 @@ export default function App() {
             </GradientText>
             <br />
             <span className="text-muted-foreground font-semibold text-3xl sm:text-4xl lg:text-5xl">
-              from Shaik Saidhul
+              from a Working Architect
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-            Live batches, self-paced recordings, foundation
-            courses, and real-world project courses — everything
-            you need to become a job-ready GCP Data Engineer.
+            Live batches, self-paced recordings, foundation courses, and real-world project
+            courses — everything you need to become a job-ready GCP Data Engineer.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
@@ -1725,41 +1094,15 @@ export default function App() {
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6 sm:gap-10 text-sm text-muted-foreground mb-10">
             {[
-              {
-                icon: Users,
-                color: "text-[#4361ee]",
-                val: "1500+",
-                sub: "Students",
-              },
-              {
-                icon: Star,
-                color: "text-yellow-400",
-                val: "4.9/5",
-                sub: "Rating",
-              },
-              {
-                icon: Award,
-                color: "text-emerald-400",
-                val: "GCP Certified",
-                sub: "Instructor",
-              },
-              {
-                icon: BookOpen,
-                color: "text-cyan-400",
-                val: "5 Courses",
-                sub: "Available",
-              },
+              { icon: Users, color: "text-[#4361ee]", val: "500+", sub: "Students" },
+              { icon: Star, color: "text-yellow-400", val: "4.9/5", sub: "Rating" },
+              { icon: Award, color: "text-emerald-400", val: "GCP Certified", sub: "Instructor" },
+              { icon: BookOpen, color: "text-cyan-400", val: "5 Courses", sub: "Available" },
             ].map(({ icon: Ic, color, val, sub }) => (
-              <div
-                key={val}
-                className="flex items-center gap-2"
-              >
+              <div key={val} className="flex items-center gap-2">
                 <Ic className={`w-4 h-4 ${color}`} />
                 <span>
-                  <strong className="text-foreground">
-                    {val}
-                  </strong>{" "}
-                  {sub}
+                  <strong className="text-foreground">{val}</strong> {sub}
                 </span>
               </div>
             ))}
@@ -1778,10 +1121,7 @@ export default function App() {
       </section>
 
       {/* ── Courses ─────────────────────────────────────────────── */}
-      <section
-        id="courses"
-        className="py-16 sm:py-20 bg-card border-y border-border"
-      >
+      <section id="courses" className="py-16 sm:py-20 bg-card border-y border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
@@ -1789,16 +1129,13 @@ export default function App() {
             </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2 mb-3"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               Choose Your Learning Path
             </h2>
             <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-              From live instructor-led batches to self-paced
-              recordings and hands-on project courses — pick
-              what fits your schedule and goals.
+              From live instructor-led batches to self-paced recordings and hands-on project
+              courses — pick what fits your schedule and goals.
             </p>
           </div>
 
@@ -1819,10 +1156,18 @@ export default function App() {
             ))}
           </div>
 
-          {/* Payment error banner */}
-          {payError && (
-            <div className="mb-6 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm text-center font-semibold">
-              ❌ {payError}
+          {/* Payment success banner */}
+          {payDone && (
+            <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <p className="text-emerald-400 text-sm font-semibold">
+                ✓ Enrollment confirmed! Login to access your course recordings.
+              </p>
+              <button
+                onClick={() => { setPayDone(null); setShowLogin(true); }}
+                className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-400 transition-colors flex-shrink-0"
+              >
+                Login Now →
+              </button>
             </div>
           )}
 
@@ -1839,8 +1184,7 @@ export default function App() {
           </div>
 
           <p className="text-center text-xs text-muted-foreground mt-8">
-            More courses coming soon · All prices in INR
-            inclusive of taxes
+            More courses coming soon · All prices in INR inclusive of taxes
           </p>
         </div>
       </section>
@@ -1854,29 +1198,23 @@ export default function App() {
             </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
-              Learn From a Working Professional
+              Learn From a Working Practitioner
             </h2>
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
-              <div className="relative w-36 h-44 sm:w-44 sm:h-56 rounded-2xl overflow-hidden shadow-2xl shadow-[#4361ee]/30 ring-2 ring-[#4361ee]/30">
-                <ImageWithFallback
-                  src={instructorPhoto}
-                  alt="SkillVane IT Academy — GCP Data Engineering Instructor"
-                  className="w-full h-full object-cover object-top"
-                />
+              <div
+                className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl flex items-center justify-center text-white text-4xl font-bold shadow-2xl shadow-[#4361ee]/30"
+                style={{ background: "linear-gradient(135deg, #4361ee 0%, #3bc9db 100%)" }}
+              >
+                SV
               </div>
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 text-yellow-400 fill-yellow-400"
-                  />
+                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                 ))}
               </div>
             </div>
@@ -1884,26 +1222,20 @@ export default function App() {
             <div className="flex-1 text-center md:text-left">
               <h3
                 className="text-xl sm:text-2xl font-bold mb-1"
-                style={{
-                  fontFamily: "'Outfit', system-ui, sans-serif",
-                }}
+                style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
               >
-                Shaik Saidhul
+                GCP Data Engineering Trainer
               </h3>
               <p className="text-[#4361ee] font-semibold text-sm mb-5">
                 Solution Architect · SkillVane IT Academy
               </p>
               <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-xl">
-                With over 9+ years of hands-on experience
-                designing large-scale data pipelines on Google
-                Cloud Platform, your instructor has architected
-                solutions for Fortune 500 enterprises across
-                BFSI, e-commerce, and logistics. As a Google
-                Certified Professional Data Engineer and Cloud
-                Architect, they bring real-world war stories,
-                battle-tested patterns, and current industry
-                practices into every lesson — no filler, no
-                theory-only slides.
+                With over 8 years of hands-on experience designing large-scale data pipelines on
+                Google Cloud Platform, your instructor has architected solutions for Fortune 500
+                enterprises across BFSI, e-commerce, and logistics. As a Google Certified
+                Professional Data Engineer and Cloud Architect, they bring real-world war stories,
+                battle-tested patterns, and current industry practices into every lesson — no
+                filler, no theory-only slides.
               </p>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -1919,16 +1251,11 @@ export default function App() {
                   >
                     <div
                       className="text-xl sm:text-2xl font-bold text-[#4361ee]"
-                      style={{
-                        fontFamily:
-                          "'Outfit', system-ui, sans-serif",
-                      }}
+                      style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
                     >
                       {value}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {label}
-                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">{label}</div>
                   </div>
                 ))}
               </div>
@@ -1938,10 +1265,7 @@ export default function App() {
       </section>
 
       {/* ── Testimonials ────────────────────────────────────────── */}
-      <section
-        id="testimonials"
-        className="py-16 sm:py-20 bg-card border-y border-border"
-      >
+      <section id="testimonials" className="py-16 sm:py-20 bg-card border-y border-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
@@ -1949,22 +1273,15 @@ export default function App() {
             </span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2 mb-3"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               Trusted by Professionals Across India
             </h2>
             <div className="flex items-center justify-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className="w-5 h-5 text-yellow-400 fill-yellow-400"
-                />
+                <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
               ))}
-              <span className="ml-2 text-muted-foreground text-sm">
-                4.9 / 5 · 500+ ratings
-              </span>
+              <span className="ml-2 text-muted-foreground text-sm">4.9 / 5 · 500+ ratings</span>
             </div>
           </div>
 
@@ -1976,15 +1293,10 @@ export default function App() {
               >
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 text-yellow-400 fill-yellow-400"
-                    />
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                   ))}
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-                  "{t.text}"
-                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-5">"{t.text}"</p>
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
@@ -1994,16 +1306,11 @@ export default function App() {
                   <div>
                     <div
                       className="font-semibold text-sm"
-                      style={{
-                        fontFamily:
-                          "'Outfit', system-ui, sans-serif",
-                      }}
+                      style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
                     >
                       {t.name}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {t.role}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{t.role}</div>
                   </div>
                 </div>
               </div>
@@ -2016,14 +1323,10 @@ export default function App() {
       <section id="faq" className="py-16 sm:py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
-              FAQ
-            </span>
+            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">FAQ</span>
             <h2
               className="text-2xl sm:text-3xl font-bold mt-2"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               Common Questions
             </h2>
@@ -2031,19 +1334,12 @@ export default function App() {
 
           <div className="space-y-2">
             {faqs.map((faq, i) => (
-              <div
-                key={i}
-                className="border border-border rounded-xl overflow-hidden"
-              >
+              <div key={i} className="border border-border rounded-xl overflow-hidden">
                 <button
                   className="w-full flex items-center justify-between p-5 text-left hover:bg-accent/60 transition-colors"
-                  onClick={() =>
-                    setOpenFaq(openFaq === i ? null : i)
-                  }
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 >
-                  <span className="font-semibold text-sm pr-4">
-                    {faq.q}
-                  </span>
+                  <span className="font-semibold text-sm pr-4">{faq.q}</span>
                   <ChevronDown
                     className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
                       openFaq === i ? "rotate-180" : ""
@@ -2052,9 +1348,7 @@ export default function App() {
                 </button>
                 {openFaq === i && (
                   <div className="px-5 pb-5 border-t border-border/40 bg-card/60">
-                    <p className="text-sm text-muted-foreground pt-4 leading-relaxed">
-                      {faq.a}
-                    </p>
+                    <p className="text-sm text-muted-foreground pt-4 leading-relaxed">{faq.a}</p>
                   </div>
                 )}
               </div>
@@ -2068,16 +1362,12 @@ export default function App() {
         <div className="max-w-xl mx-auto px-4 sm:px-6 text-center">
           <h2
             className="text-2xl sm:text-3xl font-bold mb-3"
-            style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
-            }}
+            style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
           >
             Start your GCP journey today
           </h2>
           <p className="text-muted-foreground text-sm mb-8">
-            5 courses. Live batch, recordings, foundation &
-            projects. One academy, trusted by 500+
-            professionals.
+            5 courses. Live batch, recordings, foundation & projects. One academy, trusted by 500+ professionals.
           </p>
           <button
             onClick={() => scrollTo("courses")}
@@ -2097,36 +1387,16 @@ export default function App() {
             </div>
             <span
               className="font-bold text-foreground"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
+              style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}
             >
               SkillVane IT Academy
             </span>
           </div>
-          <span>
-            © {new Date().getFullYear()} SkillVane IT Academy.
-            All rights reserved.
-          </span>
+          <span>© {new Date().getFullYear()} SkillVane IT Academy. All rights reserved.</span>
           <div className="flex gap-5">
-            <a
-              href="#"
-              className="hover:text-foreground transition-colors"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="#"
-              className="hover:text-foreground transition-colors"
-            >
-              Terms
-            </a>
-            <a
-              href="#"
-              className="hover:text-foreground transition-colors"
-            >
-              Contact
-            </a>
+            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
           </div>
         </div>
       </footer>
@@ -2137,23 +1407,6 @@ export default function App() {
           course={modalCourse}
           onClose={() => setModalCourse(null)}
           onEnroll={handleEnroll}
-        />
-      )}
-
-      {/* ── Enrollment Form Modal ────────────────────────────────── */}
-      {formCourse && (
-        <EnrollmentFormModal
-          course={formCourse}
-          onClose={() => setFormCourse(null)}
-          onSubmit={handleFormSubmit}
-        />
-      )}
-
-      {/* ── Invoice / Success Modal ──────────────────────────────── */}
-      {invoice && (
-        <InvoiceModal
-          record={invoice}
-          onClose={() => setInvoice(null)}
         />
       )}
     </div>
