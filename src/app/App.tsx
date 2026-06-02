@@ -42,12 +42,13 @@ import {
 const RAZORPAY_KEY = "rzp_live_Sv3MUrxi5JxgDU";
 
 // Paste your Google Apps Script deployment URL here after setup:
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
+const GOOGLE_SHEET_WEBHOOK_URL =
+  "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
 
 // Paste your EmailJS credentials here after setup:
-const EMAILJS_SERVICE_ID  = "service_huss9yj";
+const EMAILJS_SERVICE_ID = "service_huss9yj";
 const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
-const EMAILJS_PUBLIC_KEY  = "xC4HlrScSivWvpXtz";
+const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 
 // ─────────────────────────────────────────────────────────────────
 // COURSE DATA — Add a new course here and it appears on the site
@@ -963,20 +964,28 @@ function generateInvoiceNo() {
 
 async function loadRazorpay(): Promise<void> {
   return new Promise((resolve, reject) => {
-    if ((window as any).Razorpay) { resolve(); return; }
+    if ((window as any).Razorpay) {
+      resolve();
+      return;
+    }
     const s = document.createElement("script");
     s.src = "https://checkout.razorpay.com/v1/checkout.js";
     s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Razorpay"));
+    s.onerror = () =>
+      reject(new Error("Failed to load Razorpay"));
     document.body.appendChild(s);
   });
 }
 
 async function loadEmailJs(): Promise<void> {
   return new Promise((resolve, reject) => {
-    if ((window as any).emailjs) { resolve(); return; }
+    if ((window as any).emailjs) {
+      resolve();
+      return;
+    }
     const s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+    s.src =
+      "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
     s.onload = () => resolve();
     s.onerror = () => reject(new Error("EmailJS not loaded"));
     document.body.appendChild(s);
@@ -984,7 +993,10 @@ async function loadEmailJs(): Promise<void> {
 }
 
 async function saveToGoogleSheet(record: EnrollmentRecord) {
-  if (GOOGLE_SHEET_WEBHOOK_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL") return;
+  if (
+    GOOGLE_SHEET_WEBHOOK_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL"
+  )
+    return;
   await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
     method: "POST",
     mode: "no-cors",
@@ -1009,16 +1021,19 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
   const ejs = (window as any).emailjs;
   ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
   await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_name:     record.student.name,
-    to_email:    record.student.email,
-    invoice_no:  record.invoiceNo,
-    payment_id:  record.paymentId,
+    to_name: record.student.name,
+    to_email: record.student.email,
+    invoice_no: record.invoiceNo,
+    payment_id: record.paymentId,
     course_name: `${record.course.title} — ${record.course.subtitle}`,
-    amount:      `₹${record.course.price.toLocaleString("en-IN")}`,
-    paid_at:     record.paidAt.toLocaleDateString("en-IN", {
-                   day: "2-digit", month: "long", year: "numeric",
-                   hour: "2-digit", minute: "2-digit",
-                 }),
+    amount: `₹${record.course.price.toLocaleString("en-IN")}`,
+    paid_at: record.paidAt.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
     academy_name: "SkillVane IT Academy",
   });
 }
@@ -1035,17 +1050,27 @@ function EnrollmentFormModal({
   onClose: () => void;
   onSubmit: (student: StudentDetails) => void;
 }) {
-  const [form, setForm] = useState<StudentDetails>({ name: "", email: "", phone: "" });
-  const [errors, setErrors] = useState<Partial<StudentDetails>>({});
+  const [form, setForm] = useState<StudentDetails>({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [errors, setErrors] = useState<Partial<StudentDetails>>(
+    {},
+  );
   const nameRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { nameRef.current?.focus(); }, []);
+  useEffect(() => {
+    nameRef.current?.focus();
+  }, []);
 
   const validate = () => {
     const e: Partial<StudentDetails> = {};
-    if (!form.name.trim())                       e.name  = "Full name is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email is required";
-    if (!/^[6-9]\d{9}$/.test(form.phone))        e.phone = "Valid 10-digit mobile number required";
+    if (!form.name.trim()) e.name = "Full name is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      e.email = "Valid email is required";
+    if (!/^[6-9]\d{9}$/.test(form.phone))
+      e.phone = "Valid 10-digit mobile number required";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1057,85 +1082,149 @@ function EnrollmentFormModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div className="relative w-full sm:max-w-md bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
         {/* Header */}
         <div
           className="px-6 py-4 flex items-center justify-between border-b border-white/8"
-          style={{ background: `linear-gradient(135deg, ${course.accentFrom}22, ${course.accentTo}11)` }}
+          style={{
+            background: `linear-gradient(135deg, ${course.accentFrom}22, ${course.accentTo}11)`,
+          }}
         >
           <div>
-            <p className="text-xs font-mono uppercase tracking-widest mb-0.5" style={{ color: course.accentFrom }}>
+            <p
+              className="text-xs font-mono uppercase tracking-widest mb-0.5"
+              style={{ color: course.accentFrom }}
+            >
               Step 1 of 2 — Your Details
             </p>
-            <h2 className="font-bold text-white text-base" style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}>
+            <h2
+              className="font-bold text-white text-base"
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
+            >
               {course.title}
             </h2>
-            <p className="text-xs text-white/40">{course.subtitle} · ₹{course.price.toLocaleString("en-IN")}</p>
+            <p className="text-xs text-white/40">
+              {course.subtitle} · ₹
+              {course.price.toLocaleString("en-IN")}
+            </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="px-6 py-6 space-y-4"
+        >
           {/* Name */}
           <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">Full Name *</label>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">
+              Full Name *
+            </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               <input
                 ref={nameRef}
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
                 placeholder="Enter your full name"
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
               />
             </div>
-            {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
+            {errors.name && (
+              <p className="text-xs text-red-400 mt-1">
+                {errors.name}
+              </p>
+            )}
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">Email Address * <span className="text-white/30 font-normal">(invoice will be sent here)</span></label>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">
+              Email Address *{" "}
+              <span className="text-white/30 font-normal">
+                (invoice will be sent here)
+              </span>
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               <input
                 type="email"
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, email: e.target.value })
+                }
                 placeholder="you@example.com"
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
               />
             </div>
-            {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-xs text-red-400 mt-1">
+                {errors.email}
+              </p>
+            )}
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">Mobile Number * <span className="text-white/30 font-normal">(10 digits, Indian)</span></label>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">
+              Mobile Number *{" "}
+              <span className="text-white/30 font-normal">
+                (10 digits, Indian)
+              </span>
+            </label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <div className="absolute left-9 top-1/2 -translate-y-1/2 text-sm text-white/40 border-r border-white/10 pr-2.5">+91</div>
+              <div className="absolute left-9 top-1/2 -translate-y-1/2 text-sm text-white/40 border-r border-white/10 pr-2.5">
+                +91
+              </div>
               <input
                 type="tel"
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    phone: e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10),
+                  })
+                }
                 placeholder="9876543210"
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
               />
             </div>
-            {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
+            {errors.phone && (
+              <p className="text-xs text-red-400 mt-1">
+                {errors.phone}
+              </p>
+            )}
           </div>
 
           <p className="text-xs text-white/30 leading-relaxed">
-            Your details are used only for sending your course access and invoice. We do not share your information.
+            Your details are used only for sending your course
+            access and invoice. We do not share your
+            information.
           </p>
 
           <button
             type="submit"
             className="w-full py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-all shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`, boxShadow: `0 8px 24px ${course.accentFrom}40` }}
+            style={{
+              background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
+              boxShadow: `0 8px 24px ${course.accentFrom}40`,
+            }}
           >
             Continue to Payment →
           </button>
@@ -1156,7 +1245,9 @@ function InvoiceModal({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const [emailSent, setEmailSent] = useState<boolean | null>(null);
+  const [emailSent, setEmailSent] = useState<boolean | null>(
+    null,
+  );
 
   useEffect(() => {
     (async () => {
@@ -1181,22 +1272,32 @@ function InvoiceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div className="relative w-full sm:max-w-lg bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-emerald-500/30 shadow-2xl overflow-hidden">
         {/* Success header */}
         <div className="px-6 pt-8 pb-6 text-center border-b border-white/8 bg-emerald-500/5">
           <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-400" />
           </div>
-          <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: "'Outfit', system-ui, sans-serif" }}>
+          <h2
+            className="text-xl font-bold text-white mb-1"
+            style={{
+              fontFamily: "'Outfit', system-ui, sans-serif",
+            }}
+          >
             Enrollment Successful!
           </h2>
           <p className="text-sm text-white/50">
-            Welcome to SkillVane IT Academy, {record.student.name.split(" ")[0]}!
+            Welcome to SkillVane IT Academy,{" "}
+            {record.student.name.split(" ")[0]}!
           </p>
           {emailSent === true && (
             <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
-              <Mail className="w-3.5 h-3.5" /> Invoice sent to {record.student.email}
+              <Mail className="w-3.5 h-3.5" /> Invoice sent to{" "}
+              {record.student.email}
             </div>
           )}
           {emailSent === false && (
@@ -1211,14 +1312,28 @@ function InvoiceModal({
           {/* Invoice number */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
             <div>
-              <p className="text-xs text-white/40 mb-0.5">Invoice Number</p>
-              <p className="font-mono font-bold text-white text-sm">{record.invoiceNo}</p>
+              <p className="text-xs text-white/40 mb-0.5">
+                Invoice Number
+              </p>
+              <p className="font-mono font-bold text-white text-sm">
+                {record.invoiceNo}
+              </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-white/40 mb-0.5">Date & Time</p>
+              <p className="text-xs text-white/40 mb-0.5">
+                Date & Time
+              </p>
               <p className="text-xs text-white/70">
-                {record.paidAt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })},{" "}
-                {record.paidAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                {record.paidAt.toLocaleDateString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
+                ,{" "}
+                {record.paidAt.toLocaleTimeString("en-IN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
           </div>
@@ -1226,36 +1341,62 @@ function InvoiceModal({
           {/* Student + Course */}
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-xl bg-white/4 border border-white/8">
-              <p className="text-xs text-white/40 mb-1">Student</p>
-              <p className="text-sm font-semibold text-white">{record.student.name}</p>
-              <p className="text-xs text-white/50 mt-0.5">{record.student.email}</p>
-              <p className="text-xs text-white/50">+91 {record.student.phone}</p>
+              <p className="text-xs text-white/40 mb-1">
+                Student
+              </p>
+              <p className="text-sm font-semibold text-white">
+                {record.student.name}
+              </p>
+              <p className="text-xs text-white/50 mt-0.5">
+                {record.student.email}
+              </p>
+              <p className="text-xs text-white/50">
+                +91 {record.student.phone}
+              </p>
             </div>
             <div className="p-3 rounded-xl bg-white/4 border border-white/8">
-              <p className="text-xs text-white/40 mb-1">Course Enrolled</p>
-              <p className="text-sm font-semibold text-white">{record.course.title}</p>
-              <p className="text-xs text-white/50 mt-0.5">{record.course.subtitle}</p>
-              <p className="text-xs font-bold text-emerald-400 mt-1">₹{record.course.price.toLocaleString("en-IN")} paid</p>
+              <p className="text-xs text-white/40 mb-1">
+                Course Enrolled
+              </p>
+              <p className="text-sm font-semibold text-white">
+                {record.course.title}
+              </p>
+              <p className="text-xs text-white/50 mt-0.5">
+                {record.course.subtitle}
+              </p>
+              <p className="text-xs font-bold text-emerald-400 mt-1">
+                ₹{record.course.price.toLocaleString("en-IN")}{" "}
+                paid
+              </p>
             </div>
           </div>
 
           {/* Payment ID */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
             <div>
-              <p className="text-xs text-white/40 mb-0.5">Razorpay Payment ID</p>
-              <p className="font-mono text-xs text-white/80">{record.paymentId}</p>
+              <p className="text-xs text-white/40 mb-0.5">
+                Razorpay Payment ID
+              </p>
+              <p className="font-mono text-xs text-white/80">
+                {record.paymentId}
+              </p>
             </div>
             <button
               onClick={copyPaymentId}
               className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/8 transition-all"
             >
-              {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? (
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
               {copied ? "Copied!" : "Copy"}
             </button>
           </div>
 
           <p className="text-xs text-white/30 text-center">
-            Please save your Payment ID for any refund or support requests.
+            Please save your Payment ID for any refund or
+            support requests.
           </p>
         </div>
 
@@ -1342,7 +1483,8 @@ function CourseCard({
         <h3
           className="text-xl font-bold text-foreground leading-tight mb-1 relative z-10 group-hover:text-primary transition-colors duration-300"
           style={{
-            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontFamily:
+              "'Space Grotesk', system-ui, sans-serif",
           }}
         >
           {course.title}
@@ -1389,7 +1531,8 @@ function CourseCard({
           <span
             className="text-3xl font-extrabold text-foreground"
             style={{
-              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontFamily:
+                "'Space Grotesk', system-ui, sans-serif",
             }}
           >
             {formatINR(course.price)}
@@ -1447,10 +1590,15 @@ export default function App() {
     null,
   );
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [payLoading, setPayLoading] = useState<string | null>(null);
+  const [payLoading, setPayLoading] = useState<string | null>(
+    null,
+  );
   const [payError, setPayError] = useState<string | null>(null);
-  const [formCourse, setFormCourse] = useState<Course | null>(null);
-  const [invoice, setInvoice] = useState<EnrollmentRecord | null>(null);
+  const [formCourse, setFormCourse] = useState<Course | null>(
+    null,
+  );
+  const [invoice, setInvoice] =
+    useState<EnrollmentRecord | null>(null);
 
   useEffect(() => {
     const t = setInterval(
@@ -1464,7 +1612,9 @@ export default function App() {
   useEffect(() => {
     const anyOpen = !!(modalCourse || formCourse || invoice);
     document.body.style.overflow = anyOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [modalCourse, formCourse, invoice]);
 
   const scrollTo = (id: string) => {
@@ -1501,7 +1651,9 @@ export default function App() {
           setPayLoading(null);
           const record: EnrollmentRecord = {
             invoiceNo: generateInvoiceNo(),
-            paymentId: response.razorpay_payment_id || "PAY_" + Date.now(),
+            paymentId:
+              response.razorpay_payment_id ||
+              "PAY_" + Date.now(),
             student,
             course,
             paidAt: new Date(),
@@ -1513,7 +1665,10 @@ export default function App() {
           email: student.email,
           contact: "+91" + student.phone,
         },
-        notes: { course_id: course.id, student_email: student.email },
+        notes: {
+          course_id: course.id,
+          student_email: student.email,
+        },
         theme: { color: course.accentFrom },
         modal: { ondismiss: () => setPayLoading(null) },
       };
@@ -1521,13 +1676,17 @@ export default function App() {
       const rzp = new (window as any).Razorpay(options);
       rzp.on("payment.failed", (resp: any) => {
         setPayLoading(null);
-        setPayError(`Payment failed: ${resp.error.description}`);
+        setPayError(
+          `Payment failed: ${resp.error.description}`,
+        );
         setTimeout(() => setPayError(null), 6000);
       });
       rzp.open();
     } catch {
       setPayLoading(null);
-      setPayError("Could not load payment gateway. Please try again.");
+      setPayError(
+        "Could not load payment gateway. Please try again.",
+      );
       setTimeout(() => setPayError(null), 6000);
     }
   };
@@ -1586,11 +1745,14 @@ export default function App() {
             <span
               className="font-bold text-base tracking-tight"
               style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               SkillVane{" "}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">IT Academy</span>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                IT Academy
+              </span>
             </span>
           </div>
 
@@ -1684,17 +1846,34 @@ export default function App() {
 
           {/* Gradient Orbs with Animation */}
           <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/20 blur-[140px] animate-pulse-glow" />
-          <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-accent/20 to-primary/15 blur-[120px]"
-               style={{ animation: "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+          <div
+            className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-accent/20 to-primary/15 blur-[120px]"
+            style={{
+              animation:
+                "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            }}
+          />
           <div className="absolute bottom-0 left-1/3 w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-secondary/25 to-accent/15 blur-[100px]" />
 
           {/* Floating Shapes */}
-          <div className="absolute top-20 left-10 w-20 h-20 rounded-2xl bg-primary/10 backdrop-blur-sm rotate-12 border border-primary/20"
-               style={{ animation: "float 6s ease-in-out infinite" }} />
-          <div className="absolute top-40 right-20 w-16 h-16 rounded-full bg-accent/10 backdrop-blur-sm border border-accent/20"
-               style={{ animation: "float 5s ease-in-out infinite 1s" }} />
-          <div className="absolute bottom-40 right-32 w-24 h-24 rounded-3xl bg-secondary/10 backdrop-blur-sm -rotate-6 border border-secondary/20"
-               style={{ animation: "float 7s ease-in-out infinite 2s" }} />
+          <div
+            className="absolute top-20 left-10 w-20 h-20 rounded-2xl bg-primary/10 backdrop-blur-sm rotate-12 border border-primary/20"
+            style={{
+              animation: "float 6s ease-in-out infinite",
+            }}
+          />
+          <div
+            className="absolute top-40 right-20 w-16 h-16 rounded-full bg-accent/10 backdrop-blur-sm border border-accent/20"
+            style={{
+              animation: "float 5s ease-in-out infinite 1s",
+            }}
+          />
+          <div
+            className="absolute bottom-40 right-32 w-24 h-24 rounded-3xl bg-secondary/10 backdrop-blur-sm -rotate-6 border border-secondary/20"
+            style={{
+              animation: "float 7s ease-in-out infinite 2s",
+            }}
+          />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
@@ -1705,7 +1884,10 @@ export default function App() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
               </span>
-              <span className="font-mono text-xs tracking-wide">New Batch Starting From 1st July 2026 at 7:30 AM IST</span>
+              <span className="font-mono text-xs tracking-wide">
+                New Batch Starting From 1st July 2026 at 7:30 AM
+                IST
+              </span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
@@ -1715,7 +1897,8 @@ export default function App() {
             <h1
               className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.05] mb-8 animate-fade-in"
               style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
                 animationDelay: "0.1s",
               }}
             >
@@ -1727,19 +1910,28 @@ export default function App() {
                 </span>
               </span>
               <span className="block mt-4 text-3xl sm:text-4xl lg:text-5xl text-muted-foreground font-semibold">
-                with <span className="text-foreground">Shaik Saidhul</span>
+                with{" "}
+                <span className="text-foreground">
+                  Shaik Saidhul
+                </span>
               </span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12 animate-fade-in"
-               style={{ animationDelay: "0.2s" }}>
-              From zero to job-ready in 3 months. Live classes, real projects, and hands-on experience with Google Cloud Platform's most powerful data tools.
+            <p
+              className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12 animate-fade-in"
+              style={{ animationDelay: "0.2s" }}
+            >
+              From zero to job-ready in 3 months. Live classes,
+              real projects, and hands-on experience with Google
+              Cloud Platform's most powerful data tools.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in"
-                 style={{ animationDelay: "0.3s" }}>
+            <div
+              className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in"
+              style={{ animationDelay: "0.3s" }}
+            >
               <button
                 onClick={() => scrollTo("courses")}
                 className="group relative px-10 py-5 rounded-2xl bg-gradient-to-r from-primary via-secondary to-primary text-white font-bold text-lg hover:shadow-2xl hover:shadow-primary/50 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/40 overflow-hidden"
@@ -1762,8 +1954,10 @@ export default function App() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 animate-fade-in"
-                 style={{ animationDelay: "0.4s" }}>
+            <div
+              className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 animate-fade-in"
+              style={{ animationDelay: "0.4s" }}
+            >
               {[
                 {
                   icon: Users,
@@ -1793,38 +1987,56 @@ export default function App() {
                   val: "5 Courses",
                   sub: "Available Now",
                 },
-              ].map(({ icon: Ic, color, iconColor, val, sub }) => (
-                <div
-                  key={val}
-                  className="group relative p-6 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 border border-border/50 backdrop-blur-xl hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all"
-                >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${color} bg-opacity-10 mb-4`}>
-                      <Ic className={`w-6 h-6 ${iconColor}`} />
+              ].map(
+                ({ icon: Ic, color, iconColor, val, sub }) => (
+                  <div
+                    key={val}
+                    className="group relative p-6 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 border border-border/50 backdrop-blur-xl hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all"
+                  >
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative">
+                      <div
+                        className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${color} bg-opacity-10 mb-4`}
+                      >
+                        <Ic
+                          className={`w-6 h-6 ${iconColor}`}
+                        />
+                      </div>
+                      <div
+                        className="text-3xl font-extrabold text-foreground mb-1"
+                        style={{
+                          fontFamily:
+                            "'Space Grotesk', system-ui, sans-serif",
+                        }}
+                      >
+                        {val}
+                      </div>
+                      <div className="text-sm text-muted-foreground font-medium">
+                        {sub}
+                      </div>
                     </div>
-                    <div className="text-3xl font-extrabold text-foreground mb-1"
-                         style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
-                      {val}
-                    </div>
-                    <div className="text-sm text-muted-foreground font-medium">{sub}</div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
 
-          {/* Ticker */}
-          <div className="flex items-center justify-center gap-6 animate-fade-in"
-               style={{ animationDelay: "0.5s" }}>
-            <div className="h-px w-20 bg-gradient-to-r from-transparent to-primary/50" />
-            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-card/80 to-card/40 border border-primary/20 text-sm text-foreground min-w-[240px] justify-center backdrop-blur-sm shadow-lg">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
-              </span>
-              <span className="font-medium">{TICKER[ticker]}</span>
+            {/* Ticker */}
+            <div
+              className="flex items-center justify-center gap-6 animate-fade-in"
+              style={{ animationDelay: "0.5s" }}
+            >
+              <div className="h-px w-20 bg-gradient-to-r from-transparent to-primary/50" />
+              <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-card/80 to-card/40 border border-primary/20 text-sm text-foreground min-w-[240px] justify-center backdrop-blur-sm shadow-lg">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+                </span>
+                <span className="font-medium">
+                  {TICKER[ticker]}
+                </span>
+              </div>
+              <div className="h-px w-20 bg-gradient-to-l from-transparent to-secondary/50" />
             </div>
-            <div className="h-px w-20 bg-gradient-to-l from-transparent to-secondary/50" />
           </div>
         </div>
       </section>
@@ -1847,7 +2059,8 @@ export default function App() {
             <h2
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6"
               style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               Choose Your{" "}
@@ -1856,7 +2069,9 @@ export default function App() {
               </span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              From live instructor-led batches to self-paced recordings and hands-on project courses — pick what fits your schedule and career goals.
+              From live instructor-led batches to self-paced
+              recordings and hands-on project courses — pick
+              what fits your schedule and career goals.
             </p>
           </div>
 
