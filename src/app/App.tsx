@@ -71,6 +71,8 @@ interface Course {
   highlights: string[];
   curriculum: { module: string; topics: string[] }[];
   tag?: string;
+  zoomLink?: string; // For live batch courses
+  driveLink?: string; // For recording courses
 }
 
 const COURSES: Course[] = [
@@ -265,6 +267,7 @@ const COURSES: Course[] = [
         ],
       },
     ],
+    zoomLink: "https://zoom.us/j/YOUR_MEETING_ID", // Add your Zoom meeting link here
   },
 
   // ── Course 2 ────────────────────────────────────────────────────
@@ -454,6 +457,8 @@ const COURSES: Course[] = [
         ],
       },
     ],
+    driveLink:
+      "https://drive.google.com/drive/folders/YOUR_FOLDER_ID", // Add your Google Drive folder link here
   },
 
   // ── Course 3 ────────────────────────────────────────────────────
@@ -915,7 +920,29 @@ function CourseModal({
         </div>
 
         {/* Footer CTA */}
-        <div className="flex-shrink-0 px-5 sm:px-6 py-4 border-t border-white/8 bg-[#080d1a]">
+        <div className="flex-shrink-0 px-5 sm:px-6 py-4 border-t border-white/8 bg-[#080d1a] space-y-3">
+          {/* Access Link - Zoom for Live, Drive for Recordings */}
+          {(course.zoomLink || course.driveLink) && (
+            <a
+              href={course.zoomLink || course.driveLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 hover:border-emerald-500/50 transition-all"
+            >
+              {course.type === "live" ? (
+                <>
+                  <Video className="w-4 h-4" />
+                  Join Zoom Class
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Access Course Recordings
+                </>
+              )}
+            </a>
+          )}
+
           <button
             onClick={() => onEnroll(course)}
             className="w-full py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 active:scale-[0.99] transition-all shadow-lg"
@@ -1553,6 +1580,30 @@ function CourseCard({
             </span>
           )}
         </div>
+
+        {/* Access Link Button - Zoom for Live, Drive for Recordings */}
+        {(course.zoomLink || course.driveLink) && (
+          <div className="mb-3 relative z-10">
+            <a
+              href={course.zoomLink || course.driveLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 hover:border-emerald-500/50 transition-all"
+            >
+              {course.type === "live" ? (
+                <>
+                  <Video className="w-4 h-4" />
+                  Join Zoom Class
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Access Recordings
+                </>
+              )}
+            </a>
+          </div>
+        )}
 
         {/* Buttons */}
         <div className="flex gap-3 relative z-10">
