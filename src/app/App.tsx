@@ -34,6 +34,10 @@ import {
   Download,
   CheckCircle2,
   Copy,
+  LogIn,
+  LogOut,
+  GraduationCap,
+  Lock,
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────
@@ -972,6 +976,12 @@ interface StudentDetails {
   phone: string;
 }
 
+interface LoggedInStudent {
+  email: string;
+  name: string;
+  enrolledCourses: string[]; // Array of course IDs
+}
+
 interface EnrollmentRecord {
   invoiceNo: string;
   paymentId: string;
@@ -1063,6 +1073,491 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     }),
     academy_name: "SkillVane IT Academy",
   });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Login/Signup Modal
+// ─────────────────────────────────────────────────────────────────
+function LoginModal({
+  onClose,
+  onLogin,
+}: {
+  onClose: () => void;
+  onLogin: (student: LoggedInStudent) => void;
+}) {
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    name: "",
+    phone: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>(
+    {},
+  );
+  const [loading, setLoading] = useState(false);
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (
+      !form.email ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
+    )
+      e.email = "Valid email is required";
+    if (!form.password || form.password.length < 6)
+      e.password = "Password must be at least 6 characters";
+    if (mode === "signup") {
+      if (!form.name.trim()) e.name = "Name is required";
+      if (!form.phone || !/^[6-9]\d{9}$/.test(form.phone))
+        e.phone = "Valid 10-digit mobile number required";
+    }
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Get existing students from localStorage
+      const studentsData = localStorage.getItem(
+        "skillvane_students",
+      );
+      const students: Record<string, any> = studentsData
+        ? JSON.parse(studentsData)
+        : {};
+
+      if (mode === "signup") {
+        // Check if user already exists
+        if (students[form.email]) {
+          setErrors({
+            email: "Email already registered. Please login.",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Create new student account
+        students[form.email] = {
+          email: form.email,
+          name: form.name,
+          phone: form.phone,
+          password: form.password, // In production, hash this!
+          enrolledCourses: [],
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem(
+          "skillvane_students",
+          JSON.stringify(students),
+        );
+
+        // Auto-login after signup
+        const loggedStudent: LoggedInStudent = {
+          email: form.email,
+          name: form.name,
+          enrolledCourses: [],
+        };
+        localStorage.setItem(
+          "skillvane_current_student",
+          JSON.stringify(loggedStudent),
+        );
+        onLogin(loggedStudent);
+      } else {
+        // Login
+        const student = students[form.email];
+        if (!student || student.password !== form.password) {
+          setErrors({ password: "Invalid email or password" });
+          setLoading(false);
+          return;
+        }
+
+        const loggedStudent: LoggedInStudent = {
+          email: student.email,
+          name: student.name,
+          enrolledCourses: student.enrolledCourses || [],
+        };
+        localStorage.setItem(
+          "skillvane_current_student",
+          JSON.stringify(loggedStudent),
+        );
+        onLogin(loggedStudent);
+      }
+    } catch (error) {
+      setErrors({
+        general: "Something went wrong. Please try again.",
+      });
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 flex items-center justify-between border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
+          <div>
+            <h2
+              className="font-bold text-white text-lg"
+              style={{
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              {mode === "login"
+                ? "Welcome Back"
+                : "Create Account"}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {mode === "login"
+                ? "Login to access your courses"
+                : "Sign up to get started"}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="px-6 py-6 space-y-4"
+        >
+          {errors.general && (
+            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+              {errors.general}
+            </div>
+          )}
+
+          {mode === "signup" && (
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-1.5">
+                Full Name
+              </label>
+              <input
+                value={form.name}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
+                placeholder="Enter your full name"
+                className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+              />
+              {errors.name && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.name}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-1.5">
+              Email
+            </label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+              placeholder="your.email@example.com"
+              className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+            />
+            {errors.email && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          {mode === "signup" && (
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-1.5">
+                Phone
+              </label>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) =>
+                  setForm({ ...form, phone: e.target.value })
+                }
+                placeholder="10-digit mobile number"
+                className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+              />
+              {errors.phone && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.phone}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-1.5">
+              Password
+            </label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
+              placeholder={
+                mode === "login"
+                  ? "Enter your password"
+                  : "Create a password (min 6 chars)"
+              }
+              className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+            />
+            {errors.password && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.password}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-sm hover:shadow-xl hover:shadow-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {loading
+              ? "Please wait..."
+              : mode === "login"
+                ? "Login"
+                : "Sign Up"}
+          </button>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === "login" ? "signup" : "login");
+                setErrors({});
+              }}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              {mode === "login"
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Login"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Student Dashboard
+// ─────────────────────────────────────────────────────────────────
+function StudentDashboard({
+  student,
+  courses,
+  onLogout,
+  onClose,
+}: {
+  student: LoggedInStudent;
+  courses: Course[];
+  onLogout: () => void;
+  onClose: () => void;
+}) {
+  const enrolledCourses = courses.filter((c) =>
+    student.enrolledCourses.includes(c.id),
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative w-full sm:max-w-4xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-5 flex items-center justify-between border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+              <GraduationCap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2
+                className="font-bold text-white text-lg"
+                style={{
+                  fontFamily:
+                    "'Space Grotesk', system-ui, sans-serif",
+                }}
+              >
+                My Dashboard
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Welcome back, {student.name}!
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all text-sm font-semibold"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 px-6 py-6">
+          <div className="mb-6">
+            <h3
+              className="text-xl font-bold text-foreground mb-2"
+              style={{
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              Your Enrolled Courses
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {enrolledCourses.length > 0
+                ? `You have access to ${enrolledCourses.length} course${enrolledCourses.length > 1 ? "s" : ""}`
+                : "You haven't enrolled in any courses yet"}
+            </p>
+          </div>
+
+          {enrolledCourses.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <p className="text-foreground font-semibold mb-2">
+                No courses yet
+              </p>
+              <p className="text-sm text-muted-foreground mb-4">
+                Enroll in a course to get started
+              </p>
+              <button
+                onClick={onClose}
+                className="px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-semibold text-sm hover:shadow-lg transition-all"
+              >
+                Browse Courses
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {enrolledCourses.map((course) => {
+                const Icon = course.icon;
+                return (
+                  <div
+                    key={course.id}
+                    className="group relative p-5 rounded-2xl border border-border bg-gradient-to-br from-card to-muted/30 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all"
+                  >
+                    {/* Course Header */}
+                    <div className="flex items-start gap-3 mb-4">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{
+                          background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
+                          border: `1.5px solid ${course.accentFrom}50`,
+                        }}
+                      >
+                        <Icon
+                          className="w-6 h-6"
+                          style={{ color: course.accentFrom }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <span
+                          className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded-full border"
+                          style={{
+                            color: course.accentFrom,
+                            borderColor: `${course.accentFrom}50`,
+                            background: `${course.accentFrom}15`,
+                          }}
+                        >
+                          {course.badge}
+                        </span>
+                        <h4
+                          className="text-lg font-bold text-foreground mt-2"
+                          style={{
+                            fontFamily:
+                              "'Space Grotesk', system-ui, sans-serif",
+                          }}
+                        >
+                          {course.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground">
+                          {course.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Access Links */}
+                    {(course.zoomLink || course.driveLink) && (
+                      <div className="space-y-2 mb-4">
+                        <a
+                          href={
+                            course.zoomLink || course.driveLink
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 hover:border-emerald-500/50 transition-all"
+                        >
+                          {course.type === "live" ? (
+                            <>
+                              <Video className="w-4 h-4" />
+                              Join Zoom Class
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-4 h-4" />
+                              Access Recordings
+                            </>
+                          )}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Course Info */}
+                    <div className="flex flex-wrap gap-2">
+                      {course.duration && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                          <Clock className="w-3 h-3" />
+                          {course.duration}
+                        </span>
+                      )}
+                      {course.timings && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                          <MonitorPlay className="w-3 h-3" />
+                          Live
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -1581,30 +2076,6 @@ function CourseCard({
           )}
         </div>
 
-        {/* Access Link Button - Zoom for Live, Drive for Recordings */}
-        {(course.zoomLink || course.driveLink) && (
-          <div className="mb-3 relative z-10">
-            <a
-              href={course.zoomLink || course.driveLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 hover:border-emerald-500/50 transition-all"
-            >
-              {course.type === "live" ? (
-                <>
-                  <Video className="w-4 h-4" />
-                  Join Zoom Class
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4" />
-                  Access Recordings
-                </>
-              )}
-            </a>
-          </div>
-        )}
-
         {/* Buttons */}
         <div className="flex gap-3 relative z-10">
           <button
@@ -1651,6 +2122,26 @@ export default function App() {
   const [invoice, setInvoice] =
     useState<EnrollmentRecord | null>(null);
 
+  // Authentication state
+  const [currentStudent, setCurrentStudent] =
+    useState<LoggedInStudent | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+
+  // Check if user is logged in on mount
+  useEffect(() => {
+    const studentData = localStorage.getItem(
+      "skillvane_current_student",
+    );
+    if (studentData) {
+      try {
+        setCurrentStudent(JSON.parse(studentData));
+      } catch (e) {
+        localStorage.removeItem("skillvane_current_student");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const t = setInterval(
       () => setTicker((i) => (i + 1) % TICKER.length),
@@ -1661,18 +2152,43 @@ export default function App() {
 
   // Lock body scroll when any modal is open
   useEffect(() => {
-    const anyOpen = !!(modalCourse || formCourse || invoice);
+    const anyOpen = !!(
+      modalCourse ||
+      formCourse ||
+      invoice ||
+      showLogin ||
+      showDashboard
+    );
     document.body.style.overflow = anyOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [modalCourse, formCourse, invoice]);
+  }, [
+    modalCourse,
+    formCourse,
+    invoice,
+    showLogin,
+    showDashboard,
+  ]);
 
   const scrollTo = (id: string) => {
     document
       .getElementById(id)
       ?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
+  };
+
+  // Authentication handlers
+  const handleLogin = (student: LoggedInStudent) => {
+    setCurrentStudent(student);
+    setShowLogin(false);
+    setShowDashboard(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("skillvane_current_student");
+    setCurrentStudent(null);
+    setShowDashboard(false);
   };
 
   // Step 1: Enroll button → show student details form
@@ -1709,6 +2225,59 @@ export default function App() {
             course,
             paidAt: new Date(),
           };
+
+          // Auto-create/update student account and enroll in course
+          const studentsData = localStorage.getItem(
+            "skillvane_students",
+          );
+          const students: Record<string, any> = studentsData
+            ? JSON.parse(studentsData)
+            : {};
+
+          if (!students[student.email]) {
+            // Create new student account
+            students[student.email] = {
+              email: student.email,
+              name: student.name,
+              phone: student.phone,
+              password: Math.random().toString(36).slice(-8), // Generate random password
+              enrolledCourses: [course.id],
+              createdAt: new Date().toISOString(),
+            };
+          } else {
+            // Add course to existing student
+            if (!students[student.email].enrolledCourses) {
+              students[student.email].enrolledCourses = [];
+            }
+            if (
+              !students[student.email].enrolledCourses.includes(
+                course.id,
+              )
+            ) {
+              students[student.email].enrolledCourses.push(
+                course.id,
+              );
+            }
+          }
+
+          localStorage.setItem(
+            "skillvane_students",
+            JSON.stringify(students),
+          );
+
+          // Auto-login the student
+          const loggedStudent: LoggedInStudent = {
+            email: student.email,
+            name: student.name,
+            enrolledCourses:
+              students[student.email].enrolledCourses,
+          };
+          localStorage.setItem(
+            "skillvane_current_student",
+            JSON.stringify(loggedStudent),
+          );
+          setCurrentStudent(loggedStudent);
+
           setInvoice(record);
         },
         prefill: {
@@ -1834,12 +2403,33 @@ export default function App() {
             </button>
           </div>
 
-          <button
-            onClick={() => scrollTo("courses")}
-            className="hidden md:block px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transition-all shadow-lg shadow-primary/30"
-          >
-            View Courses →
-          </button>
+          <div className="hidden md:flex items-center gap-3">
+            {currentStudent ? (
+              <button
+                onClick={() => setShowDashboard(true)}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transition-all shadow-lg shadow-primary/30"
+              >
+                <GraduationCap className="w-4 h-4" />
+                My Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all text-sm font-semibold"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </button>
+                <button
+                  onClick={() => scrollTo("courses")}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transition-all shadow-lg shadow-primary/30"
+                >
+                  View Courses →
+                </button>
+              </>
+            )}
+          </div>
 
           <button
             className="md:hidden p-2 text-muted-foreground"
@@ -1871,12 +2461,37 @@ export default function App() {
                   : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
-            <button
-              onClick={() => scrollTo("courses")}
-              className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shadow-lg shadow-primary/30"
-            >
-              View Courses →
-            </button>
+            {currentStudent ? (
+              <button
+                onClick={() => {
+                  setShowDashboard(true);
+                  setMobileOpen(false);
+                }}
+                className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+              >
+                <GraduationCap className="w-4 h-4" />
+                My Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setShowLogin(true);
+                    setMobileOpen(false);
+                  }}
+                  className="mt-3 w-full py-3 rounded-xl border border-border text-foreground text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </button>
+                <button
+                  onClick={() => scrollTo("courses")}
+                  className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shadow-lg shadow-primary/30"
+                >
+                  View Courses →
+                </button>
+              </>
+            )}
           </div>
         )}
       </nav>
@@ -2486,6 +3101,24 @@ export default function App() {
         <InvoiceModal
           record={invoice}
           onClose={() => setInvoice(null)}
+        />
+      )}
+
+      {/* ── Login Modal ──────────────────────────────────────────── */}
+      {showLogin && (
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onLogin={handleLogin}
+        />
+      )}
+
+      {/* ── Student Dashboard ────────────────────────────────────── */}
+      {showDashboard && currentStudent && (
+        <StudentDashboard
+          student={currentStudent}
+          courses={COURSES}
+          onLogout={handleLogout}
+          onClose={() => setShowDashboard(false)}
         />
       )}
     </div>
