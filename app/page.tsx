@@ -1,1 +1,0 @@
-export default function Home(){return <main><h1>SkillVane</h1><p>Landing Page</p></main>}
