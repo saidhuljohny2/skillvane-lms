@@ -1669,116 +1669,162 @@ export default function App() {
       </nav>
 
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-16 sm:pt-24 pb-20 sm:pb-28">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(99,102,241,0.4) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
-        <div className="pointer-events-none absolute top-20 left-1/3 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-primary/20 to-secondary/15 blur-[160px] animate-pulse-glow" />
-        <div className="pointer-events-none absolute top-48 right-1/4 w-96 h-96 rounded-full bg-accent/10 blur-[140px]" />
-        <div className="pointer-events-none absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-secondary/15 blur-[120px]" />
-
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/40 bg-gradient-to-r from-primary/15 to-secondary/10 text-xs font-mono text-primary mb-8 shadow-lg shadow-primary/20">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            New Batch Starting From 1st July 2026 at 7.30 am IST
-          </div>
-
-          <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6"
+      <section className="relative overflow-hidden pt-20 sm:pt-32 pb-24 sm:pb-32">
+        {/* Animated Background Elements */}
+        <div className="pointer-events-none absolute inset-0">
+          {/* Grid Pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
             style={{
-              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              backgroundImage:
+                "linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)",
+              backgroundSize: "50px 50px",
             }}
-          >
-            Learn{" "}
-            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              GCP Data Engineering
-            </span>
-            <br />
-            <span className="text-muted-foreground font-semibold text-3xl sm:text-4xl lg:text-5xl">
-              from Shaik Saidhul
-            </span>
-          </h1>
+          />
 
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-            Live batches, self-paced recordings, foundation
-            courses, and real-world project courses — everything
-            you need to become a job-ready GCP Data Engineer.
-          </p>
+          {/* Gradient Orbs with Animation */}
+          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/20 blur-[140px] animate-pulse-glow" />
+          <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-accent/20 to-primary/15 blur-[120px]"
+               style={{ animation: "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+          <div className="absolute bottom-0 left-1/3 w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-secondary/25 to-accent/15 blur-[100px]" />
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
-            <button
-              onClick={() => scrollTo("courses")}
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-base hover:shadow-2xl hover:shadow-primary/40 hover:scale-105 active:scale-[0.98] transition-all shadow-xl shadow-primary/30"
-            >
-              Browse All Courses
-            </button>
-            <button
-              onClick={() => scrollTo("instructor")}
-              className="px-8 py-4 rounded-xl border-2 border-primary/30 text-foreground font-semibold text-base hover:bg-primary/10 hover:border-primary/50 transition-all flex items-center gap-2 justify-center group"
-            >
-              <Play className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-              Meet the Instructor
-            </button>
+          {/* Floating Shapes */}
+          <div className="absolute top-20 left-10 w-20 h-20 rounded-2xl bg-primary/10 backdrop-blur-sm rotate-12 border border-primary/20"
+               style={{ animation: "float 6s ease-in-out infinite" }} />
+          <div className="absolute top-40 right-20 w-16 h-16 rounded-full bg-accent/10 backdrop-blur-sm border border-accent/20"
+               style={{ animation: "float 5s ease-in-out infinite 1s" }} />
+          <div className="absolute bottom-40 right-32 w-24 h-24 rounded-3xl bg-secondary/10 backdrop-blur-sm -rotate-6 border border-secondary/20"
+               style={{ animation: "float 7s ease-in-out infinite 2s" }} />
+        </div>
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Announcement Badge */}
+          <div className="flex justify-center mb-8 animate-fade-in">
+            <div className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-primary/40 bg-gradient-to-r from-primary/15 via-secondary/10 to-primary/15 text-sm font-medium text-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all cursor-pointer backdrop-blur-sm">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+              </span>
+              <span className="font-mono text-xs tracking-wide">New Batch Starting From 1st July 2026 at 7:30 AM IST</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
           </div>
 
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 sm:gap-12 text-sm text-muted-foreground mb-10">
-            {[
-              {
-                icon: Users,
-                color: "text-primary",
-                val: "1500+",
-                sub: "Students",
-              },
-              {
-                icon: Star,
-                color: "text-yellow-400",
-                val: "4.9/5",
-                sub: "Rating",
-              },
-              {
-                icon: Award,
-                color: "text-emerald-400",
-                val: "GCP Certified",
-                sub: "Instructor",
-              },
-              {
-                icon: BookOpen,
-                color: "text-accent",
-                val: "5 Courses",
-                sub: "Available",
-              },
-            ].map(({ icon: Ic, color, val, sub }) => (
-              <div
-                key={val}
-                className="flex items-center gap-3 px-4 py-2 rounded-xl bg-muted/50 border border-border/50 backdrop-blur-sm"
-              >
-                <div className={`p-2 rounded-lg bg-background/80 ${color}`}>
-                  <Ic className="w-5 h-5" />
-                </div>
-                <span>
-                  <strong className="text-foreground block text-base font-bold">
-                    {val}
-                  </strong>
-                  <span className="text-xs">{sub}</span>
+          <div className="text-center">
+            {/* Main Headline */}
+            <h1
+              className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.05] mb-8 animate-fade-in"
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                animationDelay: "0.1s",
+              }}
+            >
+              <span className="block mb-2">Master</span>
+              <span className="relative inline-block">
+                <span className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-2xl"></span>
+                <span className="relative bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  GCP Data Engineering
                 </span>
-              </div>
-            ))}
-          </div>
+              </span>
+              <span className="block mt-4 text-3xl sm:text-4xl lg:text-5xl text-muted-foreground font-semibold">
+                with <span className="text-foreground">Shaik Saidhul</span>
+              </span>
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12 animate-fade-in"
+               style={{ animationDelay: "0.2s" }}>
+              From zero to job-ready in 3 months. Live classes, real projects, and hands-on experience with Google Cloud Platform's most powerful data tools.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in"
+                 style={{ animationDelay: "0.3s" }}>
+              <button
+                onClick={() => scrollTo("courses")}
+                className="group relative px-10 py-5 rounded-2xl bg-gradient-to-r from-primary via-secondary to-primary text-white font-bold text-lg hover:shadow-2xl hover:shadow-primary/50 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/40 overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center gap-2 justify-center">
+                  Browse All Courses
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+              <button
+                onClick={() => scrollTo("instructor")}
+                className="group px-10 py-5 rounded-2xl border-2 border-primary/40 text-foreground font-bold text-lg hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:border-primary/60 transition-all flex items-center gap-3 justify-center backdrop-blur-sm"
+              >
+                <div className="p-2 rounded-full bg-primary/20 group-hover:bg-primary/30 transition-colors">
+                  <Play className="w-4 h-4 text-primary" />
+                </div>
+                Meet Your Instructor
+              </button>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 animate-fade-in"
+                 style={{ animationDelay: "0.4s" }}>
+              {[
+                {
+                  icon: Users,
+                  color: "from-primary to-primary/80",
+                  iconColor: "text-primary",
+                  val: "1500+",
+                  sub: "Students Enrolled",
+                },
+                {
+                  icon: Star,
+                  color: "from-yellow-500 to-orange-500",
+                  iconColor: "text-yellow-400",
+                  val: "4.9/5",
+                  sub: "Average Rating",
+                },
+                {
+                  icon: Award,
+                  color: "from-emerald-500 to-teal-500",
+                  iconColor: "text-emerald-400",
+                  val: "GCP Certified",
+                  sub: "Expert Instructor",
+                },
+                {
+                  icon: BookOpen,
+                  color: "from-accent to-blue-500",
+                  iconColor: "text-accent",
+                  val: "5 Courses",
+                  sub: "Available Now",
+                },
+              ].map(({ icon: Ic, color, iconColor, val, sub }) => (
+                <div
+                  key={val}
+                  className="group relative p-6 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 border border-border/50 backdrop-blur-xl hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all"
+                >
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${color} bg-opacity-10 mb-4`}>
+                      <Ic className={`w-6 h-6 ${iconColor}`} />
+                    </div>
+                    <div className="text-3xl font-extrabold text-foreground mb-1"
+                         style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
+                      {val}
+                    </div>
+                    <div className="text-sm text-muted-foreground font-medium">{sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
           {/* Ticker */}
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-px w-16 bg-border" />
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs text-muted-foreground min-w-[220px] justify-center">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-              {TICKER[ticker]}
+          <div className="flex items-center justify-center gap-6 animate-fade-in"
+               style={{ animationDelay: "0.5s" }}>
+            <div className="h-px w-20 bg-gradient-to-r from-transparent to-primary/50" />
+            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-card/80 to-card/40 border border-primary/20 text-sm text-foreground min-w-[240px] justify-center backdrop-blur-sm shadow-lg">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+              </span>
+              <span className="font-medium">{TICKER[ticker]}</span>
             </div>
-            <div className="h-px w-16 bg-border" />
+            <div className="h-px w-20 bg-gradient-to-l from-transparent to-secondary/50" />
           </div>
         </div>
       </section>
@@ -1786,41 +1832,50 @@ export default function App() {
       {/* ── Courses ─────────────────────────────────────────────── */}
       <section
         id="courses"
-        className="py-16 sm:py-20 bg-card border-y border-border"
+        className="relative py-20 sm:py-28 bg-gradient-to-b from-background via-card/30 to-background overflow-hidden"
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+        {/* Background decoration */}
+        <div className="pointer-events-none absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary tracking-widest uppercase mb-6">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               All Courses
-            </span>
+            </div>
             <h2
-              className="text-2xl sm:text-3xl font-bold mt-2 mb-3"
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
-              Choose Your Learning Path
+              Choose Your{" "}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Learning Path
+              </span>
             </h2>
-            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-              From live instructor-led batches to self-paced
-              recordings and hands-on project courses — pick
-              what fits your schedule and goals.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              From live instructor-led batches to self-paced recordings and hands-on project courses — pick what fits your schedule and career goals.
             </p>
           </div>
 
           {/* Filter tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
+          <div className="inline-flex flex-wrap justify-center gap-3 mb-12 p-2 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm mx-auto">
             {FILTERS.map(({ label, value }) => (
               <button
                 key={value}
                 onClick={() => setActiveFilter(value)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                className={`relative px-6 py-3 rounded-xl text-sm font-bold transition-all ${
                   activeFilter === value
-                    ? "bg-[#4361ee] text-white shadow-lg shadow-[#4361ee]/30"
-                    : "border border-border text-muted-foreground hover:text-foreground hover:border-white/20"
+                    ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/40"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 }`}
               >
-                {label}
+                {activeFilter === value && (
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary to-secondary opacity-100" />
+                )}
+                <span className="relative z-10">{label}</span>
               </button>
             ))}
           </div>
@@ -1833,14 +1888,19 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {visibleCourses.map((course) => (
-              <CourseCard
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {visibleCourses.map((course, index) => (
+              <div
                 key={course.id}
-                course={course}
-                onViewDetails={setModalCourse}
-                onEnroll={handleEnroll}
-              />
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <CourseCard
+                  course={course}
+                  onViewDetails={setModalCourse}
+                  onEnroll={handleEnroll}
+                />
+              </div>
             ))}
           </div>
 
