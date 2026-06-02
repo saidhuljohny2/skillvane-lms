@@ -1,0 +1,112 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/skillvane_lms/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum CourseType {
+  LIVE_BATCH
+  RECORDINGS
+  SELF_PACED
+  PROJECT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id            String       @id @default(cuid())
+  name          String
+  email         String       @unique
+  password      String
+  phone         String?      @default("")
+  role          UserRole     @default(STUDENT)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  enrollments   Enrollment[]
+  payments      Payment[]
+}
+
+model Course {
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  description   String
+  longDescription String?       @default("")
+  price         Int
+  originalPrice Int?            @default(0)
+  duration      String?         @default("")
+  courseType    CourseType      @default(SELF_PACED)
+  schedule      String?         @default("")
+  features      String[]        @default([])
+  imageUrl      String?         @default("")
+  isPublished   Boolean         @default(true)
+  sortOrder     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  topics        CourseTopic[]
+  enrollments   Enrollment[]
+  payments      Payment[]
+}
+
+model CourseTopic {
+  id            String   @id @default(cuid())
+  courseId      String
+  title         String
+  description   String?  @default("")
+  videoUrl      String?  @default("")
+  notesUrl      String?  @default("")
+  sortOrder     Int      @default(0)
+  isPreview     Boolean  @default(false)
+  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([courseId])
+}
+
+model Enrollment {
+  id            String   @id @default(cuid())
+  userId        String
+  courseId      String
+  enrolledAt    DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  courseId          String
+  amount            Int
+  currency          String        @default("INR")
+  razorpayOrderId   String        @unique
+  razorpayPaymentId String?       @default("")
+  razorpaySignature String?       @default("")
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course            Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([razorpayOrderId])
+}
