@@ -1287,19 +1287,22 @@ function CourseCard({
   const Icon = course.icon;
 
   return (
-    <div className="group relative flex flex-col rounded-2xl border border-white/8 bg-card overflow-hidden hover:border-white/20 transition-all duration-300">
+    <div className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 transition-all duration-300">
       {/* Accent top bar */}
       <div
-        className="h-1 w-full"
+        className="h-1.5 w-full"
         style={{
           background: `linear-gradient(90deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
         }}
       />
 
+      {/* Hover gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
       {/* Tag */}
       {course.tag && (
         <div
-          className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-1 rounded-full text-white"
+          className="absolute top-5 right-5 text-[10px] font-bold px-3 py-1.5 rounded-full text-white shadow-lg z-10"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
           }}
@@ -1310,25 +1313,25 @@ function CourseCard({
 
       <div className="p-5 sm:p-6 flex flex-col flex-1">
         {/* Icon + badge */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4 relative z-10">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300"
             style={{
-              background: `linear-gradient(135deg, ${course.accentFrom}22 0%, ${course.accentTo}11 100%)`,
-              border: `1px solid ${course.accentFrom}40`,
+              background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
+              border: `1.5px solid ${course.accentFrom}50`,
             }}
           >
             <Icon
-              className="w-5 h-5"
+              className="w-6 h-6"
               style={{ color: course.accentFrom }}
             />
           </div>
           <span
-            className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded-full border"
+            className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-full border"
             style={{
               color: course.accentFrom,
-              borderColor: `${course.accentFrom}40`,
-              background: `${course.accentFrom}12`,
+              borderColor: `${course.accentFrom}50`,
+              background: `${course.accentFrom}15`,
             }}
           >
             {course.badge}
@@ -1337,14 +1340,14 @@ function CourseCard({
 
         {/* Title */}
         <h3
-          className="text-lg font-bold text-white leading-tight mb-0.5"
+          className="text-xl font-bold text-foreground leading-tight mb-1 relative z-10 group-hover:text-primary transition-colors duration-300"
           style={{
-            fontFamily: "'Outfit', system-ui, sans-serif",
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
           }}
         >
           {course.title}
         </h3>
-        <p className="text-xs text-white/40 mb-4">
+        <p className="text-sm text-muted-foreground mb-5 relative z-10">
           {course.subtitle}
         </p>
 
@@ -1382,22 +1385,22 @@ function CourseCard({
         </ul>
 
         {/* Price */}
-        <div className="flex items-baseline gap-2 mb-4">
+        <div className="flex items-baseline gap-2 mb-5 relative z-10">
           <span
-            className="text-2xl font-extrabold text-white"
+            className="text-3xl font-extrabold text-foreground"
             style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
             }}
           >
             {formatINR(course.price)}
           </span>
           {course.originalPrice && (
-            <span className="text-white/30 line-through text-sm">
+            <span className="text-muted-foreground line-through text-base">
               {formatINR(course.originalPrice)}
             </span>
           )}
           {course.originalPrice && (
-            <span className="text-xs text-emerald-400 font-semibold">
+            <span className="text-xs text-emerald-400 font-bold px-2 py-1 bg-emerald-400/10 rounded-md">
               {Math.round(
                 ((course.originalPrice - course.price) /
                   course.originalPrice) *
@@ -1409,10 +1412,10 @@ function CourseCard({
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3 relative z-10">
           <button
             onClick={() => onEnroll(course)}
-            className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 active:scale-[0.99] transition-all"
+            className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:shadow-xl hover:scale-105 active:scale-[0.99] transition-all shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
             }}
@@ -1421,7 +1424,7 @@ function CourseCard({
           </button>
           <button
             onClick={() => onViewDetails(course)}
-            className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-white/15 text-white/70 hover:bg-white/5 hover:text-white transition-all"
+            className="px-5 py-3 rounded-xl text-sm font-semibold border-2 border-border text-foreground/80 hover:bg-muted hover:text-foreground hover:border-primary/30 transition-all"
           >
             Details
           </button>
@@ -1577,17 +1580,17 @@ export default function App() {
       <nav className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#4361ee] flex items-center justify-center shadow-lg shadow-[#4361ee]/40">
-              <Cloud className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/40">
+              <Cloud className="w-5 h-5 text-white" />
             </div>
             <span
-              className="font-bold text-sm tracking-tight"
+              className="font-bold text-base tracking-tight"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               SkillVane{" "}
-              <span className="text-[#4361ee]">IT Academy</span>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">IT Academy</span>
             </span>
           </div>
 
@@ -1620,7 +1623,7 @@ export default function App() {
 
           <button
             onClick={() => scrollTo("courses")}
-            className="hidden md:block px-5 py-2 rounded-lg bg-[#4361ee] text-white text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-[#4361ee]/30"
+            className="hidden md:block px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transition-all shadow-lg shadow-primary/30"
           >
             View Courses →
           </button>
@@ -1657,7 +1660,7 @@ export default function App() {
             ))}
             <button
               onClick={() => scrollTo("courses")}
-              className="mt-3 w-full py-3 rounded-lg bg-[#4361ee] text-white text-sm font-semibold"
+              className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shadow-lg shadow-primary/30"
             >
               View Courses →
             </button>
@@ -1668,32 +1671,33 @@ export default function App() {
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden pt-16 sm:pt-24 pb-20 sm:pb-28">
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.15]"
+          className="pointer-events-none absolute inset-0 opacity-20"
           style={{
             backgroundImage:
-              "radial-gradient(circle, rgba(67,97,238,0.5) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
+              "radial-gradient(circle, rgba(99,102,241,0.4) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
           }}
         />
-        <div className="pointer-events-none absolute top-20 left-1/3 w-[600px] h-[600px] rounded-full bg-[#4361ee]/15 blur-[160px]" />
-        <div className="pointer-events-none absolute top-48 right-1/4 w-80 h-80 rounded-full bg-cyan-500/8 blur-[120px]" />
+        <div className="pointer-events-none absolute top-20 left-1/3 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-primary/20 to-secondary/15 blur-[160px] animate-pulse-glow" />
+        <div className="pointer-events-none absolute top-48 right-1/4 w-96 h-96 rounded-full bg-accent/10 blur-[140px]" />
+        <div className="pointer-events-none absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-secondary/15 blur-[120px]" />
 
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#4361ee]/30 bg-[#4361ee]/10 text-xs font-mono text-[#4361ee] mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/40 bg-gradient-to-r from-primary/15 to-secondary/10 text-xs font-mono text-primary mb-8 shadow-lg shadow-primary/20">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             New Batch Starting From 1st July 2026 at 7.30 am IST
           </div>
 
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5"
+            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6"
             style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
             }}
           >
             Learn{" "}
-            <GradientText from="#4361ee" to="#3bc9db">
+            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               GCP Data Engineering
-            </GradientText>
+            </span>
             <br />
             <span className="text-muted-foreground font-semibold text-3xl sm:text-4xl lg:text-5xl">
               from Shaik Saidhul
@@ -1706,28 +1710,28 @@ export default function App() {
             you need to become a job-ready GCP Data Engineer.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
             <button
               onClick={() => scrollTo("courses")}
-              className="px-8 py-4 rounded-xl bg-[#4361ee] text-white font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-xl shadow-[#4361ee]/30"
+              className="px-8 py-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-base hover:shadow-2xl hover:shadow-primary/40 hover:scale-105 active:scale-[0.98] transition-all shadow-xl shadow-primary/30"
             >
               Browse All Courses
             </button>
             <button
               onClick={() => scrollTo("instructor")}
-              className="px-8 py-4 rounded-xl border border-border text-foreground font-semibold text-base hover:bg-accent transition-all flex items-center gap-2 justify-center"
+              className="px-8 py-4 rounded-xl border-2 border-primary/30 text-foreground font-semibold text-base hover:bg-primary/10 hover:border-primary/50 transition-all flex items-center gap-2 justify-center group"
             >
-              <Play className="w-4 h-4 text-[#4361ee]" />
+              <Play className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
               Meet the Instructor
             </button>
           </div>
 
           {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 text-sm text-muted-foreground mb-10">
+          <div className="flex flex-wrap justify-center gap-8 sm:gap-12 text-sm text-muted-foreground mb-10">
             {[
               {
                 icon: Users,
-                color: "text-[#4361ee]",
+                color: "text-primary",
                 val: "1500+",
                 sub: "Students",
               },
@@ -1745,21 +1749,23 @@ export default function App() {
               },
               {
                 icon: BookOpen,
-                color: "text-cyan-400",
+                color: "text-accent",
                 val: "5 Courses",
                 sub: "Available",
               },
             ].map(({ icon: Ic, color, val, sub }) => (
               <div
                 key={val}
-                className="flex items-center gap-2"
+                className="flex items-center gap-3 px-4 py-2 rounded-xl bg-muted/50 border border-border/50 backdrop-blur-sm"
               >
-                <Ic className={`w-4 h-4 ${color}`} />
+                <div className={`p-2 rounded-lg bg-background/80 ${color}`}>
+                  <Ic className="w-5 h-5" />
+                </div>
                 <span>
-                  <strong className="text-foreground">
+                  <strong className="text-foreground block text-base font-bold">
                     {val}
-                  </strong>{" "}
-                  {sub}
+                  </strong>
+                  <span className="text-xs">{sub}</span>
                 </span>
               </div>
             ))}
