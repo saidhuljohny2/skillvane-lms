@@ -98,8 +98,8 @@ const COURSES: Course[] = [
     tag: "Most Popular",
     highlights: [
       "Daily live sessions (Mon–Fri, 7:30–8:30 AM)",
-      "Link to Attend Demo: https://meet.google.com/tvb-vzfp-qpm",
       "Recordings Shared Daily",
+      "Comprehensive Material",
       "Resume assistance & career guidance",
       "Live doubt-clearing in every session",
       "Private student community access",
@@ -272,7 +272,7 @@ const COURSES: Course[] = [
         ],
       },
     ],
-    zoomLink: "https://meet.google.com/tvb-vzfp-qpm", // Add your Zoom meeting link here
+    zoomLink: "https://zoom.us/j/YOUR_MEETING_ID", // Add your Zoom meeting link here
   },
 
   // ── Course 2 ────────────────────────────────────────────────────
@@ -463,7 +463,7 @@ const COURSES: Course[] = [
       },
     ],
     driveLink:
-      "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Add your Google Drive folder link here
+      "https://drive.google.com/drive/folders/YOUR_FOLDER_ID", // Add your Google Drive folder link here
   },
 
   // ── Course 3 ────────────────────────────────────────────────────
@@ -2496,6 +2496,29 @@ export default function App() {
           </div>
         )}
       </nav>
+
+      {/* ── Floating Contact Buttons ─────────────────────────────── */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        {/* WhatsApp Button */}
+        <a
+          href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 hover:bg-[#20BA5A]"
+          aria-label="Join WhatsApp Group"
+        >
+          <MessageCircle className="w-7 h-7 text-white group-hover:scale-110 transition-transform" />
+        </a>
+
+        {/* Call Button */}
+        <a
+          href="tel:+917305101711"
+          className="group w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
+          aria-label="Call us"
+        >
+          <Phone className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+        </a>
+      </div>
 
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden pt-20 sm:pt-32 pb-24 sm:pb-32">
