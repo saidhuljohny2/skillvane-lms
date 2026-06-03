@@ -778,7 +778,7 @@ function CourseModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={onClose}
       />
 
@@ -1771,10 +1771,11 @@ function EnrollmentFormModal({
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-md bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+      <div className="relative w-full sm:max-w-md bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,194,156,0.14),transparent_42%)]" />
         {/* Header */}
         <div
-          className="px-6 py-4 flex items-center justify-between border-b border-white/8"
+          className="relative px-6 py-4 flex items-center justify-between border-b border-white/10"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}22, ${course.accentTo}11)`,
           }}
@@ -1787,7 +1788,7 @@ function EnrollmentFormModal({
               Step 1 of 2 — Your Details
             </p>
             <h2
-              className="font-bold text-white text-base"
+              className="font-black text-white text-base"
               style={{
                 fontFamily: "'Outfit', system-ui, sans-serif",
               }}
@@ -1809,7 +1810,7 @@ function EnrollmentFormModal({
 
         <form
           onSubmit={handleSubmit}
-          className="px-6 py-6 space-y-4"
+          className="relative px-6 py-6 space-y-4"
         >
           {/* Name */}
           <div>
@@ -1825,7 +1826,7 @@ function EnrollmentFormModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.name && (
@@ -1852,7 +1853,7 @@ function EnrollmentFormModal({
                   setForm({ ...form, email: e.target.value })
                 }
                 placeholder="you@example.com"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.email && (
@@ -1887,7 +1888,7 @@ function EnrollmentFormModal({
                   })
                 }
                 placeholder="9876543210"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.phone && (
@@ -1914,7 +1915,7 @@ function EnrollmentFormModal({
                   setForm({ ...form, password: e.target.value })
                 }
                 placeholder="Create a password"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.password && (
@@ -1988,16 +1989,17 @@ function InvoiceModal({
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-lg bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-emerald-500/30 shadow-2xl overflow-hidden">
+      <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#18c29c]/30 shadow-2xl overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(24,194,156,0.16),transparent_45%)]" />
         {/* Success header */}
-        <div className="px-6 pt-8 pb-6 text-center border-b border-white/8 bg-emerald-500/5">
-          <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+        <div className="relative px-6 pt-8 pb-6 text-center border-b border-white/10 bg-[#18c29c]/5">
+          <div className="w-14 h-14 rounded-xl bg-[#18c29c]/20 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-[#8df5d7]" />
           </div>
           <h2
-            className="text-xl font-bold text-white mb-1"
+            className="text-xl font-black text-white mb-1"
             style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
             }}
           >
             Enrollment Successful!
@@ -2020,7 +2022,7 @@ function InvoiceModal({
         </div>
 
         {/* Invoice body */}
-        <div className="px-6 py-5 space-y-4">
+        <div className="relative px-6 py-5 space-y-4">
           {/* Invoice number */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
             <div>
@@ -3079,25 +3081,29 @@ export default function App() {
       </section>
 
       {/* ── Instructor ──────────────────────────────────────────── */}
-      <section id="instructor" className="py-16 sm:py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <section
+        id="instructor"
+        className="relative py-20 sm:py-28 bg-[#08111f] overflow-hidden"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+            <span className="text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
               Your Instructor
             </span>
             <h2
-              className="text-2xl sm:text-3xl font-bold mt-2"
+              className="text-3xl sm:text-4xl font-black mt-2 text-white"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               Learn From a Working Professional
             </h2>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+          <div className="rounded-xl border border-white/10 bg-white/[0.055] p-5 sm:p-7 backdrop-blur-xl flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
-              <div className="relative w-36 h-44 sm:w-44 sm:h-56 rounded-2xl overflow-hidden shadow-2xl shadow-[#4361ee]/30 ring-2 ring-[#4361ee]/30">
+              <div className="relative w-40 h-52 sm:w-52 sm:h-64 rounded-xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy — GCP Data Engineering Instructor"
@@ -3116,17 +3122,17 @@ export default function App() {
 
             <div className="flex-1 text-center md:text-left">
               <h3
-                className="text-xl sm:text-2xl font-bold mb-1"
+                className="text-2xl sm:text-3xl font-black mb-1 text-white"
                 style={{
-                  fontFamily: "'Outfit', system-ui, sans-serif",
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
                 }}
               >
                 Shaik Saidhul
               </h3>
-              <p className="text-[#4361ee] font-semibold text-sm mb-5">
+              <p className="text-[#8df5d7] font-semibold text-sm mb-5">
                 Solution Architect · SkillVane IT Academy
               </p>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-xl">
+              <p className="text-slate-300 text-sm leading-relaxed mb-8 max-w-xl">
                 With over 9+ years of hands-on experience
                 designing large-scale data pipelines on Google
                 Cloud Platform, your instructor has architected
@@ -3148,10 +3154,10 @@ export default function App() {
                 ].map(({ value, label }) => (
                   <div
                     key={label}
-                    className="p-3 sm:p-4 rounded-xl bg-card border border-border text-center"
+                    className="p-3 sm:p-4 rounded-xl bg-[#07111f]/70 border border-white/10 text-center"
                   >
                     <div
-                      className="text-xl sm:text-2xl font-bold text-[#4361ee]"
+                      className="text-xl sm:text-2xl font-black text-[#f2b84b]"
                       style={{
                         fontFamily:
                           "'Outfit', system-ui, sans-serif",
@@ -3159,7 +3165,7 @@ export default function App() {
                     >
                       {value}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">
+                    <div className="text-xs text-slate-400 mt-1">
                       {label}
                     </div>
                   </div>
@@ -3173,17 +3179,18 @@ export default function App() {
       {/* ── Testimonials ────────────────────────────────────────── */}
       <section
         id="testimonials"
-        className="py-16 sm:py-20 bg-card border-y border-border"
+        className="relative py-20 sm:py-28 bg-[#07111f] border-y border-white/10 overflow-hidden"
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+            <span className="text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
               Reviews
             </span>
             <h2
-              className="text-2xl sm:text-3xl font-bold mt-2 mb-3"
+              className="text-3xl sm:text-4xl font-black mt-2 mb-3 text-white"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               Trusted by Professionals Across India
@@ -3195,7 +3202,7 @@ export default function App() {
                   className="w-5 h-5 text-yellow-400 fill-yellow-400"
                 />
               ))}
-              <span className="ml-2 text-muted-foreground text-sm">
+              <span className="ml-2 text-slate-400 text-sm">
                 4.9 / 5 · 500+ ratings
               </span>
             </div>
@@ -3205,7 +3212,7 @@ export default function App() {
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.name}
-                className="p-6 rounded-xl border border-border bg-background hover:border-[#4361ee]/30 transition-colors"
+                className="p-6 rounded-xl border border-white/10 bg-white/[0.055] hover:border-[#18c29c]/35 transition-colors backdrop-blur-xl"
               >
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -3215,7 +3222,7 @@ export default function App() {
                     />
                   ))}
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-5">
+                <p className="text-slate-300 text-sm leading-relaxed mb-5">
                   "{t.text}"
                 </p>
                 <div className="flex items-center gap-3">
@@ -3226,7 +3233,7 @@ export default function App() {
                   </div>
                   <div>
                     <div
-                      className="font-semibold text-sm"
+                        className="font-semibold text-sm text-white"
                       style={{
                         fontFamily:
                           "'Outfit', system-ui, sans-serif",
@@ -3234,7 +3241,7 @@ export default function App() {
                     >
                       {t.name}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-slate-400">
                       {t.role}
                     </div>
                   </div>
@@ -3246,16 +3253,16 @@ export default function App() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────── */}
-      <section id="faq" className="py-16 sm:py-20">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
+      <section id="faq" className="relative py-20 sm:py-28 bg-[#08111f]">
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#4361ee] tracking-widest uppercase">
+            <span className="text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
               FAQ
             </span>
             <h2
-              className="text-2xl sm:text-3xl font-bold mt-2"
+              className="text-3xl sm:text-4xl font-black mt-2 text-white"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               Common Questions
@@ -3266,26 +3273,26 @@ export default function App() {
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className="border border-border rounded-xl overflow-hidden"
+                className="border border-white/10 bg-white/[0.045] rounded-xl overflow-hidden backdrop-blur-xl"
               >
                 <button
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-accent/60 transition-colors"
+                  className="w-full flex items-center justify-between p-5 text-left hover:bg-white/[0.06] transition-colors"
                   onClick={() =>
                     setOpenFaq(openFaq === i ? null : i)
                   }
                 >
-                  <span className="font-semibold text-sm pr-4">
+                  <span className="font-semibold text-sm pr-4 text-slate-100">
                     {faq.q}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
+                    className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${
                       openFaq === i ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {openFaq === i && (
-                  <div className="px-5 pb-5 border-t border-border/40 bg-card/60">
-                    <p className="text-sm text-muted-foreground pt-4 leading-relaxed">
+                  <div className="px-5 pb-5 border-t border-white/10 bg-[#07111f]/70">
+                    <p className="text-sm text-slate-300 pt-4 leading-relaxed">
                       {faq.a}
                     </p>
                   </div>
@@ -3297,24 +3304,25 @@ export default function App() {
       </section>
 
       {/* ── Footer CTA ──────────────────────────────────────────── */}
-      <section className="py-16 border-t border-border bg-card">
-        <div className="max-w-xl mx-auto px-4 sm:px-6 text-center">
+      <section className="relative py-20 border-t border-white/10 bg-[#07111f] overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.14),transparent_42%)]" />
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <h2
-            className="text-2xl sm:text-3xl font-bold mb-3"
+            className="text-3xl sm:text-5xl font-black mb-4 text-white"
             style={{
-              fontFamily: "'Outfit', system-ui, sans-serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
             }}
           >
             Start your GCP journey today
           </h2>
-          <p className="text-muted-foreground text-sm mb-8">
+          <p className="text-slate-300 text-sm sm:text-base mb-8">
             5 courses. Live batch, recordings, foundation &
             projects. One academy, trusted by 500+
             professionals.
           </p>
           <button
             onClick={() => scrollTo("courses")}
-            className="px-10 py-4 rounded-xl bg-[#4361ee] text-white font-bold text-base hover:opacity-90 transition-all shadow-xl shadow-[#4361ee]/30"
+            className="px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/20"
           >
             Browse All Courses →
           </button>
@@ -3322,14 +3330,14 @@ export default function App() {
       </section>
 
       {/* ── Footer ──────────────────────────────────────────────── */}
-      <footer className="py-8 border-t border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+      <footer className="py-8 border-t border-white/10 bg-[#050b14]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-[#4361ee] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center">
               <Cloud className="w-3 h-3 text-white" />
             </div>
             <span
-              className="font-bold text-foreground"
+              className="font-bold text-white"
               style={{
                 fontFamily: "'Outfit', system-ui, sans-serif",
               }}
@@ -3344,19 +3352,19 @@ export default function App() {
           <div className="flex gap-5">
             <a
               href="#"
-              className="hover:text-foreground transition-colors"
+              className="hover:text-white transition-colors"
             >
               Privacy Policy
             </a>
             <a
               href="#"
-              className="hover:text-foreground transition-colors"
+              className="hover:text-white transition-colors"
             >
               Terms
             </a>
             <a
               href="#"
-              className="hover:text-foreground transition-colors"
+              className="hover:text-white transition-colors"
             >
               Contact
             </a>
