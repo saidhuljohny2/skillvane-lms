@@ -272,7 +272,7 @@ const COURSES: Course[] = [
         ],
       },
     ],
-    zoomLink: "https://zoom.us/j/YOUR_MEETING_ID", // Add your Zoom meeting link here
+    zoomLink: "https://meet.google.com/tvb-vzfp-qpm", // Add your Zoom meeting link here
   },
 
   // ── Course 2 ────────────────────────────────────────────────────
@@ -463,7 +463,7 @@ const COURSES: Course[] = [
       },
     ],
     driveLink:
-      "https://drive.google.com/drive/folders/YOUR_FOLDER_ID", // Add your Google Drive folder link here
+      "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Add your Google Drive folder link here
   },
 
   // ── Course 3 ────────────────────────────────────────────────────
