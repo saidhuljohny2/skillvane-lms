@@ -78,6 +78,7 @@ interface Course {
   tag?: string;
   zoomLink?: string; // For live batch courses
   driveLink?: string; // For recording courses
+  notesLink?: string; // Notes/material handout link for enrolled students
 }
 
 const COURSES: Course[] = [
@@ -273,6 +274,8 @@ const COURSES: Course[] = [
       },
     ],
     zoomLink: "https://meet.google.com/tvb-vzfp-qpm", // Add your Zoom meeting link here
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_LIVE_NOTES_LINK", // Replace with GCP live batch notes link
   },
 
   // ── Course 2 ────────────────────────────────────────────────────
@@ -464,6 +467,8 @@ const COURSES: Course[] = [
     ],
     driveLink:
       "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Add your Google Drive folder link here
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_RECORDINGS_NOTES_LINK", // Replace with GCP recordings notes link
   },
 
   // ── Course 3 ────────────────────────────────────────────────────
@@ -520,6 +525,8 @@ const COURSES: Course[] = [
     ],
     driveLink:
       "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Replace with Python course Google Drive folder link
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_PYTHON_NOTES_LINK", // Replace with Python notes link
   },
 
   // ── Course 4 ────────────────────────────────────────────────────
@@ -579,6 +586,8 @@ const COURSES: Course[] = [
     ],
     driveLink:
       "https://drive.google.com/drive/folders/1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E?usp=sharing", // Replace with Healthcare project Google Drive folder link
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_HEALTHCARE_NOTES_LINK", // Replace with Healthcare notes link
   },
 
   // ── Course 5 ────────────────────────────────────────────────────
@@ -638,6 +647,8 @@ const COURSES: Course[] = [
     ],
     driveLink:
       "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR?usp=sharing", // Replace with Retailer project Google Drive folder link
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_RETAILER_NOTES_LINK", // Replace with Retailer notes link
   },
 
   // ── ADD A NEW COURSE HERE ────────────────────────────────────────
@@ -1094,6 +1105,9 @@ async function saveToGoogleSheet(record: EnrollmentRecord) {
       drive_access_required: Boolean(record.course.driveLink),
       drive_link: record.course.driveLink || "",
       drive_access_email: record.student.email,
+      notes_access_required: Boolean(record.course.notesLink),
+      notes_link: record.course.notesLink || "",
+      notes_access_email: record.student.email,
       paid_at: record.paidAt.toISOString(),
     }),
   });
@@ -1639,6 +1653,18 @@ function StudentDashboard({
                         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
                           Project material access will be shared after enrollment confirmation.
                         </div>
+                      )}
+
+                      {course.notesLink && (
+                        <a
+                          href={course.notesLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] hover:border-[#f2b84b]/55 hover:bg-[#f2b84b]/16 transition-all"
+                        >
+                          <FileText className="h-4 w-4" />
+                          Access Notes
+                        </a>
                       )}
                     </div>
                   );
