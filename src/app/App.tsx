@@ -2838,19 +2838,17 @@ export default function App() {
             <h1
               className="max-w-4xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl"
               style={{
-                fontFamily:
-                  "'Space Grotesk', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
-              Build cloud data engineering skills that look good
-              on a real resume.
+              Learn GCP Data Engineering From{" "}
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                Shaik Saidhul
+              </span>
             </h1>
 
             <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-xl">
-              SkillVane turns GCP, BigQuery, Dataflow, Dataproc,
-              Composer, Python, and real projects into a guided
-              3-month path with live classes, recordings, notes,
-              and career support.
+              At SkillVane, we offer industry-focused Google Cloud Data Engineering training through live classes, hands-on projects, real-world case studies, and dedicated career support to help you become job-ready.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
