@@ -723,6 +723,28 @@ function GradientText({
   );
 }
 
+function getDemoAccess(course: Course) {
+  if (course.type === "live" && course.zoomLink) {
+    return {
+      href: course.zoomLink,
+      label: "Join Demo",
+      longLabel: "Join Demo Class",
+      icon: MonitorPlay,
+    };
+  }
+
+  if (course.type === "recording" && course.driveLink) {
+    return {
+      href: course.driveLink,
+      label: "Watch Demos",
+      longLabel: "Watch Previous Demos",
+      icon: Play,
+    };
+  }
+
+  return null;
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Course Modal
 // ─────────────────────────────────────────────────────────────────
@@ -739,6 +761,7 @@ function CourseModal({
     0,
   );
   const Icon = course.icon;
+  const demoAccess = getDemoAccess(course);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -927,24 +950,15 @@ function CourseModal({
         {/* Footer CTA */}
         <div className="flex-shrink-0 px-5 sm:px-6 py-4 border-t border-white/8 bg-[#080d1a] space-y-3">
           {/* Access Link - Zoom for Live, Drive for Recordings */}
-          {(course.zoomLink || course.driveLink) && (
+          {demoAccess && (
             <a
-              href={course.zoomLink || course.driveLink}
+              href={demoAccess.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 hover:border-emerald-500/50 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-[#18c29c]/15 to-[#2f80ed]/15 border border-[#18c29c]/35 text-[#8df5d7] hover:from-[#18c29c]/25 hover:to-[#2f80ed]/25 hover:border-[#18c29c]/60 transition-all"
             >
-              {course.type === "live" ? (
-                <>
-                  <Video className="w-4 h-4" />
-                  Join Demo Class
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4" />
-                  Access Course Recordings
-                </>
-              )}
+              <demoAccess.icon className="w-4 h-4" />
+              {demoAccess.longLabel}
             </a>
           )}
 
@@ -975,6 +989,7 @@ interface StudentDetails {
   name: string;
   email: string;
   phone: string;
+  password: string;
 }
 
 interface LoggedInStudent {
@@ -1206,15 +1221,20 @@ function LoginModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl overflow-hidden">
+      <div className="relative w-full sm:max-w-md bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(242,184,75,0.12),transparent_36%)]" />
         {/* Header */}
-        <div className="px-6 py-4 flex items-center justify-between border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
-          <div>
+        <div className="relative px-6 py-5 flex items-center justify-between border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
+              <Lock className="w-5 h-5 text-white" />
+            </div>
+            <div>
             <h2
-              className="font-bold text-white text-lg"
+              className="font-black text-white text-xl"
               style={{
                 fontFamily:
                   "'Space Grotesk', system-ui, sans-serif",
@@ -1224,15 +1244,16 @@ function LoginModal({
                 ? "Welcome Back"
                 : "Create Account"}
             </h2>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-slate-400">
               {mode === "login"
                 ? "Login to access your courses"
                 : "Sign up to get started"}
             </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -1240,17 +1261,17 @@ function LoginModal({
 
         <form
           onSubmit={handleSubmit}
-          className="px-6 py-6 space-y-4"
+          className="relative px-6 py-6 space-y-4"
         >
           {errors.general && (
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
               {errors.general}
             </div>
           )}
 
           {mode === "signup" && (
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-1.5">
+              <label className="block text-sm font-semibold text-slate-200 mb-1.5">
                 Full Name
               </label>
               <input
@@ -1259,10 +1280,10 @@ function LoginModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
               />
               {errors.name && (
-                <p className="text-xs text-destructive mt-1">
+                <p className="text-xs text-red-300 mt-1">
                   {errors.name}
                 </p>
               )}
@@ -1270,7 +1291,7 @@ function LoginModal({
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1.5">
+            <label className="block text-sm font-semibold text-slate-200 mb-1.5">
               Email
             </label>
             <input
@@ -1280,10 +1301,10 @@ function LoginModal({
                 setForm({ ...form, email: e.target.value })
               }
               placeholder="your.email@example.com"
-              className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
             />
             {errors.email && (
-              <p className="text-xs text-destructive mt-1">
+              <p className="text-xs text-red-300 mt-1">
                 {errors.email}
               </p>
             )}
@@ -1291,7 +1312,7 @@ function LoginModal({
 
           {mode === "signup" && (
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-1.5">
+              <label className="block text-sm font-semibold text-slate-200 mb-1.5">
                 Phone
               </label>
               <input
@@ -1301,10 +1322,10 @@ function LoginModal({
                   setForm({ ...form, phone: e.target.value })
                 }
                 placeholder="10-digit mobile number"
-                className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
               />
               {errors.phone && (
-                <p className="text-xs text-destructive mt-1">
+                <p className="text-xs text-red-300 mt-1">
                   {errors.phone}
                 </p>
               )}
@@ -1312,7 +1333,7 @@ function LoginModal({
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1.5">
+            <label className="block text-sm font-semibold text-slate-200 mb-1.5">
               Password
             </label>
             <input
@@ -1326,10 +1347,10 @@ function LoginModal({
                   ? "Enter your password"
                   : "Create a password (min 6 chars)"
               }
-              className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
             />
             {errors.password && (
-              <p className="text-xs text-destructive mt-1">
+              <p className="text-xs text-red-300 mt-1">
                 {errors.password}
               </p>
             )}
@@ -1338,7 +1359,7 @@ function LoginModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-sm hover:shadow-xl hover:shadow-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#18c29c]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading
               ? "Please wait..."
@@ -1354,7 +1375,7 @@ function LoginModal({
                 setMode(mode === "login" ? "signup" : "login");
                 setErrors({});
               }}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm text-slate-400 hover:text-[#8df5d7] transition-colors"
             >
               {mode === "login"
                 ? "Don't have an account? Sign up"
@@ -1375,193 +1396,324 @@ function StudentDashboard({
   courses,
   onLogout,
   onClose,
+  onEnroll,
 }: {
   student: LoggedInStudent;
   courses: Course[];
   onLogout: () => void;
   onClose: () => void;
+  onEnroll: (course: Course) => void;
 }) {
   const enrolledCourses = courses.filter((c) =>
     student.enrolledCourses.includes(c.id),
+  );
+  const availableCourses = courses.filter(
+    (c) => !student.enrolledCourses.includes(c.id),
   );
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-4xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-card rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-5 flex items-center justify-between border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
+      <div className="relative w-full sm:max-w-6xl max-h-[94dvh] sm:max-h-[90vh] flex flex-col bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(24,194,156,0.18),transparent_34%),radial-gradient(ellipse_at_92%_20%,rgba(242,184,75,0.12),transparent_28%)]" />
+
+        <div className="relative px-5 sm:px-7 py-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
+                Student Portal
+              </p>
               <h2
-                className="font-bold text-white text-lg"
+                className="font-black text-white text-xl"
                 style={{
                   fontFamily:
                     "'Space Grotesk', system-ui, sans-serif",
                 }}
               >
-                My Dashboard
+                Welcome back, {student.name}
               </h2>
-              <p className="text-xs text-muted-foreground">
-                Welcome back, {student.name}!
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all text-sm font-semibold"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg border border-white/12 text-slate-300 hover:text-white hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
             >
               <LogOut className="w-4 h-4" />
               Logout
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="overflow-y-auto flex-1 px-6 py-6">
-          <div className="mb-6">
-            <h3
-              className="text-xl font-bold text-foreground mb-2"
-              style={{
-                fontFamily:
-                  "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              Your Enrolled Courses
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {enrolledCourses.length > 0
-                ? `You have access to ${enrolledCourses.length} course${enrolledCourses.length > 1 ? "s" : ""}`
-                : "You haven't enrolled in any courses yet"}
-            </p>
+        <div className="relative overflow-y-auto flex-1 px-5 sm:px-7 py-6 space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5">
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] p-5 sm:p-6 backdrop-blur-xl">
+              <h3
+                className="text-2xl sm:text-3xl font-black text-white"
+                style={{
+                  fontFamily:
+                    "'Space Grotesk', system-ui, sans-serif",
+                }}
+              >
+                Your learning command center
+              </h3>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+                Access enrolled courses, jump into live classes or recordings, and add the next program to your SkillVane roadmap.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("student-available-courses")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Enroll New Course
+                </button>
+                <button
+                  onClick={onClose}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 hover:border-[#f2b84b]/40"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                  Back to Website
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Owned", value: enrolledCourses.length },
+                { label: "Available", value: availableCourses.length },
+                { label: "Total", value: courses.length },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl"
+                >
+                  <div
+                    className="text-3xl font-black text-white"
+                    style={{
+                      fontFamily:
+                        "'Space Grotesk', system-ui, sans-serif",
+                    }}
+                  >
+                    {item.value}
+                  </div>
+                  <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {enrolledCourses.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-muted-foreground" />
+          <section>
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
+                  Course Access
+                </p>
+                <h3 className="mt-1 text-xl font-black text-white">
+                  Enrolled Courses
+                </h3>
               </div>
-              <p className="text-foreground font-semibold mb-2">
-                No courses yet
-              </p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Enroll in a course to get started
-              </p>
-              <button
-                onClick={onClose}
-                className="px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-semibold text-sm hover:shadow-lg transition-all"
-              >
-                Browse Courses
-              </button>
+              <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-bold text-slate-300">
+                {enrolledCourses.length} active
+              </span>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {enrolledCourses.map((course) => {
-                const Icon = course.icon;
-                return (
-                  <div
-                    key={course.id}
-                    className="group relative p-5 rounded-2xl border border-border bg-gradient-to-br from-card to-muted/30 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all"
-                  >
-                    {/* Course Header */}
-                    <div className="flex items-start gap-3 mb-4">
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{
-                          background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
-                          border: `1.5px solid ${course.accentFrom}50`,
-                        }}
-                      >
-                        <Icon
-                          className="w-6 h-6"
-                          style={{ color: course.accentFrom }}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <span
-                          className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded-full border"
-                          style={{
-                            color: course.accentFrom,
-                            borderColor: `${course.accentFrom}50`,
-                            background: `${course.accentFrom}15`,
-                          }}
-                        >
-                          {course.badge}
-                        </span>
-                        <h4
-                          className="text-lg font-bold text-foreground mt-2"
-                          style={{
-                            fontFamily:
-                              "'Space Grotesk', system-ui, sans-serif",
-                          }}
-                        >
-                          {course.title}
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          {course.subtitle}
-                        </p>
-                      </div>
-                    </div>
 
-                    {/* Access Links */}
-                    {(course.zoomLink || course.driveLink) && (
-                      <div className="space-y-2 mb-4">
+            {enrolledCourses.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-white/14 bg-white/[0.04] px-5 py-10 text-center">
+                <BookOpen className="mx-auto mb-3 h-9 w-9 text-[#f2b84b]" />
+                <p className="font-bold text-white">No enrolled courses yet</p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Pick a program below and complete enrollment to unlock access.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {enrolledCourses.map((course) => {
+                  const Icon = course.icon;
+                  const demoAccess = getDemoAccess(course);
+                  return (
+                    <div
+                      key={course.id}
+                      className="rounded-xl border border-white/10 bg-[#0b1424] p-5"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
+                            border: `1px solid ${course.accentFrom}50`,
+                          }}
+                        >
+                          <Icon
+                            className="w-5 h-5"
+                            style={{ color: course.accentFrom }}
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span
+                            className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded-full border uppercase"
+                            style={{
+                              color: course.accentFrom,
+                              borderColor: `${course.accentFrom}50`,
+                              background: `${course.accentFrom}15`,
+                            }}
+                          >
+                            {course.badge}
+                          </span>
+                          <h4 className="mt-2 text-lg font-black text-white">
+                            {course.title}
+                          </h4>
+                          <p className="text-xs text-slate-400">
+                            {course.subtitle}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {course.duration && (
+                          <span className="flex items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-slate-300">
+                            <Clock className="w-3 h-3" />
+                            {course.duration}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-slate-300">
+                          <BookOpen className="w-3 h-3" />
+                          {TYPE_LABELS[course.type]}
+                        </span>
+                      </div>
+
+                      {demoAccess ? (
                         <a
-                          href={
-                            course.zoomLink || course.driveLink
-                          }
+                          href={demoAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 hover:border-emerald-500/50 transition-all"
+                          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
                         >
-                          {course.type === "live" ? (
-                            <>
-                              <Video className="w-4 h-4" />
-                              Join Zoom Class
-                            </>
-                          ) : (
-                            <>
-                              <Play className="w-4 h-4" />
-                              Access Recordings
-                            </>
-                          )}
+                          <demoAccess.icon className="h-4 w-4" />
+                          {course.type === "live"
+                            ? "Join Live Class"
+                            : "Access Recordings"}
                         </a>
-                      </div>
-                    )}
-
-                    {/* Course Info */}
-                    <div className="flex flex-wrap gap-2">
-                      {course.duration && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                          <Clock className="w-3 h-3" />
-                          {course.duration}
-                        </span>
-                      )}
-                      {course.timings && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                          <MonitorPlay className="w-3 h-3" />
-                          Live
-                        </span>
+                      ) : (
+                        <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
+                          Project material access will be shared after enrollment confirmation.
+                        </div>
                       )}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <section id="student-available-courses">
+            <div className="mb-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f2b84b]">
+                Grow Next
+              </p>
+              <h3 className="mt-1 text-xl font-black text-white">
+                Enroll New Courses
+              </h3>
             </div>
-          )}
+
+            {availableCourses.length === 0 ? (
+              <div className="rounded-xl border border-white/10 bg-white/[0.05] p-5 text-sm text-slate-300">
+                You are enrolled in every available course.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {availableCourses.map((course) => {
+                  const Icon = course.icon;
+                  const demoAccess = getDemoAccess(course);
+                  return (
+                    <div
+                      key={course.id}
+                      className="rounded-xl border border-white/10 bg-white/[0.055] p-4 backdrop-blur-xl"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          style={{
+                            background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
+                          }}
+                        >
+                          <Icon
+                            className="w-5 h-5"
+                            style={{ color: course.accentFrom }}
+                          />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-white leading-tight">
+                            {course.title}
+                          </h4>
+                          <p className="mt-1 text-xs text-slate-400">
+                            {course.subtitle}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-xl font-black text-white">
+                            {formatINR(course.price)}
+                          </div>
+                          {course.originalPrice && (
+                            <div className="text-xs text-slate-500 line-through">
+                              {formatINR(course.originalPrice)}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => onEnroll(course)}
+                          className="rounded-lg bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-2 text-sm font-black text-white shadow-lg shadow-[#18c29c]/15"
+                        >
+                          Enroll
+                        </button>
+                      </div>
+
+                      {demoAccess && (
+                        <a
+                          href={demoAccess.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-slate-300 hover:text-white"
+                        >
+                          <demoAccess.icon className="w-3.5 h-3.5" />
+                          {demoAccess.longLabel}
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <button
+            onClick={onLogout}
+            className="sm:hidden flex w-full items-center justify-center gap-2 rounded-xl border border-white/12 px-4 py-3 text-sm font-bold text-slate-300"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
         </div>
       </div>
     </div>
@@ -1584,6 +1736,7 @@ function EnrollmentFormModal({
     name: "",
     email: "",
     phone: "",
+    password: "",
   });
   const [errors, setErrors] = useState<Partial<StudentDetails>>(
     {},
@@ -1601,6 +1754,8 @@ function EnrollmentFormModal({
       e.email = "Valid email is required";
     if (!/^[6-9]\d{9}$/.test(form.phone))
       e.phone = "Valid 10-digit mobile number required";
+    if (!form.password || form.password.length < 6)
+      e.password = "Password must be at least 6 characters";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1742,9 +1897,36 @@ function EnrollmentFormModal({
             )}
           </div>
 
+          {/* Password */}
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1.5">
+              Create Login Password *{" "}
+              <span className="text-white/30 font-normal">
+                (minimum 6 characters)
+              </span>
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <input
+                type="password"
+                value={form.password}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                placeholder="Create a password"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4361ee]/60 focus:bg-white/8 transition-all"
+              />
+            </div>
+            {errors.password && (
+              <p className="text-xs text-red-400 mt-1">
+                {errors.password}
+              </p>
+            )}
+          </div>
+
           <p className="text-xs text-white/30 leading-relaxed">
             Your details are used only for sending your course
-            access and invoice. We do not share your
+            access, invoice, and student login. We do not share your
             information.
           </p>
 
@@ -1956,9 +2138,10 @@ function CourseCard({
   onEnroll: (c: Course) => void;
 }) {
   const Icon = course.icon;
+  const demoAccess = getDemoAccess(course);
 
   return (
-    <div className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 transition-all duration-300">
+    <div className="group relative flex flex-col rounded-xl border border-white/10 bg-[#0b1424] overflow-hidden hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 hover:-translate-y-1 transition-all duration-300">
       {/* Accent top bar */}
       <div
         className="h-1.5 w-full"
@@ -1968,7 +2151,12 @@ function CourseCard({
       />
 
       {/* Hover gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(circle at top left, ${course.accentFrom}18, transparent 38%), radial-gradient(circle at bottom right, ${course.accentTo}12, transparent 34%)`,
+        }}
+      />
 
       {/* Tag */}
       {course.tag && (
@@ -1986,7 +2174,7 @@ function CourseCard({
         {/* Icon + badge */}
         <div className="flex items-center gap-3 mb-4 relative z-10">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300"
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300"
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
               border: `1.5px solid ${course.accentFrom}50`,
@@ -1998,7 +2186,7 @@ function CourseCard({
             />
           </div>
           <span
-            className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-full border"
+            className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-full border uppercase"
             style={{
               color: course.accentFrom,
               borderColor: `${course.accentFrom}50`,
@@ -2011,7 +2199,7 @@ function CourseCard({
 
         {/* Title */}
         <h3
-          className="text-xl font-bold text-foreground leading-tight mb-1 relative z-10 group-hover:text-primary transition-colors duration-300"
+          className="text-xl font-black text-white leading-tight mb-1 relative z-10"
           style={{
             fontFamily:
               "'Space Grotesk', system-ui, sans-serif",
@@ -2019,25 +2207,25 @@ function CourseCard({
         >
           {course.title}
         </h3>
-        <p className="text-sm text-muted-foreground mb-5 relative z-10">
+        <p className="text-sm text-slate-400 mb-5 relative z-10">
           {course.subtitle}
         </p>
 
         {/* Meta pills */}
         <div className="flex flex-wrap gap-2 mb-5">
           {course.duration && (
-            <span className="flex items-center gap-1 text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full">
+            <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.06] border border-white/8 px-2.5 py-1 rounded-full">
               <Clock className="w-3 h-3" />
               {course.duration}
             </span>
           )}
           {course.timings && (
-            <span className="flex items-center gap-1 text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full">
+            <span className="flex items-center gap-1 text-xs text-slate-300 bg-[#18c29c]/10 border border-[#18c29c]/20 px-2.5 py-1 rounded-full">
               <MonitorPlay className="w-3 h-3" />
               Live
             </span>
           )}
-          <span className="flex items-center gap-1 text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-full">
+          <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.06] border border-white/8 px-2.5 py-1 rounded-full">
             <BookOpen className="w-3 h-3" />
             {TYPE_LABELS[course.type]}
           </span>
@@ -2048,7 +2236,7 @@ function CourseCard({
           {course.highlights.slice(0, 4).map((h) => (
             <li
               key={h}
-              className="flex items-start gap-2.5 text-xs text-white/60"
+              className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-300"
             >
               <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
               {h}
@@ -2057,9 +2245,9 @@ function CourseCard({
         </ul>
 
         {/* Price */}
-        <div className="flex items-baseline gap-2 mb-5 relative z-10">
+        <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/8 bg-white/[0.045] px-4 py-3">
           <span
-            className="text-3xl font-extrabold text-foreground"
+            className="text-3xl font-black text-white"
             style={{
               fontFamily:
                 "'Space Grotesk', system-ui, sans-serif",
@@ -2068,7 +2256,7 @@ function CourseCard({
             {formatINR(course.price)}
           </span>
           {course.originalPrice && (
-            <span className="text-muted-foreground line-through text-base">
+            <span className="text-slate-500 line-through text-base">
               {formatINR(course.originalPrice)}
             </span>
           )}
@@ -2085,7 +2273,19 @@ function CourseCard({
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-3 relative z-10">
+        <div className="relative z-10 space-y-3">
+          {demoAccess && (
+            <a
+              href={demoAccess.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
+            >
+              <demoAccess.icon className="h-4 w-4" />
+              {demoAccess.longLabel}
+            </a>
+          )}
+          <div className="flex gap-3">
           <button
             onClick={() => onEnroll(course)}
             className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:shadow-xl hover:scale-105 active:scale-[0.99] transition-all shadow-lg"
@@ -2097,10 +2297,11 @@ function CourseCard({
           </button>
           <button
             onClick={() => onViewDetails(course)}
-            className="px-5 py-3 rounded-xl text-sm font-semibold border-2 border-border text-foreground/80 hover:bg-muted hover:text-foreground hover:border-primary/30 transition-all"
+            className="px-5 py-3 rounded-xl text-sm font-semibold border border-white/12 text-slate-200 hover:bg-white/[0.07] hover:text-white hover:border-[#f2b84b]/40 transition-all"
           >
             Details
           </button>
+          </div>
         </div>
       </div>
     </div>
@@ -2269,12 +2470,15 @@ export default function App() {
                 email: student.email,
                 name: student.name,
                 phone: student.phone,
-                password: Math.random().toString(36).slice(-8),
+                password: student.password,
                 enrolledCourses: [course.id],
                 createdAt: new Date().toISOString(),
               };
             } else {
               // Add course to existing student
+              students[student.email].name = student.name;
+              students[student.email].phone = student.phone;
+              students[student.email].password = student.password;
               if (!students[student.email].enrolledCourses) {
                 students[student.email].enrolledCourses = [];
               }
@@ -2783,31 +2987,40 @@ export default function App() {
       {/* ── Courses ─────────────────────────────────────────────── */}
       <section
         id="courses"
-        className="relative py-20 sm:py-28 bg-gradient-to-b from-background via-card/30 to-background overflow-hidden"
+        className="relative py-20 sm:py-28 bg-[#07111f] overflow-hidden"
       >
         {/* Background decoration */}
-        <div className="pointer-events-none absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_15%_10%,rgba(24,194,156,0.14),transparent_36%),radial-gradient(ellipse_at_88%_30%,rgba(242,184,75,0.1),transparent_30%)]" />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.055]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.85) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.85) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <div className="pointer-events-none absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#18c29c]/60 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#f2b84b]/40 to-transparent" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary tracking-widest uppercase mb-6">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              All Courses
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-6">
+              <span className="w-2 h-2 rounded-full bg-[#18c29c] animate-pulse" />
+              Premium Programs
             </div>
             <h2
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-white"
               style={{
                 fontFamily:
                   "'Space Grotesk', system-ui, sans-serif",
               }}
             >
-              Choose Your{" "}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Learning Path
+              Choose the path that moves your career forward.
+              <span className="block bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
+                Live, recorded, or project based.
               </span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
               From live instructor-led batches to self-paced
               recordings and hands-on project courses — pick
               what fits your schedule and career goals.
@@ -2815,19 +3028,19 @@ export default function App() {
           </div>
 
           {/* Filter tabs */}
-          <div className="inline-flex flex-wrap justify-center gap-3 mb-12 p-2 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm mx-auto">
+          <div className="mx-auto mb-12 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] p-2 backdrop-blur-xl">
             {FILTERS.map(({ label, value }) => (
               <button
                 key={value}
                 onClick={() => setActiveFilter(value)}
-                className={`relative px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                className={`relative px-5 py-3 rounded-lg text-sm font-bold transition-all ${
                   activeFilter === value
-                    ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/40"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    ? "bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white shadow-lg shadow-[#18c29c]/20"
+                    : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
                 }`}
               >
                 {activeFilter === value && (
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary to-secondary opacity-100" />
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#18c29c] to-[#2f80ed] opacity-100" />
                 )}
                 <span className="relative z-10">{label}</span>
               </button>
@@ -2842,7 +3055,7 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {visibleCourses.map((course, index) => (
               <div
                 key={course.id}
@@ -2858,7 +3071,7 @@ export default function App() {
             ))}
           </div>
 
-          <p className="text-center text-xs text-muted-foreground mt-8">
+          <p className="text-center text-xs text-slate-500 mt-8">
             More courses coming soon · All prices in INR
             inclusive of taxes
           </p>
@@ -3192,6 +3405,10 @@ export default function App() {
           courses={COURSES}
           onLogout={handleLogout}
           onClose={() => setShowDashboard(false)}
+          onEnroll={(course) => {
+            setShowDashboard(false);
+            handleEnroll(course);
+          }}
         />
       )}
     </div>
