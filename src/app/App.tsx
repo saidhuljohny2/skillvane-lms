@@ -43,7 +43,8 @@ import {
 // ─────────────────────────────────────────────────────────────────
 // CONFIG — Update these two values after setup (see guide below)
 // ─────────────────────────────────────────────────────────────────
-const RAZORPAY_KEY = "rzp_live_Sv3MUrxi5JxgDU";
+const RAZORPAY_KEY = "rzp_test_SwJJPyvHogi7ki";
+const RAZORPAY_KEY_SECRET = "q87loSl5SCo2zQ419F7dm64x";
 
 // Paste your Google Apps Script deployment URL here after setup:
 const GOOGLE_SHEET_WEBHOOK_URL =
@@ -97,8 +98,8 @@ const COURSES: Course[] = [
     tag: "Most Popular",
     highlights: [
       "Daily live sessions (Mon–Fri, 7:30–8:30 AM)",
-      "Same-day recordings shared after every session",
-      "Structured notes for every module",
+      "Link to Attend Demo: https://meet.google.com/tvb-vzfp-qpm",
+      "Recordings Shared Daily",
       "Resume assistance & career guidance",
       "Live doubt-clearing in every session",
       "Private student community access",
@@ -271,7 +272,7 @@ const COURSES: Course[] = [
         ],
       },
     ],
-    zoomLink: "https://zoom.us/j/YOUR_MEETING_ID", // Add your Zoom meeting link here
+    zoomLink: "https://meet.google.com/tvb-vzfp-qpm", // Add your Zoom meeting link here
   },
 
   // ── Course 2 ────────────────────────────────────────────────────
@@ -462,7 +463,7 @@ const COURSES: Course[] = [
       },
     ],
     driveLink:
-      "https://drive.google.com/drive/folders/YOUR_FOLDER_ID", // Add your Google Drive folder link here
+      "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Add your Google Drive folder link here
   },
 
   // ── Course 3 ────────────────────────────────────────────────────
