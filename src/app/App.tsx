@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
+import skillVaneLogo from "@/imports/logo1.png";
 import {
   ChevronDown,
   Star,
@@ -13,7 +14,6 @@ import {
   Shield,
   Zap,
   Database,
-  Cloud,
   Play,
   TrendingUp,
   Code2,
@@ -2632,8 +2632,12 @@ export default function App() {
       <nav className="sticky top-0 z-40 border-b border-white/10 bg-[#08111f]/82 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#f2b84b] flex items-center justify-center shadow-lg shadow-[#18c29c]/25">
-              <Cloud className="w-5 h-5 text-white" />
+            <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
+              <img
+                src={skillVaneLogo}
+                alt="SkillVane logo"
+                className="h-10 w-10 object-contain"
+              />
             </div>
             <span
               className="font-bold text-base tracking-tight"
@@ -3333,8 +3337,12 @@ export default function App() {
       <footer className="py-8 border-t border-white/10 bg-[#050b14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center">
-              <Cloud className="w-3 h-3 text-white" />
+            <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center overflow-hidden">
+              <img
+                src={skillVaneLogo}
+                alt="SkillVane logo"
+                className="h-7 w-7 object-contain"
+              />
             </div>
             <span
               className="font-bold text-white"
