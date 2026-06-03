@@ -2874,14 +2874,17 @@ export default function App() {
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}
-              className="group mb-7 inline-flex items-center gap-2.5 rounded-full border border-[#18c29c]/35 bg-[#18c29c]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7] shadow-lg shadow-[#18c29c]/10 backdrop-blur-md"
+              className="group mb-7 inline-flex items-center gap-2.5 rounded-full border border-[#18c29c]/35 bg-[#18c29c]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] shadow-lg shadow-[#18c29c]/10 backdrop-blur-md"
             >
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#18c29c]" />
               </span>
-              New live batch starts July 1, 2026
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+
+              <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                New live batch starts July 1, 2026 at 7.30 AM IST
+              </span>
+              <ArrowRight className="h-4 w-4 text-cyan-400 transition-transform group-hover:translate-x-1 group-hover:text-cyan-300" />
             </button>
 
             <h1
@@ -3074,7 +3077,7 @@ export default function App() {
               </span>
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              From live instructor-led batches to self-paced
+              From live batches to self-paced
               recordings and hands-on project courses — pick
               what fits your schedule and career goals.
             </p>
