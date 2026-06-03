@@ -776,6 +776,36 @@ function getEnrolledCourseAccess(course: Course) {
   return null;
 }
 
+function getGoogleDriveEmbed(link?: string) {
+  if (!link) return null;
+
+  try {
+    const url = new URL(link);
+    if (!url.hostname.includes("drive.google.com")) return null;
+
+    const fileMatch = url.pathname.match(/\/file\/d\/([^/]+)/);
+    if (fileMatch?.[1]) {
+      return {
+        src: `https://drive.google.com/file/d/${fileMatch[1]}/preview`,
+        type: "file" as const,
+      };
+    }
+
+    const folderMatch = url.pathname.match(/\/folders\/([^/]+)/);
+    const folderId = folderMatch?.[1] || url.searchParams.get("id");
+    if (folderId) {
+      return {
+        src: `https://drive.google.com/embeddedfolderview?id=${folderId}#list`,
+        type: "folder" as const,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Course Modal
 // ─────────────────────────────────────────────────────────────────
@@ -1448,6 +1478,26 @@ function StudentDashboard({
   const availableCourses = courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
+  const playableCourses = enrolledCourses.filter((c) =>
+    Boolean(getGoogleDriveEmbed(c.driveLink)),
+  );
+  const [activePlaybackCourseId, setActivePlaybackCourseId] =
+    useState(playableCourses[0]?.id || "");
+  const activePlaybackCourse =
+    playableCourses.find((c) => c.id === activePlaybackCourseId) ||
+    playableCourses[0];
+  const activeDriveEmbed = getGoogleDriveEmbed(
+    activePlaybackCourse?.driveLink,
+  );
+
+  useEffect(() => {
+    if (
+      playableCourses.length > 0 &&
+      !playableCourses.some((c) => c.id === activePlaybackCourseId)
+    ) {
+      setActivePlaybackCourseId(playableCourses[0].id);
+    }
+  }, [activePlaybackCourseId, playableCourses]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -1559,6 +1609,74 @@ function StudentDashboard({
             </div>
           </div>
 
+          {activePlaybackCourse && activeDriveEmbed && (
+            <section id="student-recording-player">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
+                    Recording Player
+                  </p>
+                  <h3 className="mt-1 text-xl font-black text-white">
+                    {activePlaybackCourse.title}
+                  </h3>
+                </div>
+                {playableCourses.length > 1 && (
+                  <div className="flex flex-wrap gap-2">
+                    {playableCourses.map((course) => (
+                      <button
+                        key={course.id}
+                        onClick={() =>
+                          setActivePlaybackCourseId(course.id)
+                        }
+                        className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold transition-all ${
+                          course.id === activePlaybackCourse.id
+                            ? "border-[#18c29c]/50 bg-[#18c29c]/14 text-[#9cf8dd]"
+                            : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/20 hover:text-white"
+                        }`}
+                      >
+                        <Play className="h-3.5 w-3.5" />
+                        {course.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-white/10 bg-[#020817] shadow-2xl shadow-black/30">
+                <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.04] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-white">
+                      {activeDriveEmbed.type === "file"
+                        ? "Video preview"
+                        : "Recording library"}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {activePlaybackCourse.subtitle}
+                    </p>
+                  </div>
+                  <a
+                    href={activePlaybackCourse.driveLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-3 py-2 text-xs font-black text-[#ffe4a3] hover:border-[#f2b84b]/55"
+                  >
+                    <ArrowRight className="h-3.5 w-3.5" />
+                    Open in Drive
+                  </a>
+                </div>
+                <div className="aspect-video min-h-[260px] w-full bg-black">
+                  <iframe
+                    title={`${activePlaybackCourse.title} recordings`}
+                    src={activeDriveEmbed.src}
+                    className="h-full w-full border-0"
+                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
           <section>
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
@@ -1588,6 +1706,9 @@ function StudentDashboard({
                   const Icon = course.icon;
                   const courseAccess =
                     getEnrolledCourseAccess(course);
+                  const driveEmbed = getGoogleDriveEmbed(
+                    course.driveLink,
+                  );
                   return (
                     <div
                       key={course.id}
@@ -1653,6 +1774,23 @@ function StudentDashboard({
                         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
                           Project material access will be shared after enrollment confirmation.
                         </div>
+                      )}
+
+                      {driveEmbed && (
+                        <button
+                          onClick={() => {
+                            setActivePlaybackCourseId(course.id);
+                            document
+                              .getElementById(
+                                "student-recording-player",
+                              )
+                              ?.scrollIntoView({ behavior: "smooth" });
+                          }}
+                          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-black text-slate-200 hover:border-[#2f80ed]/45 hover:bg-[#2f80ed]/10 transition-all"
+                        >
+                          <Video className="h-4 w-4" />
+                          Play in Dashboard
+                        </button>
                       )}
 
                       {course.notesLink && (
