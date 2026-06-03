@@ -43,8 +43,8 @@ import {
 // ─────────────────────────────────────────────────────────────────
 // CONFIG — Update these two values after setup (see guide below)
 // ─────────────────────────────────────────────────────────────────
-const RAZORPAY_KEY = "rzp_test_SwJJPyvHogi7ki";
-const RAZORPAY_KEY_SECRET = "q87loSl5SCo2zQ419F7dm64x";
+const RAZORPAY_KEY = "rzp_live_Sx2SDk8J6c6HBk";
+const RAZORPAY_KEY_SECRET = "sBIaKza4uMIkT6ehyhqwRQts";
 
 // Paste your Google Apps Script deployment URL here after setup:
 const GOOGLE_SHEET_WEBHOOK_URL =
@@ -937,7 +937,7 @@ function CourseModal({
               {course.type === "live" ? (
                 <>
                   <Video className="w-4 h-4" />
-                  Join Zoom Class
+                  Join Demo Class
                 </>
               ) : (
                 <>
