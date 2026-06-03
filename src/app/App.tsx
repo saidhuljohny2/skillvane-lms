@@ -2423,10 +2423,10 @@ export default function App() {
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
       {/* ── Navbar ──────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+      <nav className="sticky top-0 z-40 border-b border-white/10 bg-[#08111f]/82 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/40">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#f2b84b] flex items-center justify-center shadow-lg shadow-[#18c29c]/25">
               <Cloud className="w-5 h-5 text-white" />
             </div>
             <span
@@ -2437,7 +2437,7 @@ export default function App() {
               }}
             >
               SkillVane{" "}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
                 IT Academy
               </span>
             </span>
@@ -2474,7 +2474,7 @@ export default function App() {
             {currentStudent ? (
               <button
                 onClick={() => setShowDashboard(true)}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transition-all shadow-lg shadow-primary/30"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
               >
                 <GraduationCap className="w-4 h-4" />
                 My Dashboard
@@ -2483,14 +2483,14 @@ export default function App() {
               <>
                 <button
                   onClick={() => setShowLogin(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all text-sm font-semibold"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/12 text-muted-foreground hover:text-foreground hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
                 >
                   <LogIn className="w-4 h-4" />
                   Login
                 </button>
                 <button
                   onClick={() => scrollTo("courses")}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transition-all shadow-lg shadow-primary/30"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
                 >
                   View Courses →
                 </button>
@@ -2511,7 +2511,7 @@ export default function App() {
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden bg-card border-t border-border px-4 py-4 flex flex-col gap-1">
+          <div className="md:hidden bg-[#0b1524] border-t border-white/10 px-4 py-4 flex flex-col gap-1">
             {[
               "courses",
               "instructor",
@@ -2534,7 +2534,7 @@ export default function App() {
                   setShowDashboard(true);
                   setMobileOpen(false);
                 }}
-                className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20 flex items-center justify-center gap-2"
               >
                 <GraduationCap className="w-4 h-4" />
                 My Dashboard
@@ -2546,14 +2546,14 @@ export default function App() {
                     setShowLogin(true);
                     setMobileOpen(false);
                   }}
-                  className="mt-3 w-full py-3 rounded-xl border border-border text-foreground text-sm font-semibold flex items-center justify-center gap-2"
+                  className="mt-3 w-full py-3 rounded-xl border border-white/12 text-foreground text-sm font-semibold flex items-center justify-center gap-2"
                 >
                   <LogIn className="w-4 h-4" />
                   Login
                 </button>
                 <button
                   onClick={() => scrollTo("courses")}
-                  className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold shadow-lg shadow-primary/30"
+                  className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20"
                 >
                   View Courses →
                 </button>
@@ -2579,7 +2579,7 @@ export default function App() {
         {/* Call Button */}
         <a
           href="tel:+917305101711"
-          className="group w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
+          className="group w-14 h-14 rounded-full bg-gradient-to-r from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
           aria-label="Call us"
         >
           <Phone className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
@@ -2587,211 +2587,194 @@ export default function App() {
       </div>
 
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-20 sm:pt-32 pb-24 sm:pb-32">
-        {/* Animated Background Elements */}
+      <section
+        className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[#07111f] pt-16 sm:pt-20"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.98) 0%, rgba(7,17,31,0.9) 42%, rgba(7,17,31,0.54) 70%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
+          backgroundPosition: "center, right 18% top",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover, min(50rem, 58vw) auto",
+        }}
+      >
         <div className="pointer-events-none absolute inset-0">
-          {/* Grid Pattern */}
           <div
-            className="absolute inset-0 opacity-[0.03]"
+            className="absolute inset-0 opacity-[0.09]"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)",
-              backgroundSize: "50px 50px",
+                "linear-gradient(rgba(255,255,255,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.9) 1px, transparent 1px)",
+              backgroundSize: "72px 72px",
+              maskImage:
+                "linear-gradient(to bottom, black 0%, transparent 82%)",
             }}
           />
-
-          {/* Gradient Orbs with Animation */}
-          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/20 blur-[140px] animate-pulse-glow" />
-          <div
-            className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-accent/20 to-primary/15 blur-[120px]"
-            style={{
-              animation:
-                "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-            }}
-          />
-          <div className="absolute bottom-0 left-1/3 w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-secondary/25 to-accent/15 blur-[100px]" />
-
-          {/* Floating Shapes */}
-          <div
-            className="absolute top-20 left-10 w-20 h-20 rounded-2xl bg-primary/10 backdrop-blur-sm rotate-12 border border-primary/20"
-            style={{
-              animation: "float 6s ease-in-out infinite",
-            }}
-          />
-          <div
-            className="absolute top-40 right-20 w-16 h-16 rounded-full bg-accent/10 backdrop-blur-sm border border-accent/20"
-            style={{
-              animation: "float 5s ease-in-out infinite 1s",
-            }}
-          />
-          <div
-            className="absolute bottom-40 right-32 w-24 h-24 rounded-3xl bg-secondary/10 backdrop-blur-sm -rotate-6 border border-secondary/20"
-            style={{
-              animation: "float 7s ease-in-out infinite 2s",
-            }}
-          />
+          <div className="absolute left-0 top-0 h-full w-full bg-[radial-gradient(ellipse_at_20%_12%,rgba(24,194,156,0.18),transparent_38%),radial-gradient(ellipse_at_82%_78%,rgba(242,184,75,0.12),transparent_34%)]" />
+          <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Announcement Badge */}
-          <div className="flex justify-center mb-8 animate-fade-in">
-            <div className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-primary/40 bg-gradient-to-r from-primary/15 via-secondary/10 to-primary/15 text-sm font-medium text-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all cursor-pointer backdrop-blur-sm">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-8rem)] flex flex-col justify-center py-14 sm:py-20">
+          <div className="max-w-3xl">
+            <button
+              onClick={() => scrollTo("courses")}
+              className="group mb-7 inline-flex items-center gap-2.5 rounded-full border border-[#18c29c]/35 bg-[#18c29c]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7] shadow-lg shadow-[#18c29c]/10 backdrop-blur-md"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#18c29c]" />
               </span>
-              <span className="font-mono text-xs tracking-wide">
-                New Batch Starting From 1st July 2026 at 7:30 AM
-                IST
-              </span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
+              New live batch starts July 1, 2026
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
 
-          <div className="text-center">
-            {/* Main Headline */}
             <h1
-              className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.05] mb-8 animate-fade-in"
+              className="max-w-4xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl"
               style={{
                 fontFamily:
                   "'Space Grotesk', system-ui, sans-serif",
-                animationDelay: "0.1s",
               }}
             >
-              <span className="block mb-2">Master</span>
-              <span className="relative inline-block">
-                <span className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-2xl"></span>
-                <span className="relative bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  GCP Data Engineering
-                </span>
-              </span>
-              <span className="block mt-4 text-3xl sm:text-4xl lg:text-5xl text-muted-foreground font-semibold">
-                with{" "}
-                <span className="text-foreground">
-                  Shaik Saidhul
-                </span>
-              </span>
+              Build cloud data engineering skills that look good
+              on a real resume.
             </h1>
 
-            {/* Subheadline */}
-            <p
-              className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12 animate-fade-in"
-              style={{ animationDelay: "0.2s" }}
-            >
-              From zero to job-ready in 3 months. Live classes,
-              real projects, and hands-on experience with Google
-              Cloud Platform's most powerful data tools.
+            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-xl">
+              SkillVane turns GCP, BigQuery, Dataflow, Dataproc,
+              Composer, Python, and real projects into a guided
+              3-month path with live classes, recordings, notes,
+              and career support.
             </p>
 
-            {/* CTA Buttons */}
-            <div
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in"
-              style={{ animationDelay: "0.3s" }}
-            >
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => scrollTo("courses")}
-                className="group relative px-10 py-5 rounded-2xl bg-gradient-to-r from-primary via-secondary to-primary text-white font-bold text-lg hover:shadow-2xl hover:shadow-primary/50 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/40 overflow-hidden"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/20 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span className="relative z-10 flex items-center gap-2 justify-center">
-                  Browse All Courses
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                Explore Courses
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
               <button
                 onClick={() => scrollTo("instructor")}
-                className="group px-10 py-5 rounded-2xl border-2 border-primary/40 text-foreground font-bold text-lg hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:border-primary/60 transition-all flex items-center gap-3 justify-center backdrop-blur-sm"
+                className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/18 bg-white/8 px-7 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/50 hover:bg-white/12"
               >
-                <div className="p-2 rounded-full bg-primary/20 group-hover:bg-primary/30 transition-colors">
-                  <Play className="w-4 h-4 text-primary" />
-                </div>
-                Meet Your Instructor
+                <Play className="h-5 w-5 text-[#f2b84b]" />
+                Meet Instructor
               </button>
             </div>
 
-            {/* Stats Cards */}
-            <div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 animate-fade-in"
-              style={{ animationDelay: "0.4s" }}
-            >
+            <div className="mt-9 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+              {[
+                "Daily live sessions",
+                "Recordings shared",
+                "Portfolio projects",
+                "Resume guidance",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-3 py-2 backdrop-blur-md"
+                >
+                  <CheckCircle2 className="h-4 w-4 text-[#18c29c]" />
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-12 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 {
                   icon: Users,
-                  color: "from-primary to-primary/80",
-                  iconColor: "text-primary",
                   val: "1500+",
-                  sub: "Students Enrolled",
+                  sub: "Learners",
                 },
                 {
                   icon: Star,
-                  color: "from-yellow-500 to-orange-500",
-                  iconColor: "text-yellow-400",
                   val: "4.9/5",
-                  sub: "Average Rating",
+                  sub: "Rating",
                 },
                 {
                   icon: Award,
-                  color: "from-emerald-500 to-teal-500",
-                  iconColor: "text-emerald-400",
-                  val: "GCP Certified",
-                  sub: "Expert Instructor",
+                  val: "9+ yrs",
+                  sub: "Experience",
                 },
                 {
                   icon: BookOpen,
-                  color: "from-accent to-blue-500",
-                  iconColor: "text-accent",
-                  val: "5 Courses",
-                  sub: "Available Now",
+                  val: "5",
+                  sub: "Programs",
                 },
-              ].map(
-                ({ icon: Ic, color, iconColor, val, sub }) => (
+              ].map(({ icon: Ic, val, sub }) => (
+                <div
+                  key={sub}
+                  className="rounded-xl border border-white/10 bg-white/[0.075] p-4 backdrop-blur-xl"
+                >
+                  <Ic className="mb-3 h-5 w-5 text-[#f2b84b]" />
                   <div
-                    key={val}
-                    className="group relative p-6 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 border border-border/50 backdrop-blur-xl hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all"
+                    className="text-2xl font-black text-white"
+                    style={{
+                      fontFamily:
+                        "'Space Grotesk', system-ui, sans-serif",
+                    }}
                   >
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative">
-                      <div
-                        className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${color} bg-opacity-10 mb-4`}
-                      >
-                        <Ic
-                          className={`w-6 h-6 ${iconColor}`}
-                        />
-                      </div>
-                      <div
-                        className="text-3xl font-extrabold text-foreground mb-1"
-                        style={{
-                          fontFamily:
-                            "'Space Grotesk', system-ui, sans-serif",
-                        }}
-                      >
-                        {val}
-                      </div>
-                      <div className="text-sm text-muted-foreground font-medium">
-                        {sub}
-                      </div>
-                    </div>
+                    {val}
                   </div>
-                ),
-              )}
+                  <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                    {sub}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Ticker */}
-            <div
-              className="flex items-center justify-center gap-6 animate-fade-in"
-              style={{ animationDelay: "0.5s" }}
-            >
-              <div className="h-px w-20 bg-gradient-to-r from-transparent to-primary/50" />
-              <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-card/80 to-card/40 border border-primary/20 text-sm text-foreground min-w-[240px] justify-center backdrop-blur-sm shadow-lg">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
-                </span>
-                <span className="font-medium">
-                  {TICKER[ticker]}
+            <div className="rounded-xl border border-white/10 bg-[#07111f]/72 p-4 backdrop-blur-xl">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
+                    Live Learning Path
+                  </p>
+                  <h2
+                    className="mt-1 text-xl font-black text-white"
+                    style={{
+                      fontFamily:
+                        "'Space Grotesk', system-ui, sans-serif",
+                    }}
+                  >
+                    GCP Data Engineering
+                  </h2>
+                </div>
+                <span className="rounded-lg bg-[#f2b84b] px-3 py-1 text-xs font-black text-[#1d1602]">
+                  3 Months
                 </span>
               </div>
-              <div className="h-px w-20 bg-gradient-to-l from-transparent to-secondary/50" />
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                {[
+                  { icon: Database, label: "BigQuery + SQL" },
+                  { icon: Zap, label: "Dataflow + Beam" },
+                  { icon: Layers, label: "Dataproc + Spark" },
+                  { icon: GitBranch, label: "Composer + CI/CD" },
+                ].map(({ icon: Ic, label }) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.055] px-3 py-3"
+                  >
+                    <Ic className="h-5 w-5 text-[#7cc7ff]" />
+                    <span className="text-sm font-semibold text-slate-200">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-[#18c29c]/20 bg-[#18c29c]/10 px-4 py-3">
+                <span className="flex items-center gap-2 text-sm font-semibold text-[#c9fff0]">
+                  <Shield className="h-4 w-4" />
+                  {TICKER[ticker]}
+                </span>
+                <button
+                  onClick={() => scrollTo("courses")}
+                  className="text-sm font-black text-white hover:text-[#f2b84b]"
+                >
+                  View plan
+                </button>
+              </div>
             </div>
           </div>
         </div>
