@@ -1008,10 +1008,17 @@ async function loadRazorpay(): Promise<void> {
     }
     const s = document.createElement("script");
     s.src = "https://checkout.razorpay.com/v1/checkout.js";
-    s.onload = () => resolve();
+    s.async = true;
+    s.onload = () => {
+      if ((window as any).Razorpay) {
+        resolve();
+      } else {
+        reject(new Error("Razorpay SDK failed to initialize"));
+      }
+    };
     s.onerror = () =>
-      reject(new Error("Failed to load Razorpay"));
-    document.body.appendChild(s);
+      reject(new Error("Failed to load Razorpay SDK"));
+    document.head.appendChild(s);
   });
 }
 
@@ -2207,79 +2214,108 @@ export default function App() {
     setPayError(null);
 
     try {
+      // Load Razorpay SDK
       await loadRazorpay();
+
+      // Validate Razorpay key
+      if (
+        !RAZORPAY_KEY ||
+        RAZORPAY_KEY === "YOUR_RAZORPAY_KEY"
+      ) {
+        throw new Error(
+          "Razorpay key not configured. Please add your key at the top of App.tsx",
+        );
+      }
 
       const options = {
         key: RAZORPAY_KEY,
-        amount: course.price * 100,
+        amount: course.price * 100, // Amount in paise
         currency: "INR",
         name: "SkillVane IT Academy",
         description: `${course.title} — ${course.subtitle}`,
+        image: "", // Optional: Add your logo URL
         handler: (response: any) => {
           setPayLoading(null);
+
+          // Validate payment response
+          if (!response.razorpay_payment_id) {
+            setPayError(
+              "Payment verification failed. Please contact support.",
+            );
+            setTimeout(() => setPayError(null), 6000);
+            return;
+          }
+
           const record: EnrollmentRecord = {
             invoiceNo: generateInvoiceNo(),
-            paymentId:
-              response.razorpay_payment_id ||
-              "PAY_" + Date.now(),
+            paymentId: response.razorpay_payment_id,
             student,
             course,
             paidAt: new Date(),
           };
 
           // Auto-create/update student account and enroll in course
-          const studentsData = localStorage.getItem(
-            "skillvane_students",
-          );
-          const students: Record<string, any> = studentsData
-            ? JSON.parse(studentsData)
-            : {};
+          try {
+            const studentsData = localStorage.getItem(
+              "skillvane_students",
+            );
+            const students: Record<string, any> = studentsData
+              ? JSON.parse(studentsData)
+              : {};
 
-          if (!students[student.email]) {
-            // Create new student account
-            students[student.email] = {
+            if (!students[student.email]) {
+              // Create new student account
+              students[student.email] = {
+                email: student.email,
+                name: student.name,
+                phone: student.phone,
+                password: Math.random().toString(36).slice(-8),
+                enrolledCourses: [course.id],
+                createdAt: new Date().toISOString(),
+              };
+            } else {
+              // Add course to existing student
+              if (!students[student.email].enrolledCourses) {
+                students[student.email].enrolledCourses = [];
+              }
+              if (
+                !students[
+                  student.email
+                ].enrolledCourses.includes(course.id)
+              ) {
+                students[student.email].enrolledCourses.push(
+                  course.id,
+                );
+              }
+            }
+
+            localStorage.setItem(
+              "skillvane_students",
+              JSON.stringify(students),
+            );
+
+            // Auto-login the student
+            const loggedStudent: LoggedInStudent = {
               email: student.email,
               name: student.name,
-              phone: student.phone,
-              password: Math.random().toString(36).slice(-8), // Generate random password
-              enrolledCourses: [course.id],
-              createdAt: new Date().toISOString(),
+              enrolledCourses:
+                students[student.email].enrolledCourses,
             };
-          } else {
-            // Add course to existing student
-            if (!students[student.email].enrolledCourses) {
-              students[student.email].enrolledCourses = [];
-            }
-            if (
-              !students[student.email].enrolledCourses.includes(
-                course.id,
-              )
-            ) {
-              students[student.email].enrolledCourses.push(
-                course.id,
-              );
-            }
+            localStorage.setItem(
+              "skillvane_current_student",
+              JSON.stringify(loggedStudent),
+            );
+            setCurrentStudent(loggedStudent);
+
+            setInvoice(record);
+          } catch (err) {
+            console.error("Error saving enrollment:", err);
+            setPayError(
+              "Payment successful but enrollment failed. Please contact support with payment ID: " +
+                response.razorpay_payment_id,
+            );
+            setTimeout(() => setPayError(null), 10000);
           }
-
-          localStorage.setItem(
-            "skillvane_students",
-            JSON.stringify(students),
-          );
-
-          // Auto-login the student
-          const loggedStudent: LoggedInStudent = {
-            email: student.email,
-            name: student.name,
-            enrolledCourses:
-              students[student.email].enrolledCourses,
-          };
-          localStorage.setItem(
-            "skillvane_current_student",
-            JSON.stringify(loggedStudent),
-          );
-          setCurrentStudent(loggedStudent);
-
-          setInvoice(record);
         },
         prefill: {
           name: student.name,
@@ -2288,27 +2324,57 @@ export default function App() {
         },
         notes: {
           course_id: course.id,
+          course_title: course.title,
           student_email: student.email,
+          student_name: student.name,
         },
-        theme: { color: course.accentFrom },
-        modal: { ondismiss: () => setPayLoading(null) },
+        theme: {
+          color: course.accentFrom,
+          backdrop_color: "rgba(0, 0, 0, 0.8)",
+        },
+        modal: {
+          ondismiss: () => {
+            setPayLoading(null);
+            setPayError(
+              "Payment cancelled. You can try again anytime.",
+            );
+            setTimeout(() => setPayError(null), 4000);
+          },
+          confirm_close: true,
+          escape: false,
+        },
+        retry: {
+          enabled: true,
+          max_count: 3,
+        },
       };
 
       const rzp = new (window as any).Razorpay(options);
+
+      // Handle payment failures
       rzp.on("payment.failed", (resp: any) => {
         setPayLoading(null);
+        const errorMsg =
+          resp.error?.description ||
+          resp.error?.reason ||
+          "Payment failed";
         setPayError(
-          `Payment failed: ${resp.error.description}`,
+          `Payment failed: ${errorMsg}. Please try again.`,
         );
-        setTimeout(() => setPayError(null), 6000);
+        setTimeout(() => setPayError(null), 8000);
       });
+
       rzp.open();
-    } catch {
+    } catch (err: any) {
       setPayLoading(null);
+      const errorMsg =
+        err.message || "Could not load payment gateway";
       setPayError(
-        "Could not load payment gateway. Please try again.",
+        errorMsg +
+          ". Please check your internet connection and try again.",
       );
-      setTimeout(() => setPayError(null), 6000);
+      setTimeout(() => setPayError(null), 8000);
+      console.error("Razorpay error:", err);
     }
   };
 
