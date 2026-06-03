@@ -1610,7 +1610,7 @@ function StudentDashboard({
           </div>
 
           {activePlaybackCourse && activeDriveEmbed && (
-            <section id="student-recording-player">
+            <section>
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
