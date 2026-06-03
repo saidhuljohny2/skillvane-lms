@@ -518,6 +518,8 @@ const COURSES: Course[] = [
         ],
       },
     ],
+    driveLink:
+      "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Replace with Python course Google Drive folder link
   },
 
   // ── Course 4 ────────────────────────────────────────────────────
@@ -575,6 +577,8 @@ const COURSES: Course[] = [
         ],
       },
     ],
+    driveLink:
+      "https://drive.google.com/drive/folders/1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E?usp=sharing", // Replace with Healthcare project Google Drive folder link
   },
 
   // ── Course 5 ────────────────────────────────────────────────────
@@ -632,6 +636,8 @@ const COURSES: Course[] = [
         ],
       },
     ],
+    driveLink:
+      "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR?usp=sharing", // Replace with Retailer project Google Drive folder link
   },
 
   // ── ADD A NEW COURSE HERE ────────────────────────────────────────
@@ -733,11 +739,25 @@ function getDemoAccess(course: Course) {
     };
   }
 
-  if (course.type === "recording" && course.driveLink) {
+  return null;
+}
+
+function getEnrolledCourseAccess(course: Course) {
+  if (course.type === "live" && course.zoomLink) {
+    return {
+      href: course.zoomLink,
+      label: "Join Live Class",
+      icon: MonitorPlay,
+    };
+  }
+
+  if (course.type !== "live" && course.driveLink) {
     return {
       href: course.driveLink,
-      label: "Watch Demos",
-      longLabel: "Watch Previous Demos",
+      label:
+        course.type === "recording"
+          ? "Access Recordings"
+          : "Access Course Materials",
       icon: Play,
     };
   }
@@ -1069,7 +1089,11 @@ async function saveToGoogleSheet(record: EnrollmentRecord) {
       phone: record.student.phone,
       course: record.course.title,
       course_type: record.course.subtitle,
+      course_id: record.course.id,
       amount: record.course.price,
+      drive_access_required: Boolean(record.course.driveLink),
+      drive_link: record.course.driveLink || "",
+      drive_access_email: record.student.email,
       paid_at: record.paidAt.toISOString(),
     }),
   });
@@ -1548,7 +1572,8 @@ function StudentDashboard({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {enrolledCourses.map((course) => {
                   const Icon = course.icon;
-                  const demoAccess = getDemoAccess(course);
+                  const courseAccess =
+                    getEnrolledCourseAccess(course);
                   return (
                     <div
                       key={course.id}
@@ -1600,17 +1625,15 @@ function StudentDashboard({
                         </span>
                       </div>
 
-                      {demoAccess ? (
+                      {courseAccess ? (
                         <a
-                          href={demoAccess.href}
+                          href={courseAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
                         >
-                          <demoAccess.icon className="h-4 w-4" />
-                          {course.type === "live"
-                            ? "Join Live Class"
-                            : "Access Recordings"}
+                          <courseAccess.icon className="h-4 w-4" />
+                          {courseAccess.label}
                         </a>
                       ) : (
                         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
