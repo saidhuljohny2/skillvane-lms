@@ -763,18 +763,30 @@ function getEnrolledCourseAccess(course: Course) {
     };
   }
 
-  if (course.type !== "live" && course.driveLink) {
-    return {
-      href: course.driveLink,
-      label:
-        course.type === "recording"
-          ? "Access Recordings"
-          : "Access Course Materials",
-      icon: Play,
-    };
-  }
-
   return null;
+}
+
+function getGoogleDriveFileId(link?: string) {
+  if (!link) return null;
+
+  try {
+    const url = new URL(link);
+    if (!url.hostname.includes("drive.google.com")) return null;
+
+    const fileMatch = url.pathname.match(/\/file\/d\/([^/]+)/);
+    if (fileMatch?.[1]) return fileMatch[1];
+
+    return url.searchParams.get("id");
+  } catch {
+    return null;
+  }
+}
+
+function getGoogleDriveVideoSource(link?: string) {
+  const fileId = getGoogleDriveFileId(link);
+  if (!fileId) return null;
+
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
 function getGoogleDriveEmbed(link?: string) {
@@ -784,10 +796,10 @@ function getGoogleDriveEmbed(link?: string) {
     const url = new URL(link);
     if (!url.hostname.includes("drive.google.com")) return null;
 
-    const fileMatch = url.pathname.match(/\/file\/d\/([^/]+)/);
-    if (fileMatch?.[1]) {
+    const fileId = getGoogleDriveFileId(link);
+    if (fileId) {
       return {
-        src: `https://drive.google.com/file/d/${fileMatch[1]}/preview`,
+        src: `https://drive.google.com/file/d/${fileId}/preview`,
         type: "file" as const,
       };
     }
@@ -815,6 +827,7 @@ interface CourseLesson {
   topic: string;
   topicIndex: number;
   videoLink?: string;
+  playbackSrc: string | null;
   embed: ReturnType<typeof getGoogleDriveEmbed>;
 }
 
@@ -830,6 +843,7 @@ function getCourseLessons(course: Course): CourseLesson[] {
         topic,
         topicIndex,
         videoLink,
+        playbackSrc: getGoogleDriveVideoSource(videoLink),
         embed: getGoogleDriveEmbed(videoLink),
       };
     }),
@@ -1663,7 +1677,7 @@ function StudentDashboard({
                   <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.04] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm font-bold text-white">
-                        {activeLesson.embed.type === "file"
+                        {activeLesson.playbackSrc
                           ? "Now playing"
                           : "Recording library"}
                       </p>
@@ -1671,26 +1685,28 @@ function StudentDashboard({
                         {activeLesson.course.subtitle}
                       </p>
                     </div>
-                    {activeLesson.videoLink && (
-                      <a
-                        href={activeLesson.videoLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-3 py-2 text-xs font-black text-[#ffe4a3] hover:border-[#f2b84b]/55"
-                      >
-                        <ArrowRight className="h-3.5 w-3.5" />
-                        Open in Drive
-                      </a>
-                    )}
                   </div>
                   <div className="aspect-video min-h-[260px] w-full bg-black">
-                    <iframe
-                      title={`${activeLesson.course.title} - ${activeLesson.topic}`}
-                      src={activeLesson.embed.src}
-                      className="h-full w-full border-0"
-                      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                      allowFullScreen
-                    />
+                    {activeLesson.playbackSrc ? (
+                      <video
+                        key={activeLesson.key}
+                        className="h-full w-full bg-black"
+                        controls
+                        controlsList="nodownload noremoteplayback"
+                        disablePictureInPicture
+                        preload="metadata"
+                      >
+                        <source src={activeLesson.playbackSrc} />
+                      </video>
+                    ) : (
+                      <iframe
+                        title={`${activeLesson.course.title} - ${activeLesson.topic}`}
+                        src={activeLesson.embed.src}
+                        className="h-full w-full border-0"
+                        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                        allowFullScreen
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -1870,7 +1886,9 @@ function StudentDashboard({
                         </a>
                       ) : (
                         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
-                          Project material access will be shared after enrollment confirmation.
+                          {firstPlayableLesson
+                            ? "Use the topic player below to watch lessons inside the portal."
+                            : "Course access will be shared after enrollment confirmation."}
                         </div>
                       )}
 
