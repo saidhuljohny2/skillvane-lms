@@ -2851,7 +2851,7 @@ export default function App() {
         href={TRAINER_WHATSAPP_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="trainer-whatsapp-marquee group block border-y border-[#25D366]/25 bg-[#062018] text-white"
+        className="trainer-whatsapp-marquee group fixed inset-x-0 bottom-0 z-[60] block border-y border-[#25D366]/25 bg-[#062018] text-white shadow-2xl shadow-black/35"
         aria-label="Ping the trainer personally on WhatsApp for any questions"
       >
         <div className="trainer-whatsapp-marquee__track">
@@ -2880,7 +2880,7 @@ export default function App() {
       </a>
 
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+      <div className="fixed bottom-20 right-6 z-50 flex flex-col gap-3">
         {/* WhatsApp Button */}
         <a
           href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
