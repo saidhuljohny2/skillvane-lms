@@ -289,7 +289,7 @@ const COURSES: Course[] = [
     accentTo: "#a855f7",
     title: "GCP Data Engineering",
     subtitle: "Course — Recordings",
-    price: 1,
+    price: 6000,
     originalPrice: 12000,
     highlights: [
       "Latest batch recordings (full course)",
