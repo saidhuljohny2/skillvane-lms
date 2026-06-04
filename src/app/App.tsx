@@ -79,6 +79,7 @@ interface Course {
   zoomLink?: string; // For live batch courses
   driveLink?: string; // For recording courses
   notesLink?: string; // Notes/material handout link for enrolled students
+  topicVideos?: Record<string, string>; // Optional per-topic Google Drive video links for LMS playback
 }
 
 const COURSES: Course[] = [
@@ -806,6 +807,35 @@ function getGoogleDriveEmbed(link?: string) {
   return null;
 }
 
+interface CourseLesson {
+  key: string;
+  course: Course;
+  module: string;
+  moduleIndex: number;
+  topic: string;
+  topicIndex: number;
+  videoLink?: string;
+  embed: ReturnType<typeof getGoogleDriveEmbed>;
+}
+
+function getCourseLessons(course: Course): CourseLesson[] {
+  return course.curriculum.flatMap((module, moduleIndex) =>
+    module.topics.map((topic, topicIndex) => {
+      const videoLink = course.topicVideos?.[topic] || course.driveLink;
+      return {
+        key: `${course.id}-${moduleIndex}-${topicIndex}`,
+        course,
+        module: module.module,
+        moduleIndex,
+        topic,
+        topicIndex,
+        videoLink,
+        embed: getGoogleDriveEmbed(videoLink),
+      };
+    }),
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Course Modal
 // ─────────────────────────────────────────────────────────────────
@@ -1478,26 +1508,25 @@ function StudentDashboard({
   const availableCourses = courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
-  const playableCourses = enrolledCourses.filter((c) =>
-    Boolean(getGoogleDriveEmbed(c.driveLink)),
+  const enrolledLessons = enrolledCourses.flatMap(getCourseLessons);
+  const playableLessons = enrolledLessons.filter((lesson) =>
+    Boolean(lesson.embed),
   );
-  const [activePlaybackCourseId, setActivePlaybackCourseId] =
-    useState(playableCourses[0]?.id || "");
-  const activePlaybackCourse =
-    playableCourses.find((c) => c.id === activePlaybackCourseId) ||
-    playableCourses[0];
-  const activeDriveEmbed = getGoogleDriveEmbed(
-    activePlaybackCourse?.driveLink,
+  const [activeLessonKey, setActiveLessonKey] = useState(
+    playableLessons[0]?.key || "",
   );
+  const activeLesson =
+    playableLessons.find((lesson) => lesson.key === activeLessonKey) ||
+    playableLessons[0];
 
   useEffect(() => {
     if (
-      playableCourses.length > 0 &&
-      !playableCourses.some((c) => c.id === activePlaybackCourseId)
+      playableLessons.length > 0 &&
+      !playableLessons.some((lesson) => lesson.key === activeLessonKey)
     ) {
-      setActivePlaybackCourseId(playableCourses[0].id);
+      setActiveLessonKey(playableLessons[0].key);
     }
-  }, [activePlaybackCourseId, playableCourses]);
+  }, [activeLessonKey, playableLessons]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -1609,69 +1638,138 @@ function StudentDashboard({
             </div>
           </div>
 
-          {activePlaybackCourse && activeDriveEmbed && (
-            <section>
+          {activeLesson?.embed && (
+            <section id="student-recording-player">
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
-                    Recording Player
+                    Topic Player
                   </p>
                   <h3 className="mt-1 text-xl font-black text-white">
-                    {activePlaybackCourse.title}
+                    {activeLesson.topic}
                   </h3>
+                  <p className="mt-1 text-sm text-slate-400">
+                    {activeLesson.course.title} - {activeLesson.module}
+                  </p>
                 </div>
-                {playableCourses.length > 1 && (
-                  <div className="flex flex-wrap gap-2">
-                    {playableCourses.map((course) => (
-                      <button
-                        key={course.id}
-                        onClick={() =>
-                          setActivePlaybackCourseId(course.id)
-                        }
-                        className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold transition-all ${
-                          course.id === activePlaybackCourse.id
-                            ? "border-[#18c29c]/50 bg-[#18c29c]/14 text-[#9cf8dd]"
-                            : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/20 hover:text-white"
-                        }`}
-                      >
-                        <Play className="h-3.5 w-3.5" />
-                        {course.title}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-bold text-slate-300">
+                  <Video className="h-3.5 w-3.5 text-[#f2b84b]" />
+                  Lesson {activeLesson.topicIndex + 1}
+                </span>
               </div>
 
-              <div className="overflow-hidden rounded-xl border border-white/10 bg-[#020817] shadow-2xl shadow-black/30">
-                <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.04] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm font-bold text-white">
-                      {activeDriveEmbed.type === "file"
-                        ? "Video preview"
-                        : "Recording library"}
+              <div className="grid grid-cols-1 overflow-hidden rounded-xl border border-white/10 bg-[#020817] shadow-2xl shadow-black/30 lg:grid-cols-[1fr_360px]">
+                <div className="min-w-0">
+                  <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.04] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-white">
+                        {activeLesson.embed.type === "file"
+                          ? "Now playing"
+                          : "Recording library"}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {activeLesson.course.subtitle}
+                      </p>
+                    </div>
+                    {activeLesson.videoLink && (
+                      <a
+                        href={activeLesson.videoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-3 py-2 text-xs font-black text-[#ffe4a3] hover:border-[#f2b84b]/55"
+                      >
+                        <ArrowRight className="h-3.5 w-3.5" />
+                        Open in Drive
+                      </a>
+                    )}
+                  </div>
+                  <div className="aspect-video min-h-[260px] w-full bg-black">
+                    <iframe
+                      title={`${activeLesson.course.title} - ${activeLesson.topic}`}
+                      src={activeLesson.embed.src}
+                      className="h-full w-full border-0"
+                      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+
+                <div className="max-h-[520px] overflow-y-auto border-t border-white/10 bg-white/[0.03] lg:border-l lg:border-t-0">
+                  <div className="sticky top-0 z-10 border-b border-white/10 bg-[#07111f]/95 px-4 py-3 backdrop-blur">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8df5d7]">
+                      Course Topics
                     </p>
-                    <p className="text-xs text-slate-400">
-                      {activePlaybackCourse.subtitle}
+                    <p className="mt-1 text-sm font-bold text-white">
+                      {activeLesson.course.title}
                     </p>
                   </div>
-                  <a
-                    href={activePlaybackCourse.driveLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-3 py-2 text-xs font-black text-[#ffe4a3] hover:border-[#f2b84b]/55"
-                  >
-                    <ArrowRight className="h-3.5 w-3.5" />
-                    Open in Drive
-                  </a>
-                </div>
-                <div className="aspect-video min-h-[260px] w-full bg-black">
-                  <iframe
-                    title={`${activePlaybackCourse.title} recordings`}
-                    src={activeDriveEmbed.src}
-                    className="h-full w-full border-0"
-                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <div className="divide-y divide-white/10">
+                    {enrolledCourses.map((course) => {
+                      const courseLessons = getCourseLessons(course);
+                      const hasPlayableLessons = courseLessons.some(
+                        (lesson) => lesson.embed,
+                      );
+
+                      if (!hasPlayableLessons) return null;
+
+                      return (
+                        <div key={course.id} className="px-4 py-3">
+                          <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+                            {course.title}
+                          </p>
+                          <div className="space-y-3">
+                            {course.curriculum.map((module, moduleIndex) => (
+                              <div key={`${course.id}-${module.module}`}>
+                                <p className="mb-2 text-xs font-bold text-slate-300">
+                                  {moduleIndex + 1}. {module.module}
+                                </p>
+                                <div className="space-y-1.5">
+                                  {module.topics.map((topic, topicIndex) => {
+                                    const lesson = courseLessons.find(
+                                      (item) =>
+                                        item.moduleIndex === moduleIndex &&
+                                        item.topicIndex === topicIndex,
+                                    );
+                                    const isActive =
+                                      lesson?.key === activeLesson.key;
+
+                                    return (
+                                      <button
+                                        key={lesson?.key || topic}
+                                        disabled={!lesson?.embed}
+                                        onClick={() => {
+                                          if (!lesson?.embed) return;
+                                          setActiveLessonKey(lesson.key);
+                                        }}
+                                        className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-all ${
+                                          isActive
+                                            ? "border-[#18c29c]/50 bg-[#18c29c]/14 text-[#9cf8dd]"
+                                            : lesson?.embed
+                                              ? "border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#2f80ed]/45 hover:text-white"
+                                              : "border-white/5 bg-white/[0.02] text-slate-500"
+                                        }`}
+                                      >
+                                        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-white/[0.06]">
+                                          {lesson?.embed ? (
+                                            <Play className="h-3.5 w-3.5" />
+                                          ) : (
+                                            <Lock className="h-3.5 w-3.5" />
+                                          )}
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                          {topic}
+                                        </span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </section>
@@ -1706,9 +1804,9 @@ function StudentDashboard({
                   const Icon = course.icon;
                   const courseAccess =
                     getEnrolledCourseAccess(course);
-                  const driveEmbed = getGoogleDriveEmbed(
-                    course.driveLink,
-                  );
+                  const firstPlayableLesson = getCourseLessons(
+                    course,
+                  ).find((lesson) => lesson.embed);
                   return (
                     <div
                       key={course.id}
@@ -1776,10 +1874,10 @@ function StudentDashboard({
                         </div>
                       )}
 
-                      {driveEmbed && (
+                      {firstPlayableLesson && (
                         <button
                           onClick={() => {
-                            setActivePlaybackCourseId(course.id);
+                            setActiveLessonKey(firstPlayableLesson.key);
                             document
                               .getElementById(
                                 "student-recording-player",
@@ -1789,7 +1887,7 @@ function StudentDashboard({
                           className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-black text-slate-200 hover:border-[#2f80ed]/45 hover:bg-[#2f80ed]/10 transition-all"
                         >
                           <Video className="h-4 w-4" />
-                          Play in Dashboard
+                          Play Topics
                         </button>
                       )}
 
