@@ -79,7 +79,6 @@ interface Course {
   zoomLink?: string; // For live batch courses
   driveLink?: string; // For recording courses
   notesLink?: string; // Notes/material handout link for enrolled students
-  topicVideos?: Record<string, string>; // Optional per-topic HTML5 video URLs for LMS playback
 }
 
 const COURSES: Course[] = [
@@ -766,85 +765,16 @@ function getEnrolledCourseAccess(course: Course) {
   return null;
 }
 
-function getGoogleDriveFileId(link?: string) {
-  if (!link) return null;
+function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
+  const message = [
+    "Hi Admin, please provide Google Drive access for my course.",
+    `Course: ${course.title}`,
+    `Student Name: ${student.name}`,
+    `Access Email: ${student.email}`,
+    "I understand access will be provided to my mail inbox within 24 hours.",
+  ].join("\n");
 
-  try {
-    const url = new URL(link);
-    if (!url.hostname.includes("drive.google.com")) return null;
-
-    const fileMatch = url.pathname.match(/\/file\/d\/([^/]+)/);
-    if (fileMatch?.[1]) return fileMatch[1];
-
-    return url.searchParams.get("id");
-  } catch {
-    return null;
-  }
-}
-
-function getGoogleDriveVideoSource(link?: string) {
-  const fileId = getGoogleDriveFileId(link);
-  if (!fileId) return null;
-
-  return `https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link`;
-}
-
-function getHtml5VideoSource(link?: string) {
-  if (!link) return null;
-
-  const cleanLink = link.trim();
-  if (
-    !cleanLink ||
-    cleanLink.startsWith("PASTE_") ||
-    cleanLink.includes("REPLACE_WITH")
-  ) {
-    return null;
-  }
-
-  return getGoogleDriveVideoSource(cleanLink) || cleanLink;
-}
-
-function getTopicVideoPlaceholder(
-  course: Course,
-  moduleIndex: number,
-  topicIndex: number,
-) {
-  return `PASTE_VIDEO_URL_${course.id}_M${moduleIndex + 1}_T${topicIndex + 1}`;
-}
-
-interface CourseLesson {
-  key: string;
-  course: Course;
-  module: string;
-  moduleIndex: number;
-  topic: string;
-  topicIndex: number;
-  videoLink?: string;
-  placeholderLink: string;
-  playbackSrc: string | null;
-}
-
-function getCourseLessons(course: Course): CourseLesson[] {
-  return course.curriculum.flatMap((module, moduleIndex) =>
-    module.topics.map((topic, topicIndex) => {
-      const videoLink = course.topicVideos?.[topic]?.trim();
-      return {
-        key: `${course.id}-${moduleIndex}-${topicIndex}`,
-        course,
-        module: module.module,
-        moduleIndex,
-        topic,
-        topicIndex,
-        videoLink,
-        placeholderLink: getTopicVideoPlaceholder(
-          course,
-          moduleIndex,
-          topicIndex,
-        ),
-        playbackSrc: getHtml5VideoSource(videoLink),
-      };
-    }),
-  );
+  return `https://wa.me/917305101711?text=${encodeURIComponent(message)}`;
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -1519,22 +1449,6 @@ function StudentDashboard({
   const availableCourses = courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
-  const enrolledLessons = enrolledCourses.flatMap(getCourseLessons);
-  const [activeLessonKey, setActiveLessonKey] = useState(
-    enrolledLessons[0]?.key || "",
-  );
-  const activeLesson =
-    enrolledLessons.find((lesson) => lesson.key === activeLessonKey) ||
-    enrolledLessons[0];
-
-  useEffect(() => {
-    if (
-      enrolledLessons.length > 0 &&
-      !enrolledLessons.some((lesson) => lesson.key === activeLessonKey)
-    ) {
-      setActiveLessonKey(enrolledLessons[0].key);
-    }
-  }, [activeLessonKey, enrolledLessons]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -1595,7 +1509,7 @@ function StudentDashboard({
                 Your learning command center
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-                Access enrolled courses, jump into live classes or recordings, and add the next program to your SkillVane roadmap.
+                Access enrolled courses, request Google Drive access for your registered email, and add the next program to your SkillVane roadmap.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
@@ -1646,149 +1560,6 @@ function StudentDashboard({
             </div>
           </div>
 
-          {activeLesson && (
-            <section id="student-recording-player">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
-                    Topic Player
-                  </p>
-                  <h3 className="mt-1 text-xl font-black text-white">
-                    {activeLesson.topic}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-400">
-                    {activeLesson.course.title} - {activeLesson.module}
-                  </p>
-                </div>
-                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-bold text-slate-300">
-                  <Video className="h-3.5 w-3.5 text-[#f2b84b]" />
-                  Lesson {activeLesson.topicIndex + 1}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 overflow-hidden rounded-xl border border-white/10 bg-[#020817] shadow-2xl shadow-black/30 lg:grid-cols-[1fr_360px]">
-                <div className="min-w-0">
-                  <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.04] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm font-bold text-white">
-                        {activeLesson.playbackSrc
-                          ? "Now playing"
-                          : "Video link pending"}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {activeLesson.videoLink ||
-                          activeLesson.placeholderLink}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="aspect-video min-h-[260px] w-full bg-black">
-                    {activeLesson.playbackSrc ? (
-                      <video
-                        key={activeLesson.key}
-                        className="h-full w-full bg-black"
-                        controls
-                        controlsList="nodownload noremoteplayback"
-                        disablePictureInPicture
-                        preload="metadata"
-                        onContextMenu={(event) => event.preventDefault()}
-                      >
-                        <source src={activeLesson.playbackSrc} />
-                      </video>
-                    ) : (
-                      <div className="flex h-full min-h-[260px] items-center justify-center px-6 text-center">
-                        <div>
-                          <Video className="mx-auto mb-3 h-10 w-10 text-[#f2b84b]" />
-                          <p className="text-base font-black text-white">
-                            Add this topic video URL
-                          </p>
-                          <p className="mt-2 max-w-md text-xs leading-5 text-slate-400">
-                            Paste the MP4, signed CDN, or Google Drive file URL
-                            in this topic&apos;s placeholder to play it here in
-                            the portal.
-                          </p>
-                          <code className="mt-4 block rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-xs text-[#9cf8dd]">
-                            {activeLesson.placeholderLink}
-                          </code>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="max-h-[520px] overflow-y-auto border-t border-white/10 bg-white/[0.03] lg:border-l lg:border-t-0">
-                  <div className="sticky top-0 z-10 border-b border-white/10 bg-[#07111f]/95 px-4 py-3 backdrop-blur">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8df5d7]">
-                      Course Topics
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-white">
-                      {activeLesson.course.title}
-                    </p>
-                  </div>
-                  <div className="divide-y divide-white/10">
-                    {enrolledCourses.map((course) => {
-                      const courseLessons = getCourseLessons(course);
-                      return (
-                        <div key={course.id} className="px-4 py-3">
-                          <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-                            {course.title}
-                          </p>
-                          <div className="space-y-3">
-                            {course.curriculum.map((module, moduleIndex) => (
-                              <div key={`${course.id}-${module.module}`}>
-                                <p className="mb-2 text-xs font-bold text-slate-300">
-                                  {moduleIndex + 1}. {module.module}
-                                </p>
-                                <div className="space-y-1.5">
-                                  {module.topics.map((topic, topicIndex) => {
-                                    const lesson = courseLessons.find(
-                                      (item) =>
-                                        item.moduleIndex === moduleIndex &&
-                                        item.topicIndex === topicIndex,
-                                    );
-                                    const isActive =
-                                      lesson?.key === activeLesson.key;
-
-                                    return (
-                                      <button
-                                        key={lesson?.key || topic}
-                                        onClick={() => {
-                                          if (!lesson) return;
-                                          setActiveLessonKey(lesson.key);
-                                        }}
-                                        className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-all ${
-                                          isActive
-                                            ? "border-[#18c29c]/50 bg-[#18c29c]/14 text-[#9cf8dd]"
-                                            : lesson?.playbackSrc
-                                              ? "border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#2f80ed]/45 hover:text-white"
-                                              : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-[#f2b84b]/35 hover:text-white"
-                                        }`}
-                                      >
-                                        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-white/[0.06]">
-                                          {lesson?.playbackSrc ? (
-                                            <Play className="h-3.5 w-3.5" />
-                                          ) : (
-                                            <Video className="h-3.5 w-3.5" />
-                                          )}
-                                        </span>
-                                        <span className="min-w-0 flex-1">
-                                          {topic}
-                                        </span>
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
           <section>
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
@@ -1818,7 +1589,8 @@ function StudentDashboard({
                   const Icon = course.icon;
                   const courseAccess =
                     getEnrolledCourseAccess(course);
-                  const firstCourseLesson = getCourseLessons(course)[0];
+                  const driveAccessRequestHref =
+                    getDriveAccessRequestHref(student, course);
                   return (
                     <div
                       key={course.id}
@@ -1882,28 +1654,29 @@ function StudentDashboard({
                         </a>
                       ) : (
                         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
-                          {firstCourseLesson
-                            ? "Use the topic player below to watch lessons inside the portal."
-                            : "Course access will be shared after enrollment confirmation."}
+                          Course materials and recordings are shared through
+                          Google Drive after access is enabled for your email.
                         </div>
                       )}
 
-                      {firstCourseLesson && (
-                        <button
-                          onClick={() => {
-                            setActiveLessonKey(firstCourseLesson.key);
-                            document
-                              .getElementById(
-                                "student-recording-player",
-                              )
-                              ?.scrollIntoView({ behavior: "smooth" });
-                          }}
-                          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-black text-slate-200 hover:border-[#2f80ed]/45 hover:bg-[#2f80ed]/10 transition-all"
-                        >
-                          <Video className="h-4 w-4" />
-                          Play Topics
-                        </button>
-                      )}
+                      <a
+                        href={driveAccessRequestHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/15 transition-all hover:brightness-110"
+                      >
+                        <Mail className="h-4 w-4" />
+                        Ask Admin for Drive Access
+                      </a>
+
+                      <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe1a3]">
+                        Access will be provided to{" "}
+                        <span className="font-black text-white">
+                          {student.email}
+                        </span>{" "}
+                        within 24 hours. Please check your mail inbox for the
+                        Google Drive invitation.
+                      </div>
 
                       {course.notesLink && (
                         <a
