@@ -54,6 +54,8 @@ const GOOGLE_SHEET_WEBHOOK_URL =
 const EMAILJS_SERVICE_ID = "service_huss9yj";
 const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
 const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
+const TRAINER_WHATSAPP_LINK =
+  "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 
 // ─────────────────────────────────────────────────────────────────
 // COURSE DATA — Add a new course here and it appears on the site
@@ -2844,6 +2846,38 @@ export default function App() {
           </div>
         )}
       </nav>
+
+      <a
+        href={TRAINER_WHATSAPP_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="trainer-whatsapp-marquee group block border-y border-[#25D366]/25 bg-[#062018] text-white"
+        aria-label="Ping the trainer personally on WhatsApp for any questions"
+      >
+        <div className="trainer-whatsapp-marquee__track">
+          {[0, 1].map((group) => (
+            <div
+              key={group}
+              className="trainer-whatsapp-marquee__group"
+              aria-hidden={group === 1}
+            >
+              {[0, 1, 2].map((item) => (
+                <span
+                  key={`${group}-${item}`}
+                  className="inline-flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-[0.16em] text-[#dfffee] sm:text-sm"
+                >
+                  <MessageCircle className="h-4 w-4 flex-shrink-0 text-[#25D366]" />
+                  Ping the trainer personally on WhatsApp for any questions
+                  <span className="rounded-full border border-[#25D366]/35 bg-[#25D366]/12 px-3 py-1 text-[10px] tracking-[0.14em] text-[#9dffc8]">
+                    Quick Support
+                  </span>
+                  <ArrowRight className="h-4 w-4 flex-shrink-0 text-[#f2b84b] transition-transform group-hover:translate-x-1" />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </a>
 
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">

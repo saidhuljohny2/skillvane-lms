@@ -170,6 +170,63 @@ html {
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
+/* Trainer WhatsApp marquee */
+.trainer-whatsapp-marquee {
+  overflow: hidden;
+  position: relative;
+}
+
+.trainer-whatsapp-marquee::before,
+.trainer-whatsapp-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 4rem;
+  pointer-events: none;
+}
+
+.trainer-whatsapp-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, #062018 0%, rgba(6, 32, 24, 0) 100%);
+}
+
+.trainer-whatsapp-marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, #062018 0%, rgba(6, 32, 24, 0) 100%);
+}
+
+.trainer-whatsapp-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: trainerMarquee 26s linear infinite;
+}
+
+.trainer-whatsapp-marquee__group {
+  display: flex;
+  min-width: max-content;
+}
+
+.trainer-whatsapp-marquee:hover .trainer-whatsapp-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes trainerMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trainer-whatsapp-marquee__track {
+    animation: none;
+  }
+}
+
 /* Text selection */
 ::selection {
   background: rgba(99, 102, 241, 0.3);
