@@ -786,7 +786,7 @@ function getGoogleDriveVideoSource(link?: string) {
   const fileId = getGoogleDriveFileId(link);
   if (!fileId) return null;
 
-  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  return `https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link`;
 }
 
 function getHtml5VideoSource(link?: string) {
