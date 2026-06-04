@@ -2847,21 +2847,39 @@ export default function App() {
         )}
       </nav>
 
-      <div className="trainer-whatsapp-marquee__track">
-        <span className="inline-flex h-12 items-center gap-3 whitespace-nowrap px-6 text-xs font-black uppercase tracking-[0.14em] text-[#dfffee] sm:px-8 sm:text-sm">
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/25">
-            <MessageCircle className="h-4 w-4 text-white" />
-          </span>
-
-          Ping the trainer personally on WhatsApp for any questions
-
-          <span className="rounded-full border border-[#25D366]/35 bg-[#25D366]/12 px-3 py-1 text-[10px] tracking-[0.12em] text-[#9dffc8]">
-            Quick Support
-          </span>
-
-          <ArrowRight className="h-4 w-4 flex-shrink-0 text-[#f2b84b] transition-transform group-hover:translate-x-1" />
-        </span>
-      </div>
+      <a
+        href={TRAINER_WHATSAPP_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="trainer-whatsapp-marquee group fixed bottom-4 left-1/2 z-[60] block w-[min(calc(100%-1rem),980px)] -translate-x-1/2 rounded-full border border-[#25D366]/35 bg-[#041b14]/95 text-white shadow-2xl shadow-black/40 backdrop-blur-xl"
+        aria-label="Ping the trainer personally on WhatsApp for any questions"
+      >
+        <div className="trainer-whatsapp-marquee__track">
+          {[0, 1].map((group) => (
+            <div
+              key={group}
+              className="trainer-whatsapp-marquee__group"
+              aria-hidden={group === 1}
+            >
+              {[0, 1].map((item) => (
+                <span
+                  key={`${group}-${item}`}
+                  className="inline-flex h-12 items-center gap-3 whitespace-nowrap px-6 text-xs font-black uppercase tracking-[0.14em] text-[#dfffee] sm:px-8 sm:text-sm"
+                >
+                  <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/25">
+                    <MessageCircle className="h-4 w-4 text-white" />
+                  </span>
+                  Ping the trainer personally on WhatsApp for any questions
+                  <span className="rounded-full border border-[#25D366]/35 bg-[#25D366]/12 px-3 py-1 text-[10px] tracking-[0.12em] text-[#9dffc8]">
+                    Quick Support
+                  </span>
+                  <ArrowRight className="h-4 w-4 flex-shrink-0 text-[#f2b84b] transition-transform group-hover:translate-x-1" />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </a>
 
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
       <div className="fixed bottom-24 right-6 z-50 flex flex-col gap-3">
