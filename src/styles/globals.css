@@ -172,8 +172,10 @@ html {
 
 /* Trainer WhatsApp marquee */
 .trainer-whatsapp-marquee {
+  height: 3rem;
   overflow: hidden;
-  position: relative;
+  isolation: isolate;
+  white-space: nowrap;
 }
 
 .trainer-whatsapp-marquee::before,
@@ -183,28 +185,33 @@ html {
   top: 0;
   bottom: 0;
   z-index: 1;
-  width: 4rem;
+  width: 3rem;
   pointer-events: none;
 }
 
 .trainer-whatsapp-marquee::before {
   left: 0;
-  background: linear-gradient(90deg, #062018 0%, rgba(6, 32, 24, 0) 100%);
+  background: linear-gradient(90deg, #041b14 0%, rgba(4, 27, 20, 0) 100%);
 }
 
 .trainer-whatsapp-marquee::after {
   right: 0;
-  background: linear-gradient(270deg, #062018 0%, rgba(6, 32, 24, 0) 100%);
+  background: linear-gradient(270deg, #041b14 0%, rgba(4, 27, 20, 0) 100%);
 }
 
 .trainer-whatsapp-marquee__track {
   display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
   width: max-content;
-  animation: trainerMarquee 26s linear infinite;
+  height: 100%;
+  animation: trainerMarquee 20s linear infinite;
 }
 
 .trainer-whatsapp-marquee__group {
   display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
   min-width: max-content;
 }
 
