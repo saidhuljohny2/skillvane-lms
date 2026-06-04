@@ -79,7 +79,7 @@ interface Course {
   zoomLink?: string; // For live batch courses
   driveLink?: string; // For recording courses
   notesLink?: string; // Notes/material handout link for enrolled students
-  topicVideos?: Record<string, string>; // Optional per-topic Google Drive video links for LMS playback
+  topicVideos?: Record<string, string>; // Optional per-topic HTML5 video URLs for LMS playback
 }
 
 const COURSES: Course[] = [
@@ -789,34 +789,27 @@ function getGoogleDriveVideoSource(link?: string) {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
-function getGoogleDriveEmbed(link?: string) {
+function getHtml5VideoSource(link?: string) {
   if (!link) return null;
 
-  try {
-    const url = new URL(link);
-    if (!url.hostname.includes("drive.google.com")) return null;
-
-    const fileId = getGoogleDriveFileId(link);
-    if (fileId) {
-      return {
-        src: `https://drive.google.com/file/d/${fileId}/preview`,
-        type: "file" as const,
-      };
-    }
-
-    const folderMatch = url.pathname.match(/\/folders\/([^/]+)/);
-    const folderId = folderMatch?.[1] || url.searchParams.get("id");
-    if (folderId) {
-      return {
-        src: `https://drive.google.com/embeddedfolderview?id=${folderId}#list`,
-        type: "folder" as const,
-      };
-    }
-  } catch {
+  const cleanLink = link.trim();
+  if (
+    !cleanLink ||
+    cleanLink.startsWith("PASTE_") ||
+    cleanLink.includes("REPLACE_WITH")
+  ) {
     return null;
   }
 
-  return null;
+  return getGoogleDriveVideoSource(cleanLink) || cleanLink;
+}
+
+function getTopicVideoPlaceholder(
+  course: Course,
+  moduleIndex: number,
+  topicIndex: number,
+) {
+  return `PASTE_VIDEO_URL_${course.id}_M${moduleIndex + 1}_T${topicIndex + 1}`;
 }
 
 interface CourseLesson {
@@ -827,14 +820,14 @@ interface CourseLesson {
   topic: string;
   topicIndex: number;
   videoLink?: string;
+  placeholderLink: string;
   playbackSrc: string | null;
-  embed: ReturnType<typeof getGoogleDriveEmbed>;
 }
 
 function getCourseLessons(course: Course): CourseLesson[] {
   return course.curriculum.flatMap((module, moduleIndex) =>
     module.topics.map((topic, topicIndex) => {
-      const videoLink = course.topicVideos?.[topic] || course.driveLink;
+      const videoLink = course.topicVideos?.[topic]?.trim();
       return {
         key: `${course.id}-${moduleIndex}-${topicIndex}`,
         course,
@@ -843,8 +836,12 @@ function getCourseLessons(course: Course): CourseLesson[] {
         topic,
         topicIndex,
         videoLink,
-        playbackSrc: getGoogleDriveVideoSource(videoLink),
-        embed: getGoogleDriveEmbed(videoLink),
+        placeholderLink: getTopicVideoPlaceholder(
+          course,
+          moduleIndex,
+          topicIndex,
+        ),
+        playbackSrc: getHtml5VideoSource(videoLink),
       };
     }),
   );
@@ -1523,24 +1520,21 @@ function StudentDashboard({
     (c) => !student.enrolledCourses.includes(c.id),
   );
   const enrolledLessons = enrolledCourses.flatMap(getCourseLessons);
-  const playableLessons = enrolledLessons.filter((lesson) =>
-    Boolean(lesson.embed),
-  );
   const [activeLessonKey, setActiveLessonKey] = useState(
-    playableLessons[0]?.key || "",
+    enrolledLessons[0]?.key || "",
   );
   const activeLesson =
-    playableLessons.find((lesson) => lesson.key === activeLessonKey) ||
-    playableLessons[0];
+    enrolledLessons.find((lesson) => lesson.key === activeLessonKey) ||
+    enrolledLessons[0];
 
   useEffect(() => {
     if (
-      playableLessons.length > 0 &&
-      !playableLessons.some((lesson) => lesson.key === activeLessonKey)
+      enrolledLessons.length > 0 &&
+      !enrolledLessons.some((lesson) => lesson.key === activeLessonKey)
     ) {
-      setActiveLessonKey(playableLessons[0].key);
+      setActiveLessonKey(enrolledLessons[0].key);
     }
-  }, [activeLessonKey, playableLessons]);
+  }, [activeLessonKey, enrolledLessons]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -1652,7 +1646,7 @@ function StudentDashboard({
             </div>
           </div>
 
-          {activeLesson?.embed && (
+          {activeLesson && (
             <section id="student-recording-player">
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -1679,10 +1673,11 @@ function StudentDashboard({
                       <p className="text-sm font-bold text-white">
                         {activeLesson.playbackSrc
                           ? "Now playing"
-                          : "Recording library"}
+                          : "Video link pending"}
                       </p>
                       <p className="text-xs text-slate-400">
-                        {activeLesson.course.subtitle}
+                        {activeLesson.videoLink ||
+                          activeLesson.placeholderLink}
                       </p>
                     </div>
                   </div>
@@ -1695,17 +1690,27 @@ function StudentDashboard({
                         controlsList="nodownload noremoteplayback"
                         disablePictureInPicture
                         preload="metadata"
+                        onContextMenu={(event) => event.preventDefault()}
                       >
                         <source src={activeLesson.playbackSrc} />
                       </video>
                     ) : (
-                      <iframe
-                        title={`${activeLesson.course.title} - ${activeLesson.topic}`}
-                        src={activeLesson.embed.src}
-                        className="h-full w-full border-0"
-                        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <div className="flex h-full min-h-[260px] items-center justify-center px-6 text-center">
+                        <div>
+                          <Video className="mx-auto mb-3 h-10 w-10 text-[#f2b84b]" />
+                          <p className="text-base font-black text-white">
+                            Add this topic video URL
+                          </p>
+                          <p className="mt-2 max-w-md text-xs leading-5 text-slate-400">
+                            Paste the MP4, signed CDN, or Google Drive file URL
+                            in this topic&apos;s placeholder to play it here in
+                            the portal.
+                          </p>
+                          <code className="mt-4 block rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-xs text-[#9cf8dd]">
+                            {activeLesson.placeholderLink}
+                          </code>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1722,12 +1727,6 @@ function StudentDashboard({
                   <div className="divide-y divide-white/10">
                     {enrolledCourses.map((course) => {
                       const courseLessons = getCourseLessons(course);
-                      const hasPlayableLessons = courseLessons.some(
-                        (lesson) => lesson.embed,
-                      );
-
-                      if (!hasPlayableLessons) return null;
-
                       return (
                         <div key={course.id} className="px-4 py-3">
                           <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
@@ -1752,24 +1751,23 @@ function StudentDashboard({
                                     return (
                                       <button
                                         key={lesson?.key || topic}
-                                        disabled={!lesson?.embed}
                                         onClick={() => {
-                                          if (!lesson?.embed) return;
+                                          if (!lesson) return;
                                           setActiveLessonKey(lesson.key);
                                         }}
                                         className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-all ${
                                           isActive
                                             ? "border-[#18c29c]/50 bg-[#18c29c]/14 text-[#9cf8dd]"
-                                            : lesson?.embed
+                                            : lesson?.playbackSrc
                                               ? "border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#2f80ed]/45 hover:text-white"
-                                              : "border-white/5 bg-white/[0.02] text-slate-500"
+                                              : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-[#f2b84b]/35 hover:text-white"
                                         }`}
                                       >
                                         <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-white/[0.06]">
-                                          {lesson?.embed ? (
+                                          {lesson?.playbackSrc ? (
                                             <Play className="h-3.5 w-3.5" />
                                           ) : (
-                                            <Lock className="h-3.5 w-3.5" />
+                                            <Video className="h-3.5 w-3.5" />
                                           )}
                                         </span>
                                         <span className="min-w-0 flex-1">
@@ -1820,9 +1818,7 @@ function StudentDashboard({
                   const Icon = course.icon;
                   const courseAccess =
                     getEnrolledCourseAccess(course);
-                  const firstPlayableLesson = getCourseLessons(
-                    course,
-                  ).find((lesson) => lesson.embed);
+                  const firstCourseLesson = getCourseLessons(course)[0];
                   return (
                     <div
                       key={course.id}
@@ -1886,16 +1882,16 @@ function StudentDashboard({
                         </a>
                       ) : (
                         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
-                          {firstPlayableLesson
+                          {firstCourseLesson
                             ? "Use the topic player below to watch lessons inside the portal."
                             : "Course access will be shared after enrollment confirmation."}
                         </div>
                       )}
 
-                      {firstPlayableLesson && (
+                      {firstCourseLesson && (
                         <button
                           onClick={() => {
-                            setActiveLessonKey(firstPlayableLesson.key);
+                            setActiveLessonKey(firstCourseLesson.key);
                             document
                               .getElementById(
                                 "student-recording-player",
