@@ -6,6 +6,13 @@ html {
   scroll-padding-top: 7rem;
 }
 
+body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(24, 194, 156, 0.12), transparent 28rem),
+    radial-gradient(circle at 84% 16%, rgba(242, 184, 75, 0.1), transparent 24rem),
+    linear-gradient(180deg, #07111f 0%, #050b14 100%);
+}
+
 /* Custom scrollbar for webkit browsers */
 ::-webkit-scrollbar {
   width: 10px;
@@ -16,12 +23,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.5);
+  background: linear-gradient(180deg, rgba(24, 194, 156, 0.72), rgba(242, 184, 75, 0.62));
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.7);
+  background: linear-gradient(180deg, rgba(24, 194, 156, 0.95), rgba(242, 184, 75, 0.82));
 }
 
 /* Gradient text utility */
@@ -103,6 +110,50 @@ html {
   box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.2);
 }
 
+.premium-surface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+    rgba(7, 17, 31, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(22px);
+}
+
+.premium-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.08) 42%, transparent 58%);
+  opacity: 0;
+  transform: translateX(-70%);
+  transition: opacity 0.35s ease, transform 0.7s ease;
+}
+
+.premium-surface:hover::after {
+  opacity: 1;
+  transform: translateX(70%);
+}
+
+.premium-ring {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 8px rgba(24, 194, 156, 0.035),
+    0 28px 70px rgba(0, 0, 0, 0.32);
+}
+
+.magnetic-button {
+  transform: translateZ(0);
+}
+
+.magnetic-button:hover {
+  transform: translateY(-2px) scale(1.015);
+}
+
 /* Shimmer loading effect */
 @keyframes shimmer {
   0% {
@@ -177,6 +228,8 @@ html {
   overflow: hidden;
   isolation: isolate;
   white-space: nowrap;
+  background-size: 220% 100%;
+  animation: trainerGoldShift 9s ease-in-out infinite alternate;
 }
 
 .trainer-whatsapp-marquee::before,
@@ -226,6 +279,15 @@ html {
   }
 }
 
+@keyframes trainerGoldShift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .trainer-whatsapp-marquee__item {
     animation: none;
@@ -241,7 +303,7 @@ html {
 
 /* Focus visible improvements */
 *:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #f2b84b;
   outline-offset: 2px;
 }
 

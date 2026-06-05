@@ -2217,7 +2217,7 @@ function CourseCard({
   const demoAccess = getDemoAccess(course);
 
   return (
-    <div className="group relative flex flex-col rounded-xl border border-white/10 bg-[#0b1424] overflow-hidden hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 hover:-translate-y-1 transition-all duration-300">
+    <div className="premium-surface group relative flex flex-col rounded-2xl overflow-hidden hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 hover:-translate-y-1.5 transition-all duration-300">
       {/* Accent top bar */}
       <div
         className="h-1.5 w-full"
@@ -2228,7 +2228,7 @@ function CourseCard({
 
       {/* Hover gradient overlay */}
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background: `radial-gradient(circle at top left, ${course.accentFrom}18, transparent 38%), radial-gradient(circle at bottom right, ${course.accentTo}12, transparent 34%)`,
         }}
@@ -2237,7 +2237,7 @@ function CourseCard({
       {/* Tag */}
       {course.tag && (
         <div
-          className="absolute top-5 right-5 text-[10px] font-bold px-3 py-1.5 rounded-full text-white shadow-lg z-10"
+            className="absolute top-5 right-5 text-[10px] font-black px-3 py-1.5 rounded-full text-white shadow-lg z-10 ring-1 ring-white/20"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
           }}
@@ -2250,7 +2250,7 @@ function CourseCard({
         {/* Icon + badge */}
         <div className="flex items-center gap-3 mb-4 relative z-10">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300"
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md ring-1 ring-white/10 group-hover:scale-105 transition-transform duration-300"
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
               border: `1.5px solid ${course.accentFrom}50`,
@@ -2275,7 +2275,7 @@ function CourseCard({
 
         {/* Title */}
         <h3
-          className="text-xl font-black text-white leading-tight mb-1 relative z-10"
+          className="text-xl font-black text-white leading-tight mb-1 relative z-10 group-hover:text-[#fff8dd]"
           style={{
             fontFamily:
               "'Space Grotesk', system-ui, sans-serif",
@@ -2290,18 +2290,18 @@ function CourseCard({
         {/* Meta pills */}
         <div className="flex flex-wrap gap-2 mb-5">
           {course.duration && (
-            <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.06] border border-white/8 px-2.5 py-1 rounded-full">
+            <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
               <Clock className="w-3 h-3" />
               {course.duration}
             </span>
           )}
           {course.timings && (
-            <span className="flex items-center gap-1 text-xs text-slate-300 bg-[#18c29c]/10 border border-[#18c29c]/20 px-2.5 py-1 rounded-full">
+            <span className="flex items-center gap-1 text-xs text-[#b8fff0] bg-[#18c29c]/12 border border-[#18c29c]/28 px-2.5 py-1 rounded-full shadow-sm shadow-[#18c29c]/10">
               <MonitorPlay className="w-3 h-3" />
               Live
             </span>
           )}
-          <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.06] border border-white/8 px-2.5 py-1 rounded-full">
+          <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
             <BookOpen className="w-3 h-3" />
             {TYPE_LABELS[course.type]}
           </span>
@@ -2314,14 +2314,14 @@ function CourseCard({
               key={h}
               className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-300"
             >
-              <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
+              <Check className="w-3.5 h-3.5 text-emerald-300 mt-0.5 flex-shrink-0 drop-shadow-[0_0_8px_rgba(110,231,183,0.35)]" />
               {h}
             </li>
           ))}
         </ul>
 
         {/* Price */}
-        <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/8 bg-white/[0.045] px-4 py-3">
+        <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/10 bg-gradient-to-r from-white/[0.075] to-white/[0.035] px-4 py-3 shadow-inner shadow-white/5">
           <span
             className="text-3xl font-black text-white"
             style={{
@@ -2364,7 +2364,7 @@ function CourseCard({
           <div className="flex gap-3">
           <button
             onClick={() => onEnroll(course)}
-            className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:shadow-xl hover:scale-105 active:scale-[0.99] transition-all shadow-lg"
+            className="magnetic-button flex-1 py-3 rounded-xl text-sm font-bold text-white hover:shadow-xl active:scale-[0.99] transition-all shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
             }}
@@ -2389,6 +2389,7 @@ function CourseCard({
 // ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [ticker, setTicker] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<
     "all" | CourseType
@@ -2433,6 +2434,27 @@ export default function App() {
       2800,
     );
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress =
+        scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      setScrollProgress(Math.min(100, Math.max(0, nextProgress)));
+    };
+
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateProgress);
+
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+    };
   }, []);
 
   // Lock body scroll when any modal is open
@@ -2707,11 +2729,18 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen bg-background text-foreground overflow-x-hidden"
+      className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-[#f2b84b]/25"
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
       {/* ── Navbar ──────────────────────────────────────────────── */}
-      <nav className="fixed inset-x-0 top-0 z-[70] border-b border-white/10 bg-[#08111f]/90 backdrop-blur-2xl">
+      <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-[#07111f]">
+        <div
+          className="h-full rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_20px_rgba(242,184,75,0.45)] transition-[width] duration-150"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
+      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-white/10 bg-[#07111f]/88 shadow-2xl shadow-black/25 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
             <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
@@ -2735,28 +2764,28 @@ export default function App() {
             </span>
           </div>
 
-          <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
+          <div className="hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.045] p-1 text-sm text-muted-foreground">
             <button
               onClick={() => scrollTo("courses")}
-              className="hover:text-foreground transition-colors"
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
             >
               Courses
             </button>
             <button
               onClick={() => scrollTo("instructor")}
-              className="hover:text-foreground transition-colors"
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
             >
               Instructor
             </button>
             <button
               onClick={() => scrollTo("testimonials")}
-              className="hover:text-foreground transition-colors"
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
             >
               Reviews
             </button>
             <button
               onClick={() => scrollTo("faq")}
-              className="hover:text-foreground transition-colors"
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
             >
               FAQ
             </button>
@@ -2859,7 +2888,7 @@ export default function App() {
         href={TRAINER_WHATSAPP_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="trainer-whatsapp-marquee group fixed left-1/2 top-16 z-[60] block w-full -translate-x-1/2 border-y border-[#f2b84b]/40 bg-gradient-to-r from-[#5b3d07]/95 via-[#d99a18]/95 to-[#fff0a8]/95 text-[#1b1202] shadow-2xl shadow-black/25 backdrop-blur-xl"
+        className="trainer-whatsapp-marquee group fixed left-1/2 top-[4.25rem] z-[60] block w-full -translate-x-1/2 border-y border-[#f2b84b]/40 bg-gradient-to-r from-[#5b3d07]/95 via-[#d99a18]/95 to-[#fff0a8]/95 text-[#1b1202] shadow-2xl shadow-black/25 backdrop-blur-xl"
         aria-label="Ping the trainer personally on WhatsApp for any questions"
       >
         <div className="trainer-whatsapp-marquee__track">
@@ -2903,7 +2932,7 @@ export default function App() {
       <section
         className="relative min-h-screen overflow-hidden bg-[#07111f] pt-32 sm:pt-36"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.98) 0%, rgba(7,17,31,0.9) 42%, rgba(7,17,31,0.54) 70%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
+          backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover, min(50rem, 58vw) auto",
@@ -2920,7 +2949,8 @@ export default function App() {
                 "linear-gradient(to bottom, black 0%, transparent 82%)",
             }}
           />
-          <div className="absolute left-0 top-0 h-full w-full bg-[radial-gradient(ellipse_at_20%_12%,rgba(24,194,156,0.18),transparent_38%),radial-gradient(ellipse_at_82%_78%,rgba(242,184,75,0.12),transparent_34%)]" />
+          <div className="absolute left-0 top-0 h-full w-full bg-[radial-gradient(ellipse_at_20%_12%,rgba(24,194,156,0.2),transparent_38%),radial-gradient(ellipse_at_82%_78%,rgba(242,184,75,0.16),transparent_34%)]" />
+          <div className="absolute right-[5%] top-28 hidden h-64 w-64 rounded-full border border-[#f2b84b]/15 bg-[#f2b84b]/5 blur-3xl lg:block" />
           <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
         </div>
 
@@ -2928,7 +2958,7 @@ export default function App() {
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}
-              className="group mb-7 inline-flex items-center gap-2.5 rounded-full border border-[#18c29c]/35 bg-[#18c29c]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] shadow-lg shadow-[#18c29c]/10 backdrop-blur-md"
+              className="group mb-7 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/35 bg-[#f2b84b]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/10 backdrop-blur-md hover:border-[#f2b84b]/60"
             >
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
@@ -2938,7 +2968,7 @@ export default function App() {
               <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
                 New live batch starts July 1, 2026 at 7.30 AM IST
               </span>
-              <ArrowRight className="h-4 w-4 text-cyan-400 transition-transform group-hover:translate-x-1 group-hover:text-cyan-300" />
+              <ArrowRight className="h-4 w-4 text-[#f2b84b] transition-transform group-hover:translate-x-1" />
             </button>
 
             <h1
@@ -2960,14 +2990,14 @@ export default function App() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => scrollTo("courses")}
-                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/20 hover:scale-[1.02] active:scale-[0.98]"
+                className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25 active:scale-[0.98]"
               >
                 Explore Courses
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
               <button
                 onClick={() => scrollTo("instructor")}
-                className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/18 bg-white/8 px-7 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/50 hover:bg-white/12"
+                className="magnetic-button inline-flex items-center justify-center gap-3 rounded-xl border border-white/18 bg-white/8 px-7 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/50 hover:bg-white/12"
               >
                 <Play className="h-5 w-5 text-[#f2b84b]" />
                 Meet Instructor
@@ -2983,7 +3013,7 @@ export default function App() {
               ].map((item) => (
                 <span
                   key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-3 py-2 backdrop-blur-md"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-2 shadow-lg shadow-black/10 backdrop-blur-md hover:border-[#18c29c]/35"
                 >
                   <CheckCircle2 className="h-4 w-4 text-[#18c29c]" />
                   {item}
@@ -3018,7 +3048,7 @@ export default function App() {
               ].map(({ icon: Ic, val, sub }) => (
                 <div
                   key={sub}
-                  className="rounded-xl border border-white/10 bg-white/[0.075] p-4 backdrop-blur-xl"
+                  className="premium-surface rounded-xl p-4 transition-transform duration-300 hover:-translate-y-1"
                 >
                   <Ic className="mb-3 h-5 w-5 text-[#f2b84b]" />
                   <div
@@ -3037,7 +3067,7 @@ export default function App() {
               ))}
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-[#07111f]/72 p-4 backdrop-blur-xl">
+            <div className="premium-surface rounded-xl p-4">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
@@ -3065,10 +3095,10 @@ export default function App() {
                   { icon: Layers, label: "Dataproc + Spark" },
                   { icon: GitBranch, label: "Composer + CI/CD" },
                 ].map(({ icon: Ic, label }) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-3 rounded-lg border border-white/8 bg-white/[0.055] px-3 py-3"
-                  >
+                    <div
+                      key={label}
+                    className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.065] px-3 py-3 hover:border-[#7cc7ff]/30"
+                    >
                     <Ic className="h-5 w-5 text-[#7cc7ff]" />
                     <span className="text-sm font-semibold text-slate-200">
                       {label}
@@ -3077,7 +3107,7 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-[#18c29c]/20 bg-[#18c29c]/10 px-4 py-3">
+              <div className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-[#18c29c]/25 bg-[#18c29c]/12 px-4 py-3 shadow-lg shadow-[#18c29c]/10">
                 <span className="flex items-center gap-2 text-sm font-semibold text-[#c9fff0]">
                   <Shield className="h-4 w-4" />
                   {TICKER[ticker]}
@@ -3114,7 +3144,7 @@ export default function App() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-6 shadow-lg shadow-[#18c29c]/10">
               <span className="w-2 h-2 rounded-full bg-[#18c29c] animate-pulse" />
               Premium Programs
             </div>
@@ -3138,7 +3168,7 @@ export default function App() {
           </div>
 
           {/* Filter tabs */}
-          <div className="mx-auto mb-12 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] p-2 backdrop-blur-xl">
+          <div className="premium-surface mx-auto mb-12 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
             {FILTERS.map(({ label, value }) => (
               <button
                 key={value}
@@ -3196,7 +3226,7 @@ export default function App() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
+            <span className="inline-flex rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-2 text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
               Your Instructor
             </span>
             <h2
@@ -3209,9 +3239,9 @@ export default function App() {
             </h2>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/[0.055] p-5 sm:p-7 backdrop-blur-xl flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+          <div className="premium-surface rounded-2xl p-5 sm:p-7 flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
-              <div className="relative w-40 h-52 sm:w-52 sm:h-64 rounded-xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
+              <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy — GCP Data Engineering Instructor"
@@ -3262,7 +3292,7 @@ export default function App() {
                 ].map(({ value, label }) => (
                   <div
                     key={label}
-                    className="p-3 sm:p-4 rounded-xl bg-[#07111f]/70 border border-white/10 text-center"
+                      className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3 text-center shadow-lg shadow-black/10 sm:p-4"
                   >
                     <div
                       className="text-xl sm:text-2xl font-black text-[#f2b84b]"
@@ -3292,7 +3322,7 @@ export default function App() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
+            <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#ffe4a3] tracking-widest uppercase">
               Reviews
             </span>
             <h2
@@ -3320,7 +3350,7 @@ export default function App() {
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.name}
-                className="p-6 rounded-xl border border-white/10 bg-white/[0.055] hover:border-[#18c29c]/35 transition-colors backdrop-blur-xl"
+                className="premium-surface rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-[#18c29c]/35"
               >
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -3361,10 +3391,11 @@ export default function App() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────── */}
-      <section id="faq" className="relative py-20 sm:py-28 bg-[#08111f]">
+      <section id="faq" className="relative py-20 sm:py-28 bg-[#08111f] overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
+            <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
               FAQ
             </span>
             <h2
@@ -3381,7 +3412,7 @@ export default function App() {
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className="border border-white/10 bg-white/[0.045] rounded-xl overflow-hidden backdrop-blur-xl"
+                className="premium-surface rounded-xl overflow-hidden"
               >
                 <button
                   className="w-full flex items-center justify-between p-5 text-left hover:bg-white/[0.06] transition-colors"
@@ -3413,7 +3444,7 @@ export default function App() {
 
       {/* ── Footer CTA ──────────────────────────────────────────── */}
       <section className="relative py-20 border-t border-white/10 bg-[#07111f] overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.14),transparent_42%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_80%_30%,rgba(242,184,75,0.12),transparent_32%)]" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <h2
             className="text-3xl sm:text-5xl font-black mb-4 text-white"
@@ -3430,7 +3461,7 @@ export default function App() {
           </p>
           <button
             onClick={() => scrollTo("courses")}
-            className="px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/20"
+            className="magnetic-button px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white font-black text-base active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/25"
           >
             Browse All Courses →
           </button>
