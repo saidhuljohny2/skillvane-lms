@@ -2813,6 +2813,25 @@ export default function App() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2">
+              <a
+                href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
+                aria-label="Join WhatsApp Group"
+              >
+                <MessageCircle className="h-5 w-5 text-[#68f6a4] group-hover:scale-110 transition-transform" />
+              </a>
+              <a
+                href="tel:+917305101711"
+                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
+                aria-label="Call us"
+              >
+                <Phone className="h-5 w-5 text-[#9cf8dd] group-hover:scale-110 transition-transform" />
+              </a>
+            </div>
+
             {currentStudent ? (
               <button
                 onClick={() => setShowDashboard(true)}
@@ -2901,23 +2920,41 @@ export default function App() {
                 </button>
               </>
             )}
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <a
+                href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 px-3 py-3 text-sm font-black text-[#b8ffd0]"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </a>
+              <a
+                href="tel:+917305101711"
+                className="flex items-center justify-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 px-3 py-3 text-sm font-black text-[#9cf8dd]"
+              >
+                <Phone className="h-4 w-4" />
+                Call
+              </a>
+            </div>
           </div>
         )}
       </nav>
 
       {!showDashboard && (
-        <div className="trainer-support-bar fixed left-1/2 top-[4.25rem] z-[60] w-full -translate-x-1/2 border-y border-[#f2b84b]/30 bg-[#07111f]/92 px-3 py-2 shadow-2xl shadow-black/20 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="trainer-support-card fixed bottom-5 right-5 z-50 w-[min(calc(100vw-1.5rem),320px)] rounded-2xl border border-[#f2b84b]/30 bg-[#07111f]/92 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+          <div className="space-y-3">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
                 <MessageCircle className="h-4 w-4 text-[#1b1202]" />
               </span>
               <div className="min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f2b84b]">
                   Trainer Support
                 </p>
-                <p className="truncate text-xs font-bold text-white sm:text-sm">
-                  Questions about courses, access, or enrollment? Message the trainer directly.
+                <p className="mt-1 text-sm font-bold leading-5 text-white">
+                  Questions about courses, access, or enrollment?
                 </p>
               </div>
             </div>
@@ -2926,7 +2963,7 @@ export default function App() {
               href={TRAINER_WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-[#25D366]/20 sm:w-auto"
+              className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-[#25D366]/20"
               aria-label="Message the trainer on WhatsApp"
             >
               WhatsApp Trainer
@@ -2937,31 +2974,9 @@ export default function App() {
       )}
 
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-        {/* WhatsApp Button */}
-        <a
-          href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 hover:bg-[#20BA5A]"
-          aria-label="Join WhatsApp Group"
-        >
-          <MessageCircle className="w-7 h-7 text-white group-hover:scale-110 transition-transform" />
-        </a>
-
-        {/* Call Button */}
-        <a
-          href="tel:+917305101711"
-          className="group w-14 h-14 rounded-full bg-gradient-to-r from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
-          aria-label="Call us"
-        >
-          <Phone className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-        </a>
-      </div>
-
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen overflow-hidden bg-[#07111f] pt-40 sm:pt-36"
+        className="relative min-h-screen overflow-hidden bg-[#07111f] pt-24 sm:pt-28"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
