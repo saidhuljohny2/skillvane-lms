@@ -2457,9 +2457,17 @@ export default function App() {
   ]);
 
   const scrollTo = (id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: "smooth" });
+    const section = document.getElementById(id);
+    if (section) {
+      const fixedTopOffset = 112;
+      window.scrollTo({
+        top:
+          section.getBoundingClientRect().top +
+          window.scrollY -
+          fixedTopOffset,
+        behavior: "smooth",
+      });
+    }
     setMobileOpen(false);
   };
 
@@ -2703,7 +2711,7 @@ export default function App() {
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
       {/* ── Navbar ──────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-40 border-b border-white/10 bg-[#08111f]/82 backdrop-blur-2xl">
+      <nav className="fixed inset-x-0 top-0 z-[70] border-b border-white/10 bg-[#08111f]/90 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
             <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
@@ -2851,25 +2859,25 @@ export default function App() {
         href={TRAINER_WHATSAPP_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="trainer-whatsapp-marquee group fixed bottom-4 left-1/2 z-[60] block w-[min(calc(100%-1rem),980px)] -translate-x-1/2 rounded-full border border-[#25D366]/35 bg-[#041b14]/95 text-white shadow-2xl shadow-black/40 backdrop-blur-xl"
+        className="trainer-whatsapp-marquee group fixed left-1/2 top-16 z-[60] block w-full -translate-x-1/2 border-y border-[#f2b84b]/40 bg-gradient-to-r from-[#5b3d07]/95 via-[#d99a18]/95 to-[#fff0a8]/95 text-[#1b1202] shadow-2xl shadow-black/25 backdrop-blur-xl"
         aria-label="Ping the trainer personally on WhatsApp for any questions"
       >
         <div className="trainer-whatsapp-marquee__track">
-          <span className="trainer-whatsapp-marquee__item inline-flex h-12 items-center gap-3 whitespace-nowrap px-6 text-xs font-black uppercase tracking-[0.14em] text-[#dfffee] sm:px-8 sm:text-sm">
-            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/25">
+          <span className="trainer-whatsapp-marquee__item inline-flex h-12 items-center gap-3 whitespace-nowrap px-6 text-xs font-black uppercase tracking-[0.14em] text-[#fff7d0] drop-shadow-sm sm:px-8 sm:text-sm">
+            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#3b2a02]/25 ring-2 ring-white/35">
               <MessageCircle className="h-4 w-4 text-white" />
             </span>
             Ping the trainer personally on WhatsApp for any questions
-            <span className="rounded-full border border-[#25D366]/35 bg-[#25D366]/12 px-3 py-1 text-[10px] tracking-[0.12em] text-[#9dffc8]">
+            <span className="rounded-full border border-white/45 bg-white/20 px-3 py-1 text-[10px] tracking-[0.12em] text-white shadow-sm">
               Quick Support
             </span>
-            <ArrowRight className="h-4 w-4 flex-shrink-0 text-[#f2b84b] transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="h-4 w-4 flex-shrink-0 text-white transition-transform group-hover:translate-x-1" />
           </span>
         </div>
       </a>
 
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
-      <div className="fixed bottom-24 right-6 z-50 flex flex-col gap-3">
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         {/* WhatsApp Button */}
         <a
           href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
@@ -2893,7 +2901,7 @@ export default function App() {
 
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[#07111f] pt-16 sm:pt-20"
+        className="relative min-h-screen overflow-hidden bg-[#07111f] pt-32 sm:pt-36"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.98) 0%, rgba(7,17,31,0.9) 42%, rgba(7,17,31,0.54) 70%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
@@ -2916,7 +2924,7 @@ export default function App() {
           <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-8rem)] flex flex-col justify-center py-14 sm:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-9rem)] flex flex-col justify-center py-14 sm:py-20">
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}

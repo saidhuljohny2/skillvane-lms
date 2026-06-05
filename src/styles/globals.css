@@ -3,6 +3,7 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 7rem;
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -191,12 +192,12 @@ html {
 
 .trainer-whatsapp-marquee::before {
   left: 0;
-  background: linear-gradient(90deg, #041b14 0%, rgba(4, 27, 20, 0) 100%);
+  background: linear-gradient(90deg, #5b3d07 0%, rgba(91, 61, 7, 0) 100%);
 }
 
 .trainer-whatsapp-marquee::after {
   right: 0;
-  background: linear-gradient(270deg, #041b14 0%, rgba(4, 27, 20, 0) 100%);
+  background: linear-gradient(270deg, #fff0a8 0%, rgba(255, 240, 168, 0) 100%);
 }
 
 .trainer-whatsapp-marquee__track {
