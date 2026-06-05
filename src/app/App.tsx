@@ -1260,7 +1260,7 @@ function LoginModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
         className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={onClose}
@@ -1453,26 +1453,26 @@ function StudentDashboard({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
         className="absolute inset-0 bg-[#020817]/86 backdrop-blur-xl"
         onClick={onClose}
       />
-      <div className="premium-ring relative w-full sm:max-w-6xl max-h-[94dvh] sm:max-h-[90vh] flex flex-col bg-[#07111f]/95 rounded-t-2xl sm:rounded-3xl border border-white/12 shadow-2xl overflow-hidden">
+      <div className="premium-ring relative w-full sm:max-w-6xl h-[96dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-[#07111f]/95 rounded-t-2xl sm:rounded-3xl border border-white/12 shadow-2xl overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(24,194,156,0.22),transparent_34%),radial-gradient(ellipse_at_92%_20%,rgba(242,184,75,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_26%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f2b84b]/70 to-transparent" />
 
-        <div className="relative px-5 sm:px-7 py-5 flex items-center justify-between border-b border-white/10 bg-white/[0.035] backdrop-blur-xl">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] flex items-center justify-center shadow-lg shadow-[#18c29c]/25 ring-1 ring-white/20">
+        <div className="sticky top-0 z-20 px-5 sm:px-7 py-4 sm:py-5 flex items-center justify-between border-b border-white/10 bg-[#07111f]/92 backdrop-blur-xl">
+          <div className="min-w-0 flex items-center gap-3">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] flex items-center justify-center shadow-lg shadow-[#18c29c]/25 ring-1 ring-white/20 flex-shrink-0">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8df5d7]">
                 SkillVane LMS
               </p>
               <h2
-                className="font-black text-white text-lg sm:text-xl"
+                className="truncate font-black text-white text-base sm:text-xl"
                 style={{
                   fontFamily:
                     "'Space Grotesk', system-ui, sans-serif",
@@ -1482,7 +1482,7 @@ function StudentDashboard({
               </h2>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-shrink-0 items-center gap-2">
             <button
               onClick={onLogout}
               className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/12 bg-white/[0.04] text-slate-300 hover:text-white hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
