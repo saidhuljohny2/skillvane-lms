@@ -3202,9 +3202,6 @@ export default function App() {
               }}
             >
               Pick your GCP learning path.
-              <span className="block bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
-                Live, recorded, or project based.
-              </span>
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
               Choose the format that fits your schedule and career goals.
