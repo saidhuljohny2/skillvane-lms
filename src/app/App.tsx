@@ -3201,15 +3201,13 @@ export default function App() {
                   "'Space Grotesk', system-ui, sans-serif",
               }}
             >
-              Choose the path that moves your career forward.
+              Pick your GCP learning path.
               <span className="block bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
                 Live, recorded, or project based.
               </span>
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              From live batches to self-paced
-              recordings and hands-on project courses — pick
-              what fits your schedule and career goals.
+              Choose the format that fits your schedule and career goals.
             </p>
           </div>
 
