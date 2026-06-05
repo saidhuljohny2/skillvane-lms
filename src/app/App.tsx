@@ -1455,23 +1455,24 @@ function StudentDashboard({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#020817]/86 backdrop-blur-xl"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-6xl max-h-[94dvh] sm:max-h-[90vh] flex flex-col bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(24,194,156,0.18),transparent_34%),radial-gradient(ellipse_at_92%_20%,rgba(242,184,75,0.12),transparent_28%)]" />
+      <div className="premium-ring relative w-full sm:max-w-6xl max-h-[94dvh] sm:max-h-[90vh] flex flex-col bg-[#07111f]/95 rounded-t-2xl sm:rounded-3xl border border-white/12 shadow-2xl overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(24,194,156,0.22),transparent_34%),radial-gradient(ellipse_at_92%_20%,rgba(242,184,75,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_26%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f2b84b]/70 to-transparent" />
 
-        <div className="relative px-5 sm:px-7 py-5 flex items-center justify-between border-b border-white/10">
+        <div className="relative px-5 sm:px-7 py-5 flex items-center justify-between border-b border-white/10 bg-white/[0.035] backdrop-blur-xl">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] flex items-center justify-center shadow-lg shadow-[#18c29c]/25 ring-1 ring-white/20">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
-                Student Portal
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8df5d7]">
+                SkillVane LMS
               </p>
               <h2
-                className="font-black text-white text-xl"
+                className="font-black text-white text-lg sm:text-xl"
                 style={{
                   fontFamily:
                     "'Space Grotesk', system-ui, sans-serif",
@@ -1484,23 +1485,27 @@ function StudentDashboard({
           <div className="flex items-center gap-2">
             <button
               onClick={onLogout}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg border border-white/12 text-slate-300 hover:text-white hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/12 bg-white/[0.04] text-slate-300 hover:text-white hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
             >
               <LogOut className="w-4 h-4" />
               Logout
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="relative overflow-y-auto flex-1 px-5 sm:px-7 py-6 space-y-8">
+        <div className="relative overflow-y-auto flex-1 px-5 sm:px-7 py-6 space-y-8 lms-dashboard-scroll">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5">
-            <div className="rounded-xl border border-white/10 bg-white/[0.06] p-5 sm:p-6 backdrop-blur-xl">
+            <div className="premium-surface rounded-2xl p-5 sm:p-6">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Access center
+              </div>
               <h3
                 className="text-2xl sm:text-3xl font-black text-white"
                 style={{
@@ -1513,6 +1518,13 @@ function StudentDashboard({
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
                 Access enrolled courses, request Google Drive access for your registered email, and add the next program to your SkillVane roadmap.
               </p>
+              <div className="mt-4 rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe4a3]">
+                Drive invitations are sent to{" "}
+                <span className="font-black text-white">
+                  {student.email}
+                </span>
+                . Please check your inbox after requesting access.
+              </div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
                   onClick={() =>
@@ -1520,14 +1532,14 @@ function StudentDashboard({
                       .getElementById("student-available-courses")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
+                  className="magnetic-button inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   Enroll New Course
                 </button>
                 <button
                   onClick={onClose}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 hover:border-[#f2b84b]/40"
+                  className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 hover:border-[#f2b84b]/40"
                 >
                   <ArrowRight className="w-4 h-4" />
                   Back to Website
@@ -1537,14 +1549,15 @@ function StudentDashboard({
 
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: "Owned", value: enrolledCourses.length },
-                { label: "Available", value: availableCourses.length },
-                { label: "Total", value: courses.length },
+                { label: "Owned", value: enrolledCourses.length, icon: Award },
+                { label: "Available", value: availableCourses.length, icon: ShoppingCart },
+                { label: "Total", value: courses.length, icon: BookOpen },
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl"
+                  className="premium-surface rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
                 >
+                  <item.icon className="mb-3 h-4 w-4 text-[#f2b84b]" />
                   <div
                     className="text-3xl font-black text-white"
                     style={{
@@ -1565,21 +1578,21 @@ function StudentDashboard({
           <section>
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8df5d7]">
                   Course Access
                 </p>
                 <h3 className="mt-1 text-xl font-black text-white">
                   Enrolled Courses
                 </h3>
               </div>
-              <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-bold text-slate-300">
+              <span className="rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-xs font-black text-[#9cf8dd]">
                 {enrolledCourses.length} active
               </span>
             </div>
 
             {enrolledCourses.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-white/14 bg-white/[0.04] px-5 py-10 text-center">
-                <BookOpen className="mx-auto mb-3 h-9 w-9 text-[#f2b84b]" />
+              <div className="premium-surface rounded-2xl border-dashed px-5 py-10 text-center">
+                <BookOpen className="mx-auto mb-3 h-10 w-10 text-[#f2b84b]" />
                 <p className="font-bold text-white">No enrolled courses yet</p>
                 <p className="mt-1 text-sm text-slate-400">
                   Pick a program below and complete enrollment to unlock access.
@@ -1596,11 +1609,11 @@ function StudentDashboard({
                   return (
                     <div
                       key={course.id}
-                      className="rounded-xl border border-white/10 bg-[#0b1424] p-5"
+                      className="premium-surface rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-1"
                     >
                       <div className="flex items-start gap-3">
                         <div
-                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg ring-1 ring-white/10"
                           style={{
                             background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
                             border: `1px solid ${course.accentFrom}50`,
@@ -1622,7 +1635,7 @@ function StudentDashboard({
                           >
                             {course.badge}
                           </span>
-                          <h4 className="mt-2 text-lg font-black text-white">
+                          <h4 className="mt-2 text-lg font-black text-white leading-tight">
                             {course.title}
                           </h4>
                           <p className="text-xs text-slate-400">
@@ -1633,12 +1646,12 @@ function StudentDashboard({
 
                       <div className="mt-4 flex flex-wrap gap-2">
                         {course.duration && (
-                          <span className="flex items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-slate-300">
+                          <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.07] px-2.5 py-1 text-xs text-slate-300">
                             <Clock className="w-3 h-3" />
                             {course.duration}
                           </span>
                         )}
-                        <span className="flex items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-slate-300">
+                        <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.07] px-2.5 py-1 text-xs text-slate-300">
                           <BookOpen className="w-3 h-3" />
                           {TYPE_LABELS[course.type]}
                         </span>
@@ -1649,13 +1662,13 @@ function StudentDashboard({
                           href={courseAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
+                          className="magnetic-button mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
                         >
                           <courseAccess.icon className="h-4 w-4" />
                           {courseAccess.label}
                         </a>
                       ) : (
-                        <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-400">
+                        <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-slate-300">
                           Course materials and recordings are shared through
                           Google Drive after access is enabled for your email.
                         </div>
@@ -1665,13 +1678,17 @@ function StudentDashboard({
                         href={driveAccessRequestHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/15 transition-all hover:brightness-110"
+                        className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20 transition-all"
                       >
                         <Mail className="h-4 w-4" />
                         Ask Admin for Drive Access
                       </a>
 
-                      <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe1a3]">
+                      <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.035] px-4 py-3 text-xs leading-5 text-[#ffe1a3]">
+                        <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-[0.12em] text-[#f2b84b]">
+                          <Clock className="h-3.5 w-3.5" />
+                          24 hour access window
+                        </div>
                         Access will be provided to{" "}
                         <span className="font-black text-white">
                           {student.email}
@@ -1680,17 +1697,6 @@ function StudentDashboard({
                         Google Drive invitation.
                       </div>
 
-                      {course.notesLink && (
-                        <a
-                          href={course.notesLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] hover:border-[#f2b84b]/55 hover:bg-[#f2b84b]/16 transition-all"
-                        >
-                          <FileText className="h-4 w-4" />
-                          Access Notes
-                        </a>
-                      )}
                     </div>
                   );
                 })}
@@ -1699,17 +1705,22 @@ function StudentDashboard({
           </section>
 
           <section id="student-available-courses">
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f2b84b]">
-                Grow Next
-              </p>
-              <h3 className="mt-1 text-xl font-black text-white">
-                Enroll New Courses
-              </h3>
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2b84b]">
+                  Grow Next
+                </p>
+                <h3 className="mt-1 text-xl font-black text-white">
+                  Enroll New Courses
+                </h3>
+              </div>
+              <span className="w-fit rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-3 py-1 text-xs font-black text-[#ffe4a3]">
+                {availableCourses.length} options
+              </span>
             </div>
 
             {availableCourses.length === 0 ? (
-              <div className="rounded-xl border border-white/10 bg-white/[0.05] p-5 text-sm text-slate-300">
+              <div className="premium-surface rounded-2xl p-5 text-sm text-slate-300">
                 You are enrolled in every available course.
               </div>
             ) : (
@@ -1720,11 +1731,11 @@ function StudentDashboard({
                   return (
                     <div
                       key={course.id}
-                      className="rounded-xl border border-white/10 bg-white/[0.055] p-4 backdrop-blur-xl"
+                      className="premium-surface rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
                     >
                       <div className="flex items-start gap-3">
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg ring-1 ring-white/10"
                           style={{
                             background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
                           }}
@@ -1734,7 +1745,17 @@ function StudentDashboard({
                             style={{ color: course.accentFrom }}
                           />
                         </div>
-                        <div>
+                        <div className="min-w-0">
+                          <span
+                            className="mb-2 inline-flex rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em]"
+                            style={{
+                              color: course.accentFrom,
+                              borderColor: `${course.accentFrom}45`,
+                              background: `${course.accentFrom}12`,
+                            }}
+                          >
+                            {course.badge}
+                          </span>
                           <h4 className="font-black text-white leading-tight">
                             {course.title}
                           </h4>
@@ -1757,7 +1778,7 @@ function StudentDashboard({
                         </div>
                         <button
                           onClick={() => onEnroll(course)}
-                          className="rounded-lg bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-2 text-sm font-black text-white shadow-lg shadow-[#18c29c]/15"
+                          className="magnetic-button rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-4 py-2 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
                         >
                           Enroll
                         </button>
@@ -1768,7 +1789,7 @@ function StudentDashboard({
                           href={demoAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-slate-300 hover:text-white"
+                          className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2 text-xs font-bold text-slate-300 hover:border-[#18c29c]/30 hover:text-white"
                         >
                           <demoAccess.icon className="w-3.5 h-3.5" />
                           {demoAccess.longLabel}
@@ -2884,26 +2905,36 @@ export default function App() {
         )}
       </nav>
 
-      <a
-        href={TRAINER_WHATSAPP_LINK}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="trainer-whatsapp-marquee group fixed left-1/2 top-[4.25rem] z-[60] block w-full -translate-x-1/2 border-y border-[#f2b84b]/40 bg-gradient-to-r from-[#5b3d07]/95 via-[#d99a18]/95 to-[#fff0a8]/95 text-[#1b1202] shadow-2xl shadow-black/25 backdrop-blur-xl"
-        aria-label="Ping the trainer personally on WhatsApp for any questions"
-      >
-        <div className="trainer-whatsapp-marquee__track">
-          <span className="trainer-whatsapp-marquee__item inline-flex h-12 items-center gap-3 whitespace-nowrap px-6 text-xs font-black uppercase tracking-[0.14em] text-[#fff7d0] drop-shadow-sm sm:px-8 sm:text-sm">
-            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#3b2a02]/25 ring-2 ring-white/35">
-              <MessageCircle className="h-4 w-4 text-white" />
-            </span>
-            Ping the trainer personally on WhatsApp for any questions
-            <span className="rounded-full border border-white/45 bg-white/20 px-3 py-1 text-[10px] tracking-[0.12em] text-white shadow-sm">
-              Quick Support
-            </span>
-            <ArrowRight className="h-4 w-4 flex-shrink-0 text-white transition-transform group-hover:translate-x-1" />
-          </span>
+      {!showDashboard && (
+        <div className="trainer-support-bar fixed left-1/2 top-[4.25rem] z-[60] w-full -translate-x-1/2 border-y border-[#f2b84b]/30 bg-[#07111f]/92 px-3 py-2 shadow-2xl shadow-black/20 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
+                <MessageCircle className="h-4 w-4 text-[#1b1202]" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f2b84b]">
+                  Trainer Support
+                </p>
+                <p className="truncate text-xs font-bold text-white sm:text-sm">
+                  Questions about courses, access, or enrollment? Message the trainer directly.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={TRAINER_WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-[#25D366]/20 sm:w-auto"
+              aria-label="Message the trainer on WhatsApp"
+            >
+              WhatsApp Trainer
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
         </div>
-      </a>
+      )}
 
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
@@ -2930,7 +2961,7 @@ export default function App() {
 
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen overflow-hidden bg-[#07111f] pt-32 sm:pt-36"
+        className="relative min-h-screen overflow-hidden bg-[#07111f] pt-40 sm:pt-36"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
