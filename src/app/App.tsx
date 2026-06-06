@@ -675,6 +675,9 @@ const TICKER = [
   "Vijay from Kolkata just enrolled",
 ];
 
+const FREE_LEARNING_PLAYLIST_URL =
+  "https://www.youtube.com/playlist?list=PLk8wwChOsCPzoZHuQEiJqWVvhHFdFa6sy";
+
 const TESTIMONIALS = [
   {
     name: "Arjun Sharma",
@@ -1584,6 +1587,36 @@ function StudentDashboard({
               ))}
             </div>
           </div>
+
+          <section className="premium-surface rounded-2xl p-4 sm:p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/15 shadow-lg shadow-red-500/10">
+                  <Youtube className="h-6 w-6 text-red-200" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-red-200">
+                    Free Learning Library
+                  </p>
+                  <h3 className="mt-1 text-lg font-black text-white">
+                    Free GCP Data Engineering Playlist
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-400">
+                    Watch extra lessons anytime from your dashboard.
+                  </p>
+                </div>
+              </div>
+              <a
+                href={FREE_LEARNING_PLAYLIST_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-red-500/20 transition-all hover:bg-red-400"
+              >
+                <Play className="h-4 w-4 fill-white" />
+                Play Lessons
+              </a>
+            </div>
+          </section>
 
           <section>
             <div className="mb-3 flex items-end justify-between gap-4">
@@ -2907,6 +2940,12 @@ export default function App() {
               Courses
             </button>
             <button
+              onClick={() => scrollTo("free-learning")}
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
+            >
+              Free Lessons
+            </button>
+            <button
               onClick={() => scrollTo("instructor")}
               className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
             >
@@ -3007,6 +3046,7 @@ export default function App() {
           <div className="md:hidden bg-[#0b1524] border-t border-white/10 px-4 py-4 flex flex-col gap-1">
             {[
               "courses",
+              "free-learning",
               "instructor",
               "testimonials",
               "faq",
@@ -3018,6 +3058,8 @@ export default function App() {
               >
                 {s === "faq"
                   ? "FAQ"
+                  : s === "free-learning"
+                    ? "Free Lessons"
                   : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
@@ -3422,6 +3464,72 @@ export default function App() {
       </section>
 
       {/* ── Instructor ──────────────────────────────────────────── */}
+      <section
+        id="free-learning"
+        className="relative overflow-hidden border-y border-white/10 bg-[#08111f] py-12 sm:py-16"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_10%,rgba(239,68,68,0.14),transparent_30%),radial-gradient(ellipse_at_82%_70%,rgba(24,194,156,0.12),transparent_34%)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-red-400/25 bg-red-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-red-200">
+              <Youtube className="h-4 w-4" />
+              Free Learning
+            </span>
+            <h2
+              className="mt-4 max-w-2xl text-3xl font-black leading-tight text-white sm:text-4xl"
+              style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+            >
+              Start learning GCP Data Engineering for free.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+              Watch the SkillVane free playlist first, then choose a live or self-paced path when you are ready.
+            </p>
+          </div>
+
+          <div className="premium-surface rounded-2xl p-4 sm:p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-4">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-red-400/25 bg-red-500/15 shadow-xl shadow-red-500/10">
+                  <Play className="h-7 w-7 fill-red-200 text-red-200" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                    YouTube Playlist
+                  </p>
+                  <h3 className="mt-1 text-xl font-black text-white">
+                    Free GCP Data Engineering Lessons
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-400">
+                    Beginner-friendly lessons from SkillVane.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:w-52">
+                <a
+                  href={FREE_LEARNING_PLAYLIST_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-black text-white shadow-xl shadow-red-500/20 transition-all hover:bg-red-400"
+                >
+                  <Youtube className="h-4 w-4" />
+                  Play Playlist
+                </a>
+                <a
+                  href="https://www.youtube.com/@SkillVane1711"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 transition-all hover:border-red-400/35 hover:text-white"
+                >
+                  Visit Channel
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section
         id="instructor"
         className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden"
