@@ -1505,10 +1505,10 @@ function StudentDashboard({
           </div>
         </div>
 
-        <div className="relative overflow-y-auto flex-1 px-5 sm:px-7 py-6 space-y-8 lms-dashboard-scroll">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5">
-            <div className="premium-surface rounded-2xl p-5 sm:p-6">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
+        <div className="relative overflow-y-auto flex-1 px-4 py-4 sm:px-6 sm:py-5 space-y-6 lms-dashboard-scroll">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-4">
+            <div className="premium-surface rounded-2xl p-4 sm:p-5">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Access center
               </div>
@@ -1521,17 +1521,17 @@ function StudentDashboard({
               >
                 Your learning command center
               </h3>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
                 Access enrolled courses, request Google Drive access for your registered email, and add the next program to your SkillVane roadmap.
               </p>
-              <div className="mt-4 rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe4a3]">
+              <div className="mt-3 rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe4a3]">
                 Drive invitations are sent to{" "}
                 <span className="font-black text-white">
                   {student.email}
                 </span>
                 . Please check your inbox after requesting access.
               </div>
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 <button
                   onClick={() =>
                     document
@@ -1553,7 +1553,7 @@ function StudentDashboard({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[
                 { label: "Owned", value: enrolledCourses.length, icon: Award },
                 { label: "Available", value: availableCourses.length, icon: ShoppingCart },
@@ -1561,7 +1561,7 @@ function StudentDashboard({
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="premium-surface rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
+                  className="premium-surface rounded-2xl p-3 sm:p-4 transition-transform duration-300 hover:-translate-y-1"
                 >
                   <item.icon className="mb-3 h-4 w-4 text-[#f2b84b]" />
                   <div
@@ -1582,7 +1582,7 @@ function StudentDashboard({
           </div>
 
           <section>
-            <div className="mb-4 flex items-end justify-between gap-4">
+            <div className="mb-3 flex items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8df5d7]">
                   Course Access
@@ -1605,7 +1605,7 @@ function StudentDashboard({
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {enrolledCourses.map((course) => {
                   const Icon = course.icon;
                   const courseAccess =
@@ -1615,7 +1615,7 @@ function StudentDashboard({
                   return (
                     <div
                       key={course.id}
-                      className="premium-surface rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-1"
+                      className="premium-surface rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
                     >
                       <div className="flex items-start gap-3">
                         <div
@@ -1650,7 +1650,7 @@ function StudentDashboard({
                         </div>
                       </div>
 
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         {course.duration && (
                           <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.07] px-2.5 py-1 text-xs text-slate-300">
                             <Clock className="w-3 h-3" />
@@ -1668,13 +1668,13 @@ function StudentDashboard({
                           href={courseAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="magnetic-button mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
+                          className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
                         >
                           <courseAccess.icon className="h-4 w-4" />
                           {courseAccess.label}
                         </a>
                       ) : (
-                        <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-slate-300">
+                        <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-slate-300">
                           Course materials and recordings are shared through
                           Google Drive after access is enabled for your email.
                         </div>
@@ -1690,7 +1690,7 @@ function StudentDashboard({
                         Ask Admin for Drive Access
                       </a>
 
-                      <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.035] px-4 py-3 text-xs leading-5 text-[#ffe1a3]">
+                      <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.035] px-4 py-2.5 text-xs leading-5 text-[#ffe1a3]">
                         <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-[0.12em] text-[#f2b84b]">
                           <Clock className="h-3.5 w-3.5" />
                           24 hour access window
@@ -1711,7 +1711,7 @@ function StudentDashboard({
           </section>
 
           <section id="student-available-courses">
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2b84b]">
                   Grow Next
@@ -1730,14 +1730,14 @@ function StudentDashboard({
                 You are enrolled in every available course.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                 {availableCourses.map((course) => {
                   const Icon = course.icon;
                   const demoAccess = getDemoAccess(course);
                   return (
                     <div
                       key={course.id}
-                      className="premium-surface rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
+                      className="premium-surface rounded-2xl p-3.5 sm:p-4 transition-transform duration-300 hover:-translate-y-1"
                     >
                       <div className="flex items-start gap-3">
                         <div
@@ -3027,7 +3027,7 @@ export default function App() {
       {/* ── Floating Contact Buttons ─────────────────────────────── */}
       {/* ── Hero ────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen overflow-hidden bg-[#07111f] pt-24 sm:pt-28"
+        className="relative min-h-[88svh] overflow-hidden bg-[#07111f] pt-20 sm:pt-24"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
@@ -3051,11 +3051,11 @@ export default function App() {
           <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-9rem)] flex flex-col justify-center py-14 sm:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(88svh-6rem)] flex flex-col justify-center py-10 sm:py-14">
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}
-              className="group mb-7 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/35 bg-[#f2b84b]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/10 backdrop-blur-md hover:border-[#f2b84b]/60"
+              className="group mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/35 bg-[#f2b84b]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/10 backdrop-blur-md hover:border-[#f2b84b]/60"
             >
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
@@ -3080,11 +3080,11 @@ export default function App() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-xl">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
               At SkillVane, we offer industry-focused Google Cloud Data Engineering training through live classes, hands-on projects, real-world case studies, and dedicated career support to help you become job-ready.
             </p>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => scrollTo("courses")}
                 className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25 active:scale-[0.98]"
@@ -3101,7 +3101,7 @@ export default function App() {
               </button>
             </div>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+            <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-300">
               {[
                 "Daily live sessions",
                 "Recordings shared",
@@ -3119,12 +3119,12 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mt-12 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="mt-8 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 {
                   icon: Users,
-                  val: "1500+",
+                  val: "2500+",
                   sub: "Learners",
                 },
                 {
@@ -3224,7 +3224,7 @@ export default function App() {
       {/* ── Courses ─────────────────────────────────────────────── */}
       <section
         id="courses"
-        className="relative py-20 sm:py-28 bg-[#07111f] overflow-hidden"
+        className="relative py-14 sm:py-20 bg-[#07111f] overflow-hidden"
       >
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_15%_10%,rgba(24,194,156,0.14),transparent_36%),radial-gradient(ellipse_at_88%_30%,rgba(242,184,75,0.1),transparent_30%)]" />
@@ -3240,13 +3240,13 @@ export default function App() {
         <div className="pointer-events-none absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#f2b84b]/40 to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-6 shadow-lg shadow-[#18c29c]/10">
+          <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-4 shadow-lg shadow-[#18c29c]/10">
               <span className="w-2 h-2 rounded-full bg-[#18c29c] animate-pulse" />
               Premium Programs
             </div>
             <h2
-              className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-white"
+              className="text-3xl sm:text-5xl font-black mb-4 text-white"
               style={{
                 fontFamily:
                   "'Space Grotesk', system-ui, sans-serif",
@@ -3254,13 +3254,13 @@ export default function App() {
             >
               Pick your GCP learning path.
             </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
               Choose the format that fits your schedule and career goals.
             </p>
           </div>
 
           {/* Category tabs */}
-          <div className="premium-surface mx-auto mb-12 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
+          <div className="premium-surface mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
@@ -3323,16 +3323,16 @@ export default function App() {
       {/* ── Instructor ──────────────────────────────────────────── */}
       <section
         id="instructor"
-        className="relative py-20 sm:py-28 bg-[#08111f] overflow-hidden"
+        className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <span className="inline-flex rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-2 text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
               Your Instructor
             </span>
             <h2
-              className="text-3xl sm:text-4xl font-black mt-2 text-white"
+              className="text-3xl sm:text-4xl font-black mt-3 text-white"
               style={{
                 fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
@@ -3341,7 +3341,7 @@ export default function App() {
             </h2>
           </div>
 
-          <div className="premium-surface rounded-2xl p-5 sm:p-7 flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+          <div className="premium-surface rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row gap-6 md:gap-9 items-center md:items-start">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
               <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
@@ -3369,10 +3369,10 @@ export default function App() {
               >
                 Shaik Saidhul
               </h3>
-              <p className="text-[#8df5d7] font-semibold text-sm mb-5">
+              <p className="text-[#8df5d7] font-semibold text-sm mb-4">
                 Solution Architect · SkillVane IT Academy
               </p>
-              <p className="text-slate-300 text-sm leading-relaxed mb-8 max-w-xl">
+              <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xl">
                 With over 9+ years of hands-on experience
                 designing large-scale data pipelines on Google
                 Cloud Platform, your instructor has architected
@@ -3387,9 +3387,9 @@ export default function App() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { value: "8+", label: "Years on GCP" },
-                  { value: "500+", label: "Students Trained" },
-                  { value: "4", label: "GCP Certifications" },
+                  { value: "9+", label: "Years on GCP" },
+                  { value: "2500+", label: "Students Trained" },
+                  { value: "5", label: "GCP Certifications" },
                   { value: "30+", label: "Live Projects" },
                 ].map(({ value, label }) => (
                   <div
@@ -3419,11 +3419,11 @@ export default function App() {
       {/* ── Testimonials ────────────────────────────────────────── */}
       <section
         id="testimonials"
-        className="relative py-20 sm:py-28 bg-[#07111f] border-y border-white/10 overflow-hidden"
+        className="relative py-14 sm:py-20 bg-[#07111f] border-y border-white/10 overflow-hidden"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#ffe4a3] tracking-widest uppercase">
               Reviews
             </span>
@@ -3493,10 +3493,10 @@ export default function App() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────── */}
-      <section id="faq" className="relative py-20 sm:py-28 bg-[#08111f] overflow-hidden">
+      <section id="faq" className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
               FAQ
             </span>
@@ -3545,7 +3545,7 @@ export default function App() {
       </section>
 
       {/* ── Footer CTA ──────────────────────────────────────────── */}
-      <section className="relative py-20 border-t border-white/10 bg-[#07111f] overflow-hidden">
+      <section className="relative py-14 sm:py-16 border-t border-white/10 bg-[#07111f] overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_80%_30%,rgba(242,184,75,0.12),transparent_32%)]" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <h2
