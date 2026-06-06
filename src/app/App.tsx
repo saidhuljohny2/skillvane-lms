@@ -38,6 +38,9 @@ import {
   LogOut,
   GraduationCap,
   Lock,
+  Youtube,
+  Send,
+  Linkedin,
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────
@@ -2873,6 +2876,24 @@ export default function App() {
           <div className="hidden md:flex items-center gap-3">
             <div className="hidden lg:flex items-center gap-2">
               <a
+                href="https://www.youtube.com/@SkillVane1711"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/12 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
+                aria-label="SkillVane YouTube"
+              >
+                <Youtube className="h-5 w-5 text-red-300 group-hover:scale-110 transition-transform" />
+              </a>
+              <a
+                href="https://t.me/gcpdataengineering"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
+                aria-label="Join Telegram"
+              >
+                <Send className="h-5 w-5 text-[#7cc7ff] group-hover:scale-110 transition-transform" />
+              </a>
+              <a
                 href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -2979,6 +3000,24 @@ export default function App() {
               </>
             )}
             <div className="mt-3 grid grid-cols-2 gap-2">
+              <a
+                href="https://www.youtube.com/@SkillVane1711"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-red-400/25 bg-red-500/12 px-3 py-3 text-sm font-black text-red-200"
+              >
+                <Youtube className="h-4 w-4" />
+                YouTube
+              </a>
+              <a
+                href="https://t.me/gcpdataengineering"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-3 py-3 text-sm font-black text-[#bfe3ff]"
+              >
+                <Send className="h-4 w-4" />
+                Telegram
+              </a>
               <a
                 href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
                 target="_blank"
@@ -3603,24 +3642,33 @@ export default function App() {
             © {new Date().getFullYear()} SkillVane IT Academy.
             All rights reserved.
           </span>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <a
-              href="#"
-              className="hover:text-white transition-colors"
+              href="https://www.linkedin.com/in/shaik-saidhul-1286ab146"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#2f80ed]/25 bg-[#2f80ed]/10 px-3 py-1.5 text-[#bfe3ff] hover:border-[#7cc7ff]/45 hover:text-white transition-colors"
             >
-              Privacy Policy
+              <Linkedin className="h-3.5 w-3.5" />
+              LinkedIn
             </a>
             <a
-              href="#"
-              className="hover:text-white transition-colors"
+              href="https://www.youtube.com/@SkillVane1711"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-red-200 hover:border-red-400/45 hover:text-white transition-colors"
             >
-              Terms
+              <Youtube className="h-3.5 w-3.5" />
+              YouTube
             </a>
             <a
-              href="#"
-              className="hover:text-white transition-colors"
+              href="https://t.me/gcpdataengineering"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#18c29c]/20 bg-[#18c29c]/10 px-3 py-1.5 text-[#9cf8dd] hover:border-[#18c29c]/45 hover:text-white transition-colors"
             >
-              Contact
+              <Send className="h-3.5 w-3.5" />
+              Telegram
             </a>
           </div>
         </div>
