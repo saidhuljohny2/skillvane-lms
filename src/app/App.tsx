@@ -61,7 +61,7 @@ const TRAINER_WHATSAPP_LINK =
 // COURSE DATA — Add a new course here and it appears on the site
 // ─────────────────────────────────────────────────────────────────
 type CourseType = "live" | "recording" | "course" | "project";
-type CourseCategory = "live-batch" | "self-paced";
+type CourseCategory = "all" | "live-batch" | "self-paced";
 
 interface Course {
   id: string;
@@ -484,7 +484,7 @@ const COURSES: Course[] = [
     accentTo: "#10b981",
     title: "Python for Data Engineering",
     subtitle: "Hands-On Foundation Course",
-    price: 599,
+    price: 2,
     originalPrice: 2000,
     highlights: [
       "Python fundamentals for data engineers",
@@ -711,6 +711,7 @@ const TYPE_LABELS: Record<CourseType, string> = {
 };
 
 const CATEGORY_LABELS: Record<CourseCategory, string> = {
+  all: "All",
   "live-batch": "Live Batch",
   "self-paced": "Self-paced",
 };
@@ -2458,7 +2459,7 @@ export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] =
-    useState<CourseCategory>("live-batch");
+    useState<CourseCategory>("all");
   const [modalCourse, setModalCourse] = useState<Course | null>(
     null,
   );
@@ -2759,6 +2760,11 @@ export default function App() {
     icon: React.ElementType;
   }[] = [
     {
+      label: "All",
+      value: "all",
+      icon: Layers,
+    },
+    {
       label: "Live Batch",
       value: "live-batch",
       icon: MonitorPlay,
@@ -2770,11 +2776,12 @@ export default function App() {
     },
   ];
 
-  const visibleCourses = COURSES.filter((course) =>
-    activeCategory === "live-batch"
+  const visibleCourses = COURSES.filter((course) => {
+    if (activeCategory === "all") return true;
+    return activeCategory === "live-batch"
       ? course.type === "live"
-      : course.type !== "live",
-  );
+      : course.type !== "live";
+  });
 
   const faqs = [
     {
@@ -3278,11 +3285,13 @@ export default function App() {
                 <span className="relative z-10">{label}</span>
                 <span className="relative z-10 rounded-full bg-black/18 px-2 py-0.5 text-[10px] font-black">
                   {
-                    COURSES.filter((course) =>
-                      value === "live-batch"
-                        ? course.type === "live"
-                        : course.type !== "live",
-                    ).length
+                    value === "all"
+                      ? COURSES.length
+                      : COURSES.filter((course) =>
+                          value === "live-batch"
+                            ? course.type === "live"
+                            : course.type !== "live",
+                        ).length
                   }
                 </span>
               </button>
