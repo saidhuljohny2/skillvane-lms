@@ -2576,16 +2576,43 @@ export default function App() {
   };
 
   // Step 1: Enroll button → show student details form
-  const handleEnroll = (course: Course) => {
-    setModalCourse(null);
-    setFormCourse(course);
+  const getSavedStudentDetails = (
+    student: LoggedInStudent,
+  ): StudentDetails | null => {
+    try {
+      const studentsData = localStorage.getItem("skillvane_students");
+      const students: Record<string, any> = studentsData
+        ? JSON.parse(studentsData)
+        : {};
+      const saved = students[student.email];
+
+      if (
+        saved?.name &&
+        saved?.email &&
+        /^[6-9]\d{9}$/.test(saved.phone || "") &&
+        saved?.password
+      ) {
+        return {
+          name: saved.name,
+          email: saved.email,
+          phone: saved.phone,
+          password: saved.password,
+        };
+      }
+    } catch (err) {
+      console.error("Could not load saved student details:", err);
+    }
+
+    return null;
   };
 
   // Step 2: Form submitted → open Razorpay
-  const handleFormSubmit = async (student: StudentDetails) => {
-    if (!formCourse) return;
-    const course = formCourse;
+  const startEnrollmentPayment = async (
+    course: Course,
+    student: StudentDetails,
+  ) => {
     setFormCourse(null);
+    setShowDashboard(false);
     setPayLoading(course.id);
     setPayError(null);
 
@@ -2755,6 +2782,32 @@ export default function App() {
       setTimeout(() => setPayError(null), 8000);
       console.error("Razorpay error:", err);
     }
+  };
+
+  const handleEnroll = (course: Course) => {
+    setModalCourse(null);
+
+    if (currentStudent?.enrolledCourses.includes(course.id)) {
+      setShowDashboard(true);
+      setPayError("You are already enrolled in this course.");
+      setTimeout(() => setPayError(null), 4000);
+      return;
+    }
+
+    if (currentStudent) {
+      const savedStudent = getSavedStudentDetails(currentStudent);
+      if (savedStudent) {
+        void startEnrollmentPayment(course, savedStudent);
+        return;
+      }
+    }
+
+    setFormCourse(course);
+  };
+
+  const handleFormSubmit = async (student: StudentDetails) => {
+    if (!formCourse) return;
+    await startEnrollmentPayment(formCourse, student);
   };
 
   const COURSE_CATEGORIES: {
