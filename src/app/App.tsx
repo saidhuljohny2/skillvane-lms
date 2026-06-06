@@ -2246,10 +2246,6 @@ function CourseCard({
     course.type === "live" ? "live-batch" : "self-paced";
   const isLiveBatch = category === "live-batch";
   const moduleCount = course.curriculum.length;
-  const topicCount = course.curriculum.reduce(
-    (sum, module) => sum + module.topics.length,
-    0,
-  );
   const curriculumPreview = course.curriculum.slice(0, 2);
 
   return (
@@ -2353,25 +2349,6 @@ function CourseCard({
             <Layers className="w-3 h-3" />
             {moduleCount} modules
           </span>
-        </div>
-
-        <div className="relative z-10 mb-5 grid grid-cols-2 gap-2">
-          <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
-            <div className="text-lg font-black text-white">
-              {topicCount}
-            </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
-              Topics
-            </div>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
-            <div className="text-lg font-black text-white">
-              {course.highlights.length}
-            </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
-              Features
-            </div>
-          </div>
         </div>
 
         {/* Highlights (top 4) */}
@@ -2779,19 +2756,16 @@ export default function App() {
   const COURSE_CATEGORIES: {
     label: string;
     value: CourseCategory;
-    description: string;
     icon: React.ElementType;
   }[] = [
     {
       label: "Live Batch",
       value: "live-batch",
-      description: "Attend demo, join live sessions, and learn with direct trainer guidance.",
       icon: MonitorPlay,
     },
     {
       label: "Self-paced",
       value: "self-paced",
-      description: "Recordings, foundations, and projects you can complete on your schedule.",
       icon: Video,
     },
   ];
@@ -3286,43 +3260,31 @@ export default function App() {
           </div>
 
           {/* Category tabs */}
-          <div className="mx-auto mb-12 grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2">
-            {COURSE_CATEGORIES.map(({ label, value, description, icon: CategoryIcon }) => (
+          <div className="premium-surface mx-auto mb-12 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
+            {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
                 onClick={() => setActiveCategory(value)}
-                className={`premium-surface relative overflow-hidden rounded-2xl p-4 text-left transition-all ${
+                className={`relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-black transition-all ${
                   activeCategory === value
-                    ? "border-[#f2b84b]/45 shadow-2xl shadow-[#f2b84b]/10"
-                    : "hover:border-[#18c29c]/35"
+                    ? "bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white shadow-lg shadow-[#18c29c]/20"
+                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#f2b84b]/35 hover:text-white"
                 }`}
               >
                 {activeCategory === value && (
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/12 to-white/0" />
                 )}
-                <div className="relative z-10 flex items-start gap-3">
-                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#18c29c]/25 to-[#f2b84b]/15 ring-1 ring-white/10">
-                    <CategoryIcon className="h-5 w-5 text-[#f2b84b]" />
-                  </div>
-                  <div>
-                    <div className="text-lg font-black text-white">
-                      {label}
-                    </div>
-                    <p className="mt-1 text-xs leading-5 text-slate-300">
-                      {description}
-                    </p>
-                    <div className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
-                      {
-                        COURSES.filter((course) =>
-                          value === "live-batch"
-                            ? course.type === "live"
-                            : course.type !== "live",
-                        ).length
-                      }{" "}
-                      courses
-                    </div>
-                  </div>
-                </div>
+                <CategoryIcon className="relative z-10 h-4 w-4" />
+                <span className="relative z-10">{label}</span>
+                <span className="relative z-10 rounded-full bg-black/18 px-2 py-0.5 text-[10px] font-black">
+                  {
+                    COURSES.filter((course) =>
+                      value === "live-batch"
+                        ? course.type === "live"
+                        : course.type !== "live",
+                    ).length
+                  }
+                </span>
               </button>
             ))}
           </div>
