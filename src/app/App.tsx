@@ -61,6 +61,7 @@ const TRAINER_WHATSAPP_LINK =
 // COURSE DATA — Add a new course here and it appears on the site
 // ─────────────────────────────────────────────────────────────────
 type CourseType = "live" | "recording" | "course" | "project";
+type CourseCategory = "live-batch" | "self-paced";
 
 interface Course {
   id: string;
@@ -707,6 +708,11 @@ const TYPE_LABELS: Record<CourseType, string> = {
   recording: "Self-Paced",
   course: "Foundation",
   project: "Project",
+};
+
+const CATEGORY_LABELS: Record<CourseCategory, string> = {
+  "live-batch": "Live Batch",
+  "self-paced": "Self-paced",
 };
 
 // ─────────────────────────────────────────────────────────────────
@@ -2236,6 +2242,15 @@ function CourseCard({
 }) {
   const Icon = course.icon;
   const demoAccess = getDemoAccess(course);
+  const category: CourseCategory =
+    course.type === "live" ? "live-batch" : "self-paced";
+  const isLiveBatch = category === "live-batch";
+  const moduleCount = course.curriculum.length;
+  const topicCount = course.curriculum.reduce(
+    (sum, module) => sum + module.topics.length,
+    0,
+  );
+  const curriculumPreview = course.curriculum.slice(0, 2);
 
   return (
     <div className="premium-surface group relative flex flex-col rounded-2xl overflow-hidden hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 hover:-translate-y-1.5 transition-all duration-300">
@@ -2255,10 +2270,14 @@ function CourseCard({
         }}
       />
 
+      <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-full border border-white/12 bg-black/20 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/80 backdrop-blur-xl">
+        {CATEGORY_LABELS[category]}
+      </div>
+
       {/* Tag */}
       {course.tag && (
         <div
-            className="absolute top-5 right-5 text-[10px] font-black px-3 py-1.5 rounded-full text-white shadow-lg z-10 ring-1 ring-white/20"
+            className="absolute top-12 right-4 text-[10px] font-black px-3 py-1.5 rounded-full text-white shadow-lg z-10 ring-1 ring-white/20"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
           }}
@@ -2309,7 +2328,11 @@ function CourseCard({
         </p>
 
         {/* Meta pills */}
-        <div className="flex flex-wrap gap-2 mb-5">
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className="flex items-center gap-1 text-xs text-[#ffe4a3] bg-[#f2b84b]/10 border border-[#f2b84b]/24 px-2.5 py-1 rounded-full">
+            <Zap className="w-3 h-3" />
+            {isLiveBatch ? "Free demo available" : "On-demand access"}
+          </span>
           {course.duration && (
             <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
               <Clock className="w-3 h-3" />
@@ -2319,18 +2342,41 @@ function CourseCard({
           {course.timings && (
             <span className="flex items-center gap-1 text-xs text-[#b8fff0] bg-[#18c29c]/12 border border-[#18c29c]/28 px-2.5 py-1 rounded-full shadow-sm shadow-[#18c29c]/10">
               <MonitorPlay className="w-3 h-3" />
-              Live
+              {course.timings}
             </span>
           )}
           <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
             <BookOpen className="w-3 h-3" />
             {TYPE_LABELS[course.type]}
           </span>
+          <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
+            <Layers className="w-3 h-3" />
+            {moduleCount} modules
+          </span>
+        </div>
+
+        <div className="relative z-10 mb-5 grid grid-cols-2 gap-2">
+          <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
+            <div className="text-lg font-black text-white">
+              {topicCount}
+            </div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+              Topics
+            </div>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
+            <div className="text-lg font-black text-white">
+              {course.highlights.length}
+            </div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+              Features
+            </div>
+          </div>
         </div>
 
         {/* Highlights (top 4) */}
-        <ul className="space-y-2 mb-6 flex-1">
-          {course.highlights.slice(0, 4).map((h) => (
+        <ul className="space-y-2 mb-5">
+          {course.highlights.slice(0, 3).map((h) => (
             <li
               key={h}
               className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-300"
@@ -2340,6 +2386,28 @@ function CourseCard({
             </li>
           ))}
         </ul>
+
+        <div className="relative z-10 mb-6 rounded-xl border border-white/10 bg-[#07111f]/60 p-3">
+          <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+            <BookOpen className="h-3.5 w-3.5" />
+            Curriculum preview
+          </div>
+          <div className="space-y-1.5">
+            {curriculumPreview.map((module) => (
+              <div
+                key={module.module}
+                className="flex items-start justify-between gap-3 rounded-lg bg-white/[0.04] px-3 py-2"
+              >
+                <span className="min-w-0 truncate text-xs font-bold text-slate-200">
+                  {module.module}
+                </span>
+                <span className="flex-shrink-0 text-[10px] font-black text-slate-400">
+                  {module.topics.length} topics
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Price */}
         <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/10 bg-gradient-to-r from-white/[0.075] to-white/[0.035] px-4 py-3 shadow-inner shadow-white/5">
@@ -2412,9 +2480,8 @@ export default function App() {
   const [ticker, setTicker] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<
-    "all" | CourseType
-  >("all");
+  const [activeCategory, setActiveCategory] =
+    useState<CourseCategory>("live-batch");
   const [modalCourse, setModalCourse] = useState<Course | null>(
     null,
   );
@@ -2709,21 +2776,31 @@ export default function App() {
     }
   };
 
-  const FILTERS: {
+  const COURSE_CATEGORIES: {
     label: string;
-    value: "all" | CourseType;
+    value: CourseCategory;
+    description: string;
+    icon: React.ElementType;
   }[] = [
-    { label: "All Courses", value: "all" },
-    { label: "Live Batch", value: "live" },
-    { label: "Recordings", value: "recording" },
-    { label: "Foundation", value: "course" },
-    { label: "Projects", value: "project" },
+    {
+      label: "Live Batch",
+      value: "live-batch",
+      description: "Attend demo, join live sessions, and learn with direct trainer guidance.",
+      icon: MonitorPlay,
+    },
+    {
+      label: "Self-paced",
+      value: "self-paced",
+      description: "Recordings, foundations, and projects you can complete on your schedule.",
+      icon: Video,
+    },
   ];
 
-  const visibleCourses =
-    activeFilter === "all"
-      ? COURSES
-      : COURSES.filter((c) => c.type === activeFilter);
+  const visibleCourses = COURSES.filter((course) =>
+    activeCategory === "live-batch"
+      ? course.type === "live"
+      : course.type !== "live",
+  );
 
   const faqs = [
     {
@@ -3208,22 +3285,44 @@ export default function App() {
             </p>
           </div>
 
-          {/* Filter tabs */}
-          <div className="premium-surface mx-auto mb-12 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
-            {FILTERS.map(({ label, value }) => (
+          {/* Category tabs */}
+          <div className="mx-auto mb-12 grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2">
+            {COURSE_CATEGORIES.map(({ label, value, description, icon: CategoryIcon }) => (
               <button
                 key={value}
-                onClick={() => setActiveFilter(value)}
-                className={`relative px-5 py-3 rounded-lg text-sm font-bold transition-all ${
-                  activeFilter === value
-                    ? "bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white shadow-lg shadow-[#18c29c]/20"
-                    : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                onClick={() => setActiveCategory(value)}
+                className={`premium-surface relative overflow-hidden rounded-2xl p-4 text-left transition-all ${
+                  activeCategory === value
+                    ? "border-[#f2b84b]/45 shadow-2xl shadow-[#f2b84b]/10"
+                    : "hover:border-[#18c29c]/35"
                 }`}
               >
-                {activeFilter === value && (
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#18c29c] to-[#2f80ed] opacity-100" />
+                {activeCategory === value && (
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b]" />
                 )}
-                <span className="relative z-10">{label}</span>
+                <div className="relative z-10 flex items-start gap-3">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#18c29c]/25 to-[#f2b84b]/15 ring-1 ring-white/10">
+                    <CategoryIcon className="h-5 w-5 text-[#f2b84b]" />
+                  </div>
+                  <div>
+                    <div className="text-lg font-black text-white">
+                      {label}
+                    </div>
+                    <p className="mt-1 text-xs leading-5 text-slate-300">
+                      {description}
+                    </p>
+                    <div className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
+                      {
+                        COURSES.filter((course) =>
+                          value === "live-batch"
+                            ? course.type === "live"
+                            : course.type !== "live",
+                        ).length
+                      }{" "}
+                      courses
+                    </div>
+                  </div>
+                </div>
               </button>
             ))}
           </div>
