@@ -60,7 +60,9 @@ const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
 const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
-const ADMIN_ACCESS_CODE = "SkillVane@1711";
+const ADMIN_EMAIL = "saidhuljohny@gmail.com";
+const ADMIN_DEFAULT_PASSWORD = "SkillVane@1711";
+const OTP_VALIDITY_MS = 10 * 60 * 1000;
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // COURSE DATA - Add a new course here and it appears on the site
@@ -1180,6 +1182,39 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Login/Signup Modal
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function getAdminPassword() {
+  return (
+    localStorage.getItem("skillvane_admin_password") ||
+    ADMIN_DEFAULT_PASSWORD
+  );
+}
+
+async function sendOtpEmail(
+  toEmail: string,
+  toName: string,
+  otp: string,
+  purpose: string,
+) {
+  if (EMAILJS_SERVICE_ID === "YOUR_EMAILJS_SERVICE_ID") return;
+  await loadEmailJs();
+  const ejs = (window as any).emailjs;
+  ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_name: toName,
+    to_email: toEmail,
+    otp,
+    passcode: otp,
+    verification_code: otp,
+    purpose,
+    academy_name: "SkillVane IT Academy",
+    message: `Your SkillVane ${purpose} OTP is ${otp}. It is valid for 10 minutes.`,
+  });
+}
+
 function LoginModal({
   onClose,
   onLogin,
@@ -1188,6 +1223,13 @@ function LoginModal({
   onLogin: (student: LoggedInStudent) => void;
 }) {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const [otpState, setOtpState] = useState<{
+    email: string;
+    code: string;
+    expiresAt: number;
+    verified: boolean;
+  } | null>(null);
+  const [otpInput, setOtpInput] = useState("");
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -1206,8 +1248,10 @@ function LoginModal({
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
     )
       e.email = "Valid email is required";
-    if (!form.password || form.password.length < 6)
-      e.password = "Password must be at least 6 characters";
+    if (mode !== "reset" || otpState?.verified) {
+      if (!form.password || form.password.length < 6)
+        e.password = "Password must be at least 6 characters";
+    }
     if (mode === "signup") {
       if (!form.name.trim()) e.name = "Name is required";
       if (!form.phone || !/^[6-9]\d{9}$/.test(form.phone))
@@ -1215,6 +1259,71 @@ function LoginModal({
     }
     setErrors(e);
     return Object.keys(e).length === 0;
+  };
+
+  const loadStudents = (): Record<string, StoredStudent> => {
+    try {
+      return JSON.parse(localStorage.getItem("skillvane_students") || "{}");
+    } catch {
+      return {};
+    }
+  };
+
+  const sendStudentResetOtp = async () => {
+    const email = form.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrors({ email: "Valid email is required" });
+      return;
+    }
+
+    const students = loadStudents();
+    const student = students[email];
+    if (!student) {
+      setErrors({ email: "No student found with this email." });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const code = generateOtp();
+      await sendOtpEmail(
+        email,
+        student.name || "Student",
+        code,
+        "password reset",
+      );
+      setOtpState({
+        email,
+        code,
+        expiresAt: Date.now() + OTP_VALIDITY_MS,
+        verified: false,
+      });
+      setOtpInput("");
+      setErrors({
+        general: "OTP sent to your registered email. Please check your inbox.",
+      });
+    } catch {
+      setErrors({
+        general: "Unable to send OTP right now. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyStudentOtp = () => {
+    if (!otpState) return;
+    if (Date.now() > otpState.expiresAt) {
+      setErrors({ general: "OTP expired. Please send a new OTP." });
+      setOtpState(null);
+      return;
+    }
+    if (otpInput.trim() !== otpState.code) {
+      setErrors({ general: "Invalid OTP. Please check your email." });
+      return;
+    }
+    setOtpState({ ...otpState, verified: true });
+    setErrors({ general: "OTP verified. Set your new password." });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1227,22 +1336,23 @@ function LoginModal({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Get existing students from localStorage
-      const studentsData = localStorage.getItem(
-        "skillvane_students",
-      );
-      const students: Record<string, any> = studentsData
-        ? JSON.parse(studentsData)
-        : {};
+      const students = loadStudents();
 
       if (mode === "reset") {
-        const student = students[form.email];
+        if (!otpState?.verified) {
+          setErrors({ general: "Please verify the OTP before resetting." });
+          setLoading(false);
+          return;
+        }
+
+        const student = students[otpState.email];
         if (!student) {
           setErrors({ email: "No student found with this email." });
           setLoading(false);
           return;
         }
 
-        students[form.email] = {
+        students[otpState.email] = {
           ...student,
           password: form.password,
         };
@@ -1256,13 +1366,16 @@ function LoginModal({
         });
         setMode("login");
         setForm({ ...form, password: "" });
+        setOtpState(null);
+        setOtpInput("");
         setLoading(false);
         return;
       }
 
       if (mode === "signup") {
         // Check if user already exists
-        if (students[form.email]) {
+        const email = form.email.trim().toLowerCase();
+        if (students[email]) {
           setErrors({
             email: "Email already registered. Please login.",
           });
@@ -1271,8 +1384,8 @@ function LoginModal({
         }
 
         // Create new student account
-        students[form.email] = {
-          email: form.email,
+        students[email] = {
+          email,
           name: form.name,
           phone: form.phone,
           password: form.password, // In production, hash this!
@@ -1286,7 +1399,7 @@ function LoginModal({
 
         // Auto-login after signup
         const loggedStudent: LoggedInStudent = {
-          email: form.email,
+          email,
           name: form.name,
           enrolledCourses: [],
         };
@@ -1297,7 +1410,8 @@ function LoginModal({
         onLogin(loggedStudent);
       } else {
         // Login
-        const student = students[form.email];
+        const email = form.email.trim().toLowerCase();
+        const student = students[email];
         if (!student || student.password !== form.password) {
           setErrors({ password: "Invalid email or password" });
           setLoading(false);
@@ -1356,7 +1470,7 @@ function LoginModal({
                 ? "Login to access your courses"
                 : mode === "signup"
                   ? "Sign up to get started"
-                  : "Use your registered email"}
+                  : "Verify OTP sent to your email"}
             </p>
             </div>
           </div>
@@ -1373,7 +1487,13 @@ function LoginModal({
           className="relative px-5 py-5 space-y-4"
         >
           {errors.general && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+            <div
+              className={`p-3 rounded-lg border text-sm ${
+                /sent|verified|successful/i.test(errors.general)
+                  ? "bg-[#18c29c]/10 border-[#18c29c]/30 text-[#9cf8dd]"
+                  : "bg-red-500/10 border-red-500/30 text-red-300"
+              }`}
+            >
               {errors.general}
             </div>
           )}
@@ -1407,7 +1527,7 @@ function LoginModal({
               type="email"
               value={form.email}
               onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
+                setForm({ ...form, email: e.target.value.toLowerCase() })
               }
               placeholder="your.email@example.com"
               className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
@@ -1441,9 +1561,47 @@ function LoginModal({
             </div>
           )}
 
+          {mode === "reset" && (
+            <div className="grid gap-3">
+              <button
+                type="button"
+                onClick={sendStudentResetOtp}
+                disabled={loading}
+                className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-colors hover:bg-[#f2b84b]/16 disabled:opacity-50"
+              >
+                {otpState ? "Resend OTP" : "Send OTP to Email"}
+              </button>
+
+              {otpState && !otpState.verified && (
+                <div className="grid gap-2">
+                  <label className="block text-sm font-semibold text-slate-200">
+                    Email OTP
+                  </label>
+                  <div className="grid grid-cols-[1fr_auto] gap-2">
+                    <input
+                      inputMode="numeric"
+                      value={otpInput}
+                      onChange={(e) => setOtpInput(e.target.value)}
+                      placeholder="6-digit OTP"
+                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyStudentOtp}
+                      className="rounded-xl bg-white/[0.08] px-4 py-3 text-sm font-black text-white hover:bg-white/[0.12]"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {(mode !== "reset" || otpState?.verified) && (
           <div>
             <label className="block text-sm font-semibold text-slate-200 mb-1.5">
-              Password
+              {mode === "reset" ? "New Password" : "Password"}
             </label>
             <input
               type="password"
@@ -1464,10 +1622,11 @@ function LoginModal({
               </p>
             )}
           </div>
+          )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || (mode === "reset" && !otpState?.verified)}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#18c29c]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading
@@ -1476,7 +1635,7 @@ function LoginModal({
                 ? "Login"
                 : mode === "signup"
                   ? "Sign Up"
-                  : "Reset Password"}
+                  : "Save New Password"}
           </button>
 
           <div className="flex flex-col items-center gap-2 text-center">
@@ -1487,10 +1646,12 @@ function LoginModal({
                   setMode("reset");
                   setErrors({});
                   setForm({ ...form, password: "" });
+                  setOtpState(null);
+                  setOtpInput("");
                 }}
                 className="text-sm font-bold text-[#8df5d7] hover:text-white transition-colors"
               >
-                Forgot password? Reset using email
+                Forgot password? Reset with email OTP
               </button>
             )}
             <button
@@ -1498,6 +1659,8 @@ function LoginModal({
               onClick={() => {
                 setMode(mode === "login" ? "signup" : "login");
                 setErrors({});
+                setOtpState(null);
+                setOtpInput("");
               }}
               className="text-sm text-slate-400 hover:text-[#8df5d7] transition-colors"
             >
@@ -1524,7 +1687,18 @@ function AdminStudentsModal({
   courses: Course[];
   onClose: () => void;
 }) {
-  const [accessCode, setAccessCode] = useState("");
+  const [adminMode, setAdminMode] = useState<"login" | "forgot">("login");
+  const [adminLogin, setAdminLogin] = useState({
+    email: "",
+    password: "",
+  });
+  const [adminOtp, setAdminOtp] = useState<{
+    code: string;
+    expiresAt: number;
+    verified: boolean;
+  } | null>(null);
+  const [adminOtpInput, setAdminOtpInput] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [message, setMessage] = useState("");
   const [students, setStudents] = useState<Record<string, StoredStudent>>(
@@ -1619,6 +1793,68 @@ function AdminStudentsModal({
     setForm({ ...form, enrolledCourses: Array.from(enrolled) });
   };
 
+  const openAdminConsole = () => {
+    const email = adminLogin.email.trim().toLowerCase();
+    if (email !== ADMIN_EMAIL || adminLogin.password !== getAdminPassword()) {
+      setMessage("Invalid admin email or password.");
+      return;
+    }
+    setUnlocked(true);
+    setMessage("");
+  };
+
+  const sendAdminResetOtp = async () => {
+    const email = adminLogin.email.trim().toLowerCase();
+    if (email !== ADMIN_EMAIL) {
+      setMessage("Enter the registered admin Gmail first.");
+      return;
+    }
+
+    const code = generateOtp();
+    setMessage("Sending OTP to admin Gmail...");
+    try {
+      await sendOtpEmail(ADMIN_EMAIL, "SkillVane Admin", code, "admin password reset");
+      setAdminOtp({
+        code,
+        expiresAt: Date.now() + OTP_VALIDITY_MS,
+        verified: false,
+      });
+      setAdminOtpInput("");
+      setMessage("OTP sent to admin Gmail.");
+    } catch {
+      setMessage("Unable to send admin OTP right now.");
+    }
+  };
+
+  const verifyAdminOtp = () => {
+    if (!adminOtp) return;
+    if (Date.now() > adminOtp.expiresAt) {
+      setAdminOtp(null);
+      setMessage("OTP expired. Please send a new OTP.");
+      return;
+    }
+    if (adminOtpInput.trim() !== adminOtp.code) {
+      setMessage("Invalid OTP. Please check the admin Gmail.");
+      return;
+    }
+    setAdminOtp({ ...adminOtp, verified: true });
+    setMessage("OTP verified. Set a new admin password.");
+  };
+
+  const saveAdminPassword = () => {
+    if (newAdminPassword.length < 6) {
+      setMessage("Admin password must be at least 6 characters.");
+      return;
+    }
+    localStorage.setItem("skillvane_admin_password", newAdminPassword);
+    setAdminLogin({ email: ADMIN_EMAIL, password: "" });
+    setNewAdminPassword("");
+    setAdminOtp(null);
+    setAdminOtpInput("");
+    setAdminMode("login");
+    setMessage("Admin password updated. Login with the new password.");
+  };
+
   const studentList = Object.values(students).sort((a, b) =>
     a.email.localeCompare(b.email),
   );
@@ -1649,30 +1885,124 @@ function AdminStudentsModal({
 
         {!unlocked ? (
           <div className="space-y-4 px-5 py-5">
-            <p className="text-sm text-slate-300">
-              Enter the admin access code to manage student emails and passwords.
-            </p>
-            <input
-              type="password"
-              value={accessCode}
-              onChange={(e) => setAccessCode(e.target.value)}
-              placeholder="Admin access code"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
-            />
-            {message && <p className="text-sm text-red-300">{message}</p>}
-            <button
-              onClick={() => {
-                if (accessCode === ADMIN_ACCESS_CODE) {
-                  setUnlocked(true);
-                  setMessage("");
-                } else {
-                  setMessage("Invalid admin access code.");
-                }
-              }}
-              className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
-            >
-              Open Admin Console
-            </button>
+            {adminMode === "login" ? (
+              <>
+                <p className="text-sm text-slate-300">
+                  Login with admin Gmail and password to manage student
+                  accounts.
+                </p>
+                <input
+                  type="email"
+                  value={adminLogin.email}
+                  onChange={(e) =>
+                    setAdminLogin({
+                      ...adminLogin,
+                      email: e.target.value.toLowerCase(),
+                    })
+                  }
+                  placeholder="Admin Gmail"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                <input
+                  type="password"
+                  value={adminLogin.password}
+                  onChange={(e) =>
+                    setAdminLogin({
+                      ...adminLogin,
+                      password: e.target.value,
+                    })
+                  }
+                  placeholder="Admin password"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                {message && <p className="text-sm text-red-300">{message}</p>}
+                <button
+                  onClick={openAdminConsole}
+                  className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+                >
+                  Open Admin Console
+                </button>
+                <button
+                  onClick={() => {
+                    setAdminMode("forgot");
+                    setMessage("");
+                    setAdminOtp(null);
+                    setAdminOtpInput("");
+                  }}
+                  className="w-full text-sm font-bold text-[#8df5d7] hover:text-white"
+                >
+                  Forgot admin password? Reset with OTP
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-slate-300">
+                  OTP will be sent to the registered admin Gmail.
+                </p>
+                <input
+                  type="email"
+                  value={adminLogin.email}
+                  onChange={(e) =>
+                    setAdminLogin({
+                      ...adminLogin,
+                      email: e.target.value.toLowerCase(),
+                    })
+                  }
+                  placeholder="Admin Gmail"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                <button
+                  onClick={sendAdminResetOtp}
+                  className="w-full rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3]"
+                >
+                  {adminOtp ? "Resend Admin OTP" : "Send Admin OTP"}
+                </button>
+                {adminOtp && !adminOtp.verified && (
+                  <div className="grid grid-cols-[1fr_auto] gap-2">
+                    <input
+                      inputMode="numeric"
+                      value={adminOtpInput}
+                      onChange={(e) => setAdminOtpInput(e.target.value)}
+                      placeholder="6-digit OTP"
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                    />
+                    <button
+                      onClick={verifyAdminOtp}
+                      className="rounded-xl bg-white/[0.08] px-4 py-3 text-sm font-black text-white hover:bg-white/[0.12]"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                )}
+                {adminOtp?.verified && (
+                  <>
+                    <input
+                      type="password"
+                      value={newAdminPassword}
+                      onChange={(e) => setNewAdminPassword(e.target.value)}
+                      placeholder="New admin password"
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                    />
+                    <button
+                      onClick={saveAdminPassword}
+                      className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+                    >
+                      Save New Admin Password
+                    </button>
+                  </>
+                )}
+                {message && <p className="text-sm text-[#ffe4a3]">{message}</p>}
+                <button
+                  onClick={() => {
+                    setAdminMode("login");
+                    setMessage("");
+                  }}
+                  className="w-full text-sm font-bold text-slate-300 hover:text-white"
+                >
+                  Back to admin login
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="grid flex-1 gap-4 overflow-y-auto px-5 py-5 lg:grid-cols-[0.95fr_1.05fr]">
@@ -3415,43 +3745,6 @@ export default function App() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-2">
-              <a
-                href="https://www.youtube.com/@SkillVane1711"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/12 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
-                aria-label="SkillVane YouTube"
-              >
-                <Youtube className="h-5 w-5 text-red-300 group-hover:scale-110 transition-transform" />
-              </a>
-              <a
-                href="https://t.me/gcpdataengineering"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
-                aria-label="Join Telegram"
-              >
-                <Send className="h-5 w-5 text-[#7cc7ff] group-hover:scale-110 transition-transform" />
-              </a>
-              <a
-                href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
-                aria-label="Join WhatsApp Group"
-              >
-                <MessageCircle className="h-5 w-5 text-[#68f6a4] group-hover:scale-110 transition-transform" />
-              </a>
-              <a
-                href="tel:+917305101711"
-                className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
-                aria-label="Call us"
-              >
-                <Phone className="h-5 w-5 text-[#9cf8dd] group-hover:scale-110 transition-transform" />
-              </a>
-            </div>
-
             {currentStudent ? (
               <>
                 <button
@@ -3577,46 +3870,10 @@ export default function App() {
                   onClick={() => scrollTo("courses")}
                   className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20"
                 >
-                  View Courses
-                </button>
-              </>
-            )}
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <a
-                href="https://www.youtube.com/@SkillVane1711"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl border border-red-400/25 bg-red-500/12 px-3 py-3 text-sm font-black text-red-200"
-              >
-                <Youtube className="h-4 w-4" />
-                YouTube
-              </a>
-              <a
-                href="https://t.me/gcpdataengineering"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-3 py-3 text-sm font-black text-[#bfe3ff]"
-              >
-                <Send className="h-4 w-4" />
-                Telegram
-              </a>
-              <a
-                href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 px-3 py-3 text-sm font-black text-[#b8ffd0]"
-              >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </a>
-              <a
-                href="tel:+917305101711"
-                className="flex items-center justify-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 px-3 py-3 text-sm font-black text-[#9cf8dd]"
-              >
-                <Phone className="h-4 w-4" />
-                Call
-              </a>
-            </div>
+                View Courses
+              </button>
+            </>
+          )}
           </div>
         )}
       </nav>
@@ -3727,6 +3984,43 @@ export default function App() {
                 <Play className="h-5 w-5 text-[#f2b84b]" />
                 Meet Instructor
               </button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+              <a
+                href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 px-4 py-3 text-sm font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 backdrop-blur-md hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
+              >
+                <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
+                WhatsApp
+              </a>
+              <a
+                href="https://t.me/gcpdataengineering"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-4 py-3 text-sm font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 backdrop-blur-md hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
+              >
+                <Send className="h-4 w-4 transition-transform group-hover:scale-110" />
+                Telegram
+              </a>
+              <a
+                href="https://www.youtube.com/@SkillVane1711"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-red-400/25 bg-red-500/12 px-4 py-3 text-sm font-black text-red-200 shadow-lg shadow-red-500/10 backdrop-blur-md hover:border-red-400/45 hover:bg-red-500/18"
+              >
+                <Youtube className="h-4 w-4 transition-transform group-hover:scale-110" />
+                YouTube
+              </a>
+              <a
+                href="tel:+917305101711"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 px-4 py-3 text-sm font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 backdrop-blur-md hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
+              >
+                <Phone className="h-4 w-4 transition-transform group-hover:scale-110" />
+                Call
+              </a>
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300">
