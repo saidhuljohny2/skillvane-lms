@@ -3294,15 +3294,15 @@ export default function App() {
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}
-              className="group mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/35 bg-[#f2b84b]/10 px-4 py-2 text-left text-xs font-bold uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/10 backdrop-blur-md hover:border-[#f2b84b]/60"
+              className="attention-vibrate group mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/45 bg-[#f2b84b]/12 px-4 py-2 text-left text-xs font-black uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/20 backdrop-blur-md hover:border-[#f2b84b]/70"
             >
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#18c29c]" />
               </span>
 
-              <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-semibold">
-                  New live batch starts July 1, 2026 at 7.00 AM IST
+              <span className="bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-black">
+                  New live batch starts 1st July at 7.00 AM IST
                 </span>
                 <ArrowRight className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
               </button>
