@@ -2324,11 +2324,9 @@ function InvoiceModal({
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CourseCard({
   course,
-  onViewDetails,
   onEnroll,
 }: {
   course: Course;
-  onViewDetails: (c: Course) => void;
   onEnroll: (c: Course) => void;
 }) {
   const Icon = course.icon;
@@ -2338,7 +2336,8 @@ function CourseCard({
   const isLiveBatch = category === "live-batch";
   const isFeaturedLiveBatch = course.id === "gcp-live";
   const moduleCount = course.curriculum.length;
-  const curriculumPreview = course.curriculum.slice(0, 2);
+  const curriculumHref =
+    course.curriculumDownload || gcpDataEngineeringCurriculum;
 
   return (
     <div
@@ -2480,39 +2479,22 @@ function CourseCard({
           </span>
         </div>
 
-        {/* Highlights (top 4) */}
-        <ul className="space-y-2 mb-5">
-          {course.highlights.slice(0, 3).map((h) => (
-            <li
-              key={h}
-              className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-300"
-            >
-              <Check className="w-3.5 h-3.5 text-emerald-300 mt-0.5 flex-shrink-0 drop-shadow-[0_0_8px_rgba(110,231,183,0.35)]" />
-              {h}
-            </li>
-          ))}
-        </ul>
-
-        <div className="relative z-10 mb-6 rounded-xl border border-white/10 bg-[#07111f]/72 p-3">
-          <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]">
-            <BookOpen className="h-3.5 w-3.5" />
-            Curriculum preview
+        <div className="relative z-10 mb-5 rounded-xl border border-white/10 bg-[#07111f]/72 p-3">
+          <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            What's included
           </div>
-          <div className="space-y-1.5">
-            {curriculumPreview.map((module) => (
-              <div
-                key={module.module}
-                className="flex items-start justify-between gap-3 rounded-lg bg-white/[0.04] px-3 py-2"
+          <ul className={`grid gap-2 ${isFeaturedLiveBatch ? "sm:grid-cols-2" : ""}`}>
+            {course.highlights.map((h) => (
+              <li
+                key={h}
+                className="flex items-start gap-2.5 rounded-lg bg-white/[0.035] px-3 py-2 text-xs leading-relaxed text-slate-200"
               >
-                <span className="min-w-0 truncate text-xs font-bold text-slate-200">
-                  {module.module}
-                </span>
-                <span className="flex-shrink-0 text-[10px] font-black text-slate-400">
-                  {module.topics.length} topics
-                </span>
-              </div>
+                <Check className="w-3.5 h-3.5 text-emerald-300 mt-0.5 flex-shrink-0 drop-shadow-[0_0_8px_rgba(110,231,183,0.35)]" />
+                {h}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
 
         {/* Price */}
@@ -2545,9 +2527,31 @@ function CourseCard({
 
         {/* Buttons */}
         <div className="relative z-10 space-y-3">
-          {course.curriculumDownload && (
+          {isFeaturedLiveBatch ? (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <a
+                href={curriculumHref}
+                download
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/35 bg-[#f2b84b]/12 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-all hover:border-[#f2b84b]/60 hover:bg-[#f2b84b]/18"
+              >
+                <Download className="h-4 w-4" />
+                Download Curriculum
+              </a>
+              {demoAccess && (
+                <a
+                  href={demoAccess.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
+                >
+                  <demoAccess.icon className="h-4 w-4" />
+                  Join Demo
+                </a>
+              )}
+            </div>
+          ) : (
             <a
-              href={course.curriculumDownload}
+              href={curriculumHref}
               download
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/35 bg-[#f2b84b]/12 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-all hover:border-[#f2b84b]/60 hover:bg-[#f2b84b]/18"
             >
@@ -2555,7 +2559,7 @@ function CourseCard({
               Download Curriculum
             </a>
           )}
-          {demoAccess && (
+          {!isFeaturedLiveBatch && demoAccess && (
             <a
               href={demoAccess.href}
               target="_blank"
@@ -2566,23 +2570,15 @@ function CourseCard({
               {demoAccess.longLabel}
             </a>
           )}
-          <div className="flex gap-3">
           <button
             onClick={() => onEnroll(course)}
-            className="magnetic-button flex-1 py-3 rounded-xl text-sm font-bold text-white hover:shadow-xl active:scale-[0.99] transition-all shadow-lg"
+            className="magnetic-button w-full py-3.5 rounded-xl text-sm font-black text-white hover:shadow-xl active:scale-[0.99] transition-all shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
             }}
           >
             Enroll Now
           </button>
-          <button
-            onClick={() => onViewDetails(course)}
-            className="px-5 py-3 rounded-xl text-sm font-semibold border border-white/12 text-slate-200 hover:bg-white/[0.07] hover:text-white hover:border-[#f2b84b]/40 transition-all"
-          >
-            Details
-          </button>
-          </div>
         </div>
       </div>
     </div>
@@ -3543,7 +3539,6 @@ export default function App() {
               >
                 <CourseCard
                   course={course}
-                  onViewDetails={setModalCourse}
                   onEnroll={handleEnroll}
                 />
               </div>
