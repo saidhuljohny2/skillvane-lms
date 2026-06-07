@@ -98,10 +98,10 @@ const COURSES: Course[] = [
     icon: MonitorPlay,
     accentFrom: "#4361ee",
     accentTo: "#3bc9db",
-    title: "Next Morning Batch: GCP Data Engineering",
+    title: "New Batch: GCP Data Engineering",
     subtitle: "Full Course - Live Morning Batch",
     price: 12000,
-    originalPrice: 20000,
+    originalPrice: 15000,
     duration: "3 months",
     timings: "7:00 AM to 8:00 AM",
     curriculumDownload: gcpDataEngineeringCurriculum,
@@ -730,7 +730,11 @@ const CATEGORY_LABELS: Record<CourseCategory, string> = {
 // Helpers
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatINR(n: number) {
-  return `â‚¹${n.toLocaleString("en-IN")}`;
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
 function GradientText({
@@ -1031,11 +1035,11 @@ function CourseModal({
               boxShadow: `0 8px 30px ${course.accentFrom}40`,
             }}
           >
-            Enroll Now Â· {formatINR(course.price)}
+            Enroll Now - {formatINR(course.price)}
           </button>
           <p className="text-center text-xs text-white/30 mt-2.5">
-            Secure payment via Razorpay Â· UPI Â· Net Banking Â·
-            Cards Â· EMI
+            Secure payment via Razorpay - UPI - Net Banking -
+            Cards - EMI
           </p>
         </div>
       </div>
@@ -1154,7 +1158,7 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     invoice_no: record.invoiceNo,
     payment_id: record.paymentId,
     course_name: `${record.course.title} â€” ${record.course.subtitle}`,
-    amount: `â‚¹${record.course.price.toLocaleString("en-IN")}`,
+    amount: formatINR(record.course.price),
     paid_at: record.paidAt.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "long",
@@ -1948,8 +1952,7 @@ function EnrollmentFormModal({
               {course.title}
             </h2>
             <p className="text-xs text-white/40">
-              {course.subtitle} Â· â‚¹
-              {course.price.toLocaleString("en-IN")}
+              {course.subtitle} · {formatINR(course.price)}
             </p>
           </div>
           <button
@@ -2231,8 +2234,7 @@ function InvoiceModal({
                 {record.course.subtitle}
               </p>
               <p className="text-xs font-bold text-emerald-400 mt-1">
-                â‚¹{record.course.price.toLocaleString("en-IN")}{" "}
-                paid
+                {formatINR(record.course.price)} paid
               </p>
             </div>
           </div>
@@ -3521,7 +3523,7 @@ export default function App() {
           </div>
 
           <p className="text-center text-xs text-slate-500 mt-8">
-            More courses coming soon Â· All prices in INR
+            More courses coming soon - All prices in INR
             inclusive of taxes
           </p>
         </div>
@@ -3643,7 +3645,7 @@ export default function App() {
                 Shaik Saidhul
               </h3>
               <p className="text-[#8df5d7] font-semibold text-sm mb-4">
-                Solution Architect Â· SkillVane IT Academy
+                Solution Architect - SkillVane IT Academy
               </p>
               <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xl">
                 With over 9+ years of hands-on experience
@@ -3716,7 +3718,7 @@ export default function App() {
                 />
               ))}
               <span className="ml-2 text-slate-400 text-sm">
-                4.9 / 5 Â· 500+ ratings
+                4.9 / 5 - 500+ ratings
               </span>
             </div>
           </div>
@@ -3949,4 +3951,5 @@ export default function App() {
     </div>
   );
 }
+
 
