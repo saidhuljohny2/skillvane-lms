@@ -3938,7 +3938,7 @@ export default function App() {
       {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
-        className="relative min-h-[82svh] overflow-hidden bg-[#07111f] pt-[4.5rem] sm:pt-[5.5rem]"
+        className="relative min-h-[76svh] overflow-hidden bg-[#07111f] pt-[4.5rem] sm:pt-[5.5rem]"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
@@ -3962,7 +3962,7 @@ export default function App() {
           <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(82svh-5rem)] flex flex-col justify-center py-8 sm:py-12">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(76svh-5rem)] flex flex-col justify-center py-7 sm:py-9">
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}
@@ -3985,9 +3985,12 @@ export default function App() {
                 fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
-              Learn GCP Data Engineering From{" "}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                Shaik Saidhul
+              <span className="block">Learn GCP Data Engineering</span>
+              <span className="block">
+                From{" "}
+                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Shaik Saidhul
+                </span>
               </span>
             </h1>
 
@@ -4075,13 +4078,14 @@ export default function App() {
               ))}
             </div>
 
-            <div className="premium-surface rounded-xl p-4">
-              <div className="mb-4">
+            <div className="premium-surface rounded-xl p-3 sm:p-4">
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f2b84b]">
                   Connect With SkillVane
                 </p>
                 <h2
-                  className="mt-1 text-xl font-black text-white"
+                  className="mt-1 text-base font-black text-white sm:text-lg"
                   style={{
                     fontFamily:
                       "'Space Grotesk', system-ui, sans-serif",
@@ -4089,17 +4093,18 @@ export default function App() {
                 >
                   Join the community or speak with us.
                 </h2>
+                </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <a
                   href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 px-4 py-4 text-sm font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-[#25D366]/25 bg-[#25D366]/12 px-3 py-2.5 text-xs font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#25D366]/18">
-                    <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#25D366]/18">
+                    <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
                   </span>
                   WhatsApp
                 </a>
@@ -4107,10 +4112,10 @@ export default function App() {
                   href="https://t.me/gcpdataengineering"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-4 py-4 text-sm font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-3 py-2.5 text-xs font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2f80ed]/18">
-                    <Send className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2f80ed]/18">
+                    <Send className="h-4 w-4 transition-transform group-hover:scale-110" />
                   </span>
                   Telegram
                 </a>
@@ -4118,19 +4123,19 @@ export default function App() {
                   href="https://www.youtube.com/@SkillVane1711"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 rounded-xl border border-red-400/25 bg-red-500/12 px-4 py-4 text-sm font-black text-red-200 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-red-400/25 bg-red-500/12 px-3 py-2.5 text-xs font-black text-red-200 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/18">
-                    <Youtube className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/18">
+                    <Youtube className="h-4 w-4 transition-transform group-hover:scale-110" />
                   </span>
                   YouTube
                 </a>
                 <a
                   href="tel:+917305101711"
-                  className="group flex items-center gap-3 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 px-4 py-4 text-sm font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-[#18c29c]/25 bg-[#18c29c]/12 px-3 py-2.5 text-xs font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#18c29c]/18">
-                    <Phone className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#18c29c]/18">
+                    <Phone className="h-4 w-4 transition-transform group-hover:scale-110" />
                   </span>
                   Call
                 </a>
