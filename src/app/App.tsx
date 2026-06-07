@@ -56,7 +56,8 @@ const GOOGLE_SHEET_WEBHOOK_URL =
 
 // Paste your EmailJS credentials here after setup:
 const EMAILJS_SERVICE_ID = "service_huss9yj";
-const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
+const EMAILJS_INVOICE_TEMPLATE_ID = "template_jqy6yhj";
+const EMAILJS_PASSWORD_OTP_TEMPLATE_ID = "template_fx61y3u";
 const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
@@ -1161,7 +1162,7 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
   await loadEmailJs();
   const ejs = (window as any).emailjs;
   ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_INVOICE_TEMPLATE_ID, {
     to_name: record.student.name,
     to_email: record.student.email,
     invoice_no: record.invoiceNo,
@@ -1200,10 +1201,16 @@ async function sendOtpEmail(
   purpose: string,
 ) {
   if (EMAILJS_SERVICE_ID === "YOUR_EMAILJS_SERVICE_ID") return;
+  if (
+    !EMAILJS_PASSWORD_OTP_TEMPLATE_ID ||
+    EMAILJS_PASSWORD_OTP_TEMPLATE_ID === "template_password_otp"
+  ) {
+    throw new Error("Password OTP EmailJS template is not configured.");
+  }
   await loadEmailJs();
   const ejs = (window as any).emailjs;
   ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_PASSWORD_OTP_TEMPLATE_ID, {
     to_name: toName,
     to_email: toEmail,
     otp,
