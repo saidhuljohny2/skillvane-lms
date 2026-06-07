@@ -45,7 +45,7 @@ import {
 } from "lucide-react";
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// CONFIG â€” Update these two values after setup (see guide below)
+// CONFIG - Update these two values after setup (see guide below)
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const RAZORPAY_KEY = "rzp_live_Sx2SDk8J6c6HBk";
 const RAZORPAY_KEY_SECRET = "sBIaKza4uMIkT6ehyhqwRQts";
@@ -62,7 +62,7 @@ const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// COURSE DATA â€” Add a new course here and it appears on the site
+// COURSE DATA - Add a new course here and it appears on the site
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type CourseType = "live" | "recording" | "course" | "project";
 type CourseCategory = "all" | "live-batch" | "self-paced";
@@ -297,7 +297,7 @@ const COURSES: Course[] = [
     accentFrom: "#7c3aed",
     accentTo: "#a855f7",
     title: "GCP Data Engineering",
-    subtitle: "Course â€” Recordings",
+    subtitle: "Course - Recordings",
     price: 6000,
     originalPrice: 12000,
     highlights: [
@@ -573,7 +573,7 @@ const COURSES: Course[] = [
         module: "Data Ingestion Pipeline",
         topics: [
           "Ingesting HL7/FHIR Healthcare Records",
-          "Pub/Sub â†’ Dataflow Streaming Ingestion",
+          "Pub/Sub -> Dataflow Streaming Ingestion",
           "Raw Layer Design in Cloud Storage",
         ],
       },
@@ -641,7 +641,7 @@ const COURSES: Course[] = [
       {
         module: "Streaming & Real-Time Analytics",
         topics: [
-          "Pub/Sub â†’ Dataflow for Live Order Events",
+          "Pub/Sub -> Dataflow for Live Order Events",
           "Real-Time Sales Dashboard in Looker Studio",
           "Alerting on Inventory Threshold Breaches",
         ],
@@ -1157,7 +1157,7 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     to_email: record.student.email,
     invoice_no: record.invoiceNo,
     payment_id: record.paymentId,
-    course_name: `${record.course.title} â€” ${record.course.subtitle}`,
+    course_name: `${record.course.title} - ${record.course.subtitle}`,
     amount: formatINR(record.course.price),
     paid_at: record.paidAt.toLocaleDateString("en-IN", {
       day: "2-digit",
@@ -1482,6 +1482,22 @@ function StudentDashboard({
   const availableCourses = courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
+  const accessStorageKey = `skillvane_drive_access_confirmed_${student.email}`;
+  const [confirmedAccess, setConfirmedAccess] = useState<
+    Record<string, boolean>
+  >(() => {
+    try {
+      return JSON.parse(localStorage.getItem(accessStorageKey) || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  const confirmAccessReceived = (courseId: string) => {
+    const next = { ...confirmedAccess, [courseId]: true };
+    setConfirmedAccess(next);
+    localStorage.setItem(accessStorageKey, JSON.stringify(next));
+  };
 
   return (
     <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -1667,6 +1683,8 @@ function StudentDashboard({
                     getEnrolledCourseAccess(course);
                   const driveAccessRequestHref =
                     getDriveAccessRequestHref(student, course);
+                  const hasConfirmedAccess =
+                    Boolean(confirmedAccess[course.id]);
                   return (
                     <div
                       key={course.id}
@@ -1735,28 +1753,48 @@ function StudentDashboard({
                         </div>
                       )}
 
-                      <a
-                        href={driveAccessRequestHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20 transition-all"
-                      >
-                        <Mail className="h-4 w-4" />
-                        Ask Admin for Drive Access
-                      </a>
-
-                      <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.035] px-4 py-2.5 text-xs leading-5 text-[#ffe1a3]">
-                        <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-[0.12em] text-[#f2b84b]">
-                          <Clock className="h-3.5 w-3.5" />
-                          24 hour access window
+                      {hasConfirmedAccess ? (
+                        <div className="mt-3 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-3 text-xs font-bold leading-5 text-[#9cf8dd]">
+                          <div className="flex items-center gap-2 font-black uppercase tracking-[0.12em]">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Access confirmed
+                          </div>
                         </div>
-                        Access will be provided to{" "}
-                        <span className="font-black text-white">
-                          {student.email}
-                        </span>{" "}
-                        within 24 hours. Please check your mail inbox for the
-                        Google Drive invitation.
-                      </div>
+                      ) : (
+                        <>
+                          <a
+                            href={driveAccessRequestHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20 transition-all"
+                          >
+                            <Mail className="h-4 w-4" />
+                            Ask Admin for Drive Access
+                          </a>
+
+                          <button
+                            type="button"
+                            onClick={() => confirmAccessReceived(course.id)}
+                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] transition-all hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16"
+                          >
+                            <CheckCircle2 className="h-4 w-4" />
+                            I Received Access
+                          </button>
+
+                          <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.035] px-4 py-2.5 text-xs leading-5 text-[#ffe1a3]">
+                            <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-[0.12em] text-[#f2b84b]">
+                              <Clock className="h-3.5 w-3.5" />
+                              24 hour access window
+                            </div>
+                            Access will be provided to{" "}
+                            <span className="font-black text-white">
+                              {student.email}
+                            </span>{" "}
+                            within 24 hours. Please check your mail inbox for the
+                            Google Drive invitation.
+                          </div>
+                        </>
+                      )}
 
                     </div>
                   );
@@ -1941,7 +1979,7 @@ function EnrollmentFormModal({
               className="text-xs font-mono uppercase tracking-widest mb-0.5"
               style={{ color: course.accentFrom }}
             >
-              Step 1 of 2 â€” Your Details
+              Step 1 of 2 - Your Details
             </p>
             <h2
               className="font-black text-white text-base"
@@ -2094,7 +2132,7 @@ function EnrollmentFormModal({
               boxShadow: `0 8px 24px ${course.accentFrom}40`,
             }}
           >
-            Continue to Payment â†’
+            Continue to Payment
           </button>
         </form>
       </div>
@@ -2171,7 +2209,7 @@ function InvoiceModal({
           )}
           {emailSent === false && (
             <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full">
-              Invoice email setup pending â€” see guide below
+              Invoice email setup pending - see guide below
             </div>
           )}
         </div>
@@ -2304,9 +2342,9 @@ function CourseCard({
 
   return (
     <div
-      className={`premium-surface group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 ${
+      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/12 bg-[#0b1423] shadow-xl shadow-black/20 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 ${
         isFeaturedLiveBatch
-          ? "border-[#f2b84b]/35 shadow-2xl shadow-[#f2b84b]/10"
+          ? "border-[#f2b84b]/40 bg-[#0c1626] shadow-2xl shadow-[#f2b84b]/10"
           : ""
       }`}
     >
@@ -2322,7 +2360,7 @@ function CourseCard({
       <div
         className="absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(circle at top left, ${course.accentFrom}18, transparent 38%), radial-gradient(circle at bottom right, ${course.accentTo}12, transparent 34%)`,
+          background: `linear-gradient(135deg, ${course.accentFrom}10, transparent 34%), linear-gradient(180deg, rgba(255,255,255,0.035), transparent 28%)`,
         }}
       />
 
@@ -2455,7 +2493,7 @@ function CourseCard({
           ))}
         </ul>
 
-        <div className="relative z-10 mb-6 rounded-xl border border-white/10 bg-[#07111f]/60 p-3">
+        <div className="relative z-10 mb-6 rounded-xl border border-white/10 bg-[#07111f]/72 p-3">
           <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]">
             <BookOpen className="h-3.5 w-3.5" />
             Curriculum preview
@@ -2478,7 +2516,7 @@ function CourseCard({
         </div>
 
         {/* Price */}
-        <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/10 bg-gradient-to-r from-white/[0.075] to-white/[0.035] px-4 py-3 shadow-inner shadow-white/5">
+        <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/10 bg-white/[0.045] px-4 py-3 shadow-inner shadow-white/5">
           <span
             className="text-3xl font-black text-white"
             style={{
@@ -2672,7 +2710,7 @@ export default function App() {
     setShowDashboard(false);
   };
 
-  // Step 1: Enroll button â†’ show student details form
+  // Step 1: Enroll button -> show student details form
   const getSavedStudentDetails = (
     student: LoggedInStudent,
   ): StudentDetails | null => {
@@ -2703,7 +2741,7 @@ export default function App() {
     return null;
   };
 
-  // Step 2: Form submitted â†’ open Razorpay
+  // Step 2: Form submitted -> open Razorpay
   const startEnrollmentPayment = async (
     course: Course,
     student: StudentDetails,
@@ -2732,7 +2770,7 @@ export default function App() {
         amount: course.price * 100, // Amount in paise
         currency: "INR",
         name: "SkillVane IT Academy",
-        description: `${course.title} â€” ${course.subtitle}`,
+        description: `${course.title} - ${course.subtitle}`,
         image: "", // Optional: Add your logo URL
         handler: (response: any) => {
           setPayLoading(null);
@@ -2943,7 +2981,7 @@ export default function App() {
     },
     {
       q: "What is the difference between the Live Batch and Recordings course?",
-      a: "The Live Batch gives you real-time interaction with the instructor (Monâ€“Fri, 7:30â€“8:30 AM) plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
+      a: "The Live Batch gives you real-time interaction with the instructor (Mon-Fri, 7:30-8:30 AM) plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
     },
     {
       q: "Can I buy the project courses without the main GCP course?",
@@ -2951,7 +2989,7 @@ export default function App() {
     },
     {
       q: "Is there a refund policy?",
-      a: "Yes â€” 7-day no-questions-asked refund if you are not satisfied after accessing up to the first two modules of any course.",
+      a: "Yes - 7-day no-questions-asked refund if you are not satisfied after accessing up to the first two modules of any course.",
     },
     {
       q: "Is EMI or instalment payment available?",
@@ -3088,7 +3126,7 @@ export default function App() {
                   onClick={() => scrollTo("courses")}
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
                 >
-                  View Courses â†’
+                  View Courses
                 </button>
               </>
             )}
@@ -3154,7 +3192,7 @@ export default function App() {
                   onClick={() => scrollTo("courses")}
                   className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20"
                 >
-                  View Courses â†’
+                  View Courses
                 </button>
               </>
             )}
@@ -3429,20 +3467,10 @@ export default function App() {
       {/* â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="courses"
-        className="relative py-14 sm:py-20 bg-[#07111f] overflow-hidden"
+        className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden"
       >
-        {/* Background decoration */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_15%_10%,rgba(24,194,156,0.14),transparent_36%),radial-gradient(ellipse_at_88%_30%,rgba(242,184,75,0.1),transparent_30%)]" />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.055]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.85) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.85) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div className="pointer-events-none absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#18c29c]/60 to-transparent" />
-        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#f2b84b]/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
@@ -3499,7 +3527,7 @@ export default function App() {
           {/* Payment error banner */}
           {payError && (
             <div className="mb-6 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm text-center font-semibold">
-              âŒ {payError}
+              Error: {payError}
             </div>
           )}
 
@@ -3621,7 +3649,7 @@ export default function App() {
               <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
                   src={instructorPhoto}
-                  alt="SkillVane IT Academy â€” GCP Data Engineering Instructor"
+                  alt="SkillVane IT Academy - GCP Data Engineering Instructor"
                   className="w-full h-full object-cover object-top"
                 />
               </div>
@@ -3656,7 +3684,7 @@ export default function App() {
                 Certified Professional Data Engineer and Cloud
                 Architect, they bring real-world war stories,
                 battle-tested patterns, and current industry
-                practices into every lesson â€” no filler, no
+                practices into every lesson - no filler, no
                 theory-only slides.
               </p>
 
@@ -3840,7 +3868,7 @@ export default function App() {
             onClick={() => scrollTo("courses")}
             className="magnetic-button px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white font-black text-base active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/25"
           >
-            Browse All Courses â†’
+            Browse All Courses
           </button>
         </div>
       </section>
@@ -3866,7 +3894,7 @@ export default function App() {
             </span>
           </div>
           <span>
-            Â© {new Date().getFullYear()} SkillVane IT Academy.
+            (c) {new Date().getFullYear()} SkillVane IT Academy.
             All rights reserved.
           </span>
           <div className="flex flex-wrap items-center justify-center gap-3">
