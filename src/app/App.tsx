@@ -4012,43 +4012,6 @@ export default function App() {
               </button>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-              <a
-                href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 px-4 py-3 text-sm font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 backdrop-blur-md hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
-              >
-                <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
-                WhatsApp
-              </a>
-              <a
-                href="https://t.me/gcpdataengineering"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-4 py-3 text-sm font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 backdrop-blur-md hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
-              >
-                <Send className="h-4 w-4 transition-transform group-hover:scale-110" />
-                Telegram
-              </a>
-              <a
-                href="https://www.youtube.com/@SkillVane1711"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-red-400/25 bg-red-500/12 px-4 py-3 text-sm font-black text-red-200 shadow-lg shadow-red-500/10 backdrop-blur-md hover:border-red-400/45 hover:bg-red-500/18"
-              >
-                <Youtube className="h-4 w-4 transition-transform group-hover:scale-110" />
-                YouTube
-              </a>
-              <a
-                href="tel:+917305101711"
-                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 px-4 py-3 text-sm font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 backdrop-blur-md hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
-              >
-                <Phone className="h-4 w-4 transition-transform group-hover:scale-110" />
-                Call
-              </a>
-            </div>
-
             <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300">
               {[
                 "Daily live sessions",
@@ -4113,56 +4076,64 @@ export default function App() {
             </div>
 
             <div className="premium-surface rounded-xl p-4">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8df5d7]">
-                    Live Learning Path
-                  </p>
-                  <h2
-                    className="mt-1 text-xl font-black text-white"
-                    style={{
-                      fontFamily:
-                        "'Space Grotesk', system-ui, sans-serif",
-                    }}
-                  >
-                    GCP Data Engineering
-                  </h2>
-                </div>
-                <span className="rounded-lg bg-[#f2b84b] px-3 py-1 text-xs font-black text-[#1d1602]">
-                  3 Months
-                </span>
-              </div>
-
-              <div className="grid gap-2 sm:grid-cols-2">
-                {[
-                  { icon: Database, label: "BigQuery + SQL" },
-                  { icon: Zap, label: "Dataflow + Beam" },
-                  { icon: Layers, label: "Dataproc + Spark" },
-                  { icon: GitBranch, label: "Composer + CI/CD" },
-                ].map(({ icon: Ic, label }) => (
-                    <div
-                      key={label}
-                    className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.065] px-3 py-3 hover:border-[#7cc7ff]/30"
-                    >
-                    <Ic className="h-5 w-5 text-[#7cc7ff]" />
-                    <span className="text-sm font-semibold text-slate-200">
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-[#18c29c]/25 bg-[#18c29c]/12 px-4 py-3 shadow-lg shadow-[#18c29c]/10">
-                <span className="flex items-center gap-2 text-sm font-semibold text-[#c9fff0]">
-                  <Shield className="h-4 w-4" />
-                  {TICKER[ticker]}
-                </span>
-                <button
-                  onClick={() => scrollTo("courses")}
-                  className="text-sm font-black text-white hover:text-[#f2b84b]"
+              <div className="mb-4">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f2b84b]">
+                  Connect With SkillVane
+                </p>
+                <h2
+                  className="mt-1 text-xl font-black text-white"
+                  style={{
+                    fontFamily:
+                      "'Space Grotesk', system-ui, sans-serif",
+                  }}
                 >
-                  View plan
-                </button>
+                  Join the community or speak with us.
+                </h2>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <a
+                  href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-xl border border-[#25D366]/25 bg-[#25D366]/12 px-4 py-4 text-sm font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#25D366]/18">
+                    <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  </span>
+                  WhatsApp
+                </a>
+                <a
+                  href="https://t.me/gcpdataengineering"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-xl border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-4 py-4 text-sm font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2f80ed]/18">
+                    <Send className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  </span>
+                  Telegram
+                </a>
+                <a
+                  href="https://www.youtube.com/@SkillVane1711"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-xl border border-red-400/25 bg-red-500/12 px-4 py-4 text-sm font-black text-red-200 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/18">
+                    <Youtube className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  </span>
+                  YouTube
+                </a>
+                <a
+                  href="tel:+917305101711"
+                  className="group flex items-center gap-3 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/12 px-4 py-4 text-sm font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#18c29c]/18">
+                    <Phone className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  </span>
+                  Call
+                </a>
               </div>
             </div>
           </div>
