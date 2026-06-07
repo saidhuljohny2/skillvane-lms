@@ -1227,6 +1227,9 @@ async function sendOtpEmail(
   await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_PASSWORD_OTP_TEMPLATE_ID, {
     to_name: toName,
     to_email: toEmail,
+    email: toEmail,
+    user_email: toEmail,
+    reply_to: toEmail,
     otp,
     passcode: otp,
     verification_code: otp,
