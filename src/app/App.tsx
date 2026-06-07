@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
+import gcpDataEngineeringCurriculum from "@/imports/gcp-data-engineering-curriculum.pdf";
 import {
   ChevronDown,
   Star,
@@ -43,9 +44,9 @@ import {
   Linkedin,
 } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────
-// CONFIG — Update these two values after setup (see guide below)
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// CONFIG â€” Update these two values after setup (see guide below)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const RAZORPAY_KEY = "rzp_live_Sx2SDk8J6c6HBk";
 const RAZORPAY_KEY_SECRET = "sBIaKza4uMIkT6ehyhqwRQts";
 
@@ -60,9 +61,9 @@ const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 
-// ─────────────────────────────────────────────────────────────────
-// COURSE DATA — Add a new course here and it appears on the site
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// COURSE DATA â€” Add a new course here and it appears on the site
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type CourseType = "live" | "recording" | "course" | "project";
 type CourseCategory = "all" | "live-batch" | "self-paced";
 
@@ -81,6 +82,7 @@ interface Course {
   timings?: string;
   highlights: string[];
   curriculum: { module: string; topics: string[] }[];
+  curriculumDownload?: string;
   tag?: string;
   zoomLink?: string; // For live batch courses
   driveLink?: string; // For recording courses
@@ -88,7 +90,7 @@ interface Course {
 }
 
 const COURSES: Course[] = [
-  // ── Course 1 ────────────────────────────────────────────────────
+  // â”€â”€ Course 1 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "gcp-live",
     type: "live",
@@ -96,15 +98,17 @@ const COURSES: Course[] = [
     icon: MonitorPlay,
     accentFrom: "#4361ee",
     accentTo: "#3bc9db",
-    title: "GCP Data Engineering",
-    subtitle: "Full Course — Live Batch",
+    title: "Next Morning Batch: GCP Data Engineering",
+    subtitle: "Full Course - Live Morning Batch",
     price: 12000,
     originalPrice: 20000,
-    duration: "3 Months",
-    timings: "7:30 AM – 8:30 AM (Mon – Fri)",
-    tag: "Most Popular",
+    duration: "3 months",
+    timings: "7:00 AM to 8:00 AM",
+    curriculumDownload: gcpDataEngineeringCurriculum,
+    tag: "Main Focus",
     highlights: [
-      "Daily live sessions (Mon–Fri, 7:30–8:30 AM)",
+      "Demo: July 1, 2, and 3 - three free demo classes",
+      "Daily live sessions from 7:00 AM to 8:00 AM",
       "Recordings Shared Daily",
       "Comprehensive Material",
       "Resume assistance & career guidance",
@@ -112,7 +116,7 @@ const COURSES: Course[] = [
       "Private student community access",
     ],
     curriculum: [
-      // ── PASTE YOUR CURRICULUM HERE ──
+      // â”€â”€ PASTE YOUR CURRICULUM HERE â”€â”€
       // Format: { module: "Module Name", topics: ["Topic 1", "Topic 2"] }
       {
         module: "GCP Cloud Basics",
@@ -284,7 +288,7 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_LIVE_NOTES_LINK", // Replace with GCP live batch notes link
   },
 
-  // ── Course 2 ────────────────────────────────────────────────────
+  // â”€â”€ Course 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "gcp-recordings",
     type: "recording",
@@ -293,7 +297,7 @@ const COURSES: Course[] = [
     accentFrom: "#7c3aed",
     accentTo: "#a855f7",
     title: "GCP Data Engineering",
-    subtitle: "Course — Recordings",
+    subtitle: "Course â€” Recordings",
     price: 6000,
     originalPrice: 12000,
     highlights: [
@@ -305,7 +309,7 @@ const COURSES: Course[] = [
       "Community access for doubt resolution",
     ],
     curriculum: [
-      // ── PASTE YOUR CURRICULUM HERE ──
+      // â”€â”€ PASTE YOUR CURRICULUM HERE â”€â”€
       {
         module: "GCP Cloud Basics",
         topics: [
@@ -477,7 +481,7 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_RECORDINGS_NOTES_LINK", // Replace with GCP recordings notes link
   },
 
-  // ── Course 3 ────────────────────────────────────────────────────
+  // â”€â”€ Course 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "python-de",
     type: "course",
@@ -535,7 +539,7 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_PYTHON_NOTES_LINK", // Replace with Python notes link
   },
 
-  // ── Course 4 ────────────────────────────────────────────────────
+  // â”€â”€ Course 4 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "project-healthcare",
     type: "project",
@@ -556,7 +560,7 @@ const COURSES: Course[] = [
       "Architecture walkthrough & code review",
     ],
     curriculum: [
-      // ── PASTE YOUR CURRICULUM HERE ──
+      // â”€â”€ PASTE YOUR CURRICULUM HERE â”€â”€
       {
         module: "Project Overview & Architecture",
         topics: [
@@ -569,7 +573,7 @@ const COURSES: Course[] = [
         module: "Data Ingestion Pipeline",
         topics: [
           "Ingesting HL7/FHIR Healthcare Records",
-          "Pub/Sub → Dataflow Streaming Ingestion",
+          "Pub/Sub â†’ Dataflow Streaming Ingestion",
           "Raw Layer Design in Cloud Storage",
         ],
       },
@@ -596,7 +600,7 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_HEALTHCARE_NOTES_LINK", // Replace with Healthcare notes link
   },
 
-  // ── Course 5 ────────────────────────────────────────────────────
+  // â”€â”€ Course 5 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "project-retail",
     type: "project",
@@ -617,7 +621,7 @@ const COURSES: Course[] = [
       "Architecture walkthrough & code review",
     ],
     curriculum: [
-      // ── PASTE YOUR CURRICULUM HERE ──
+      // â”€â”€ PASTE YOUR CURRICULUM HERE â”€â”€
       {
         module: "Project Overview & Architecture",
         topics: [
@@ -637,7 +641,7 @@ const COURSES: Course[] = [
       {
         module: "Streaming & Real-Time Analytics",
         topics: [
-          "Pub/Sub → Dataflow for Live Order Events",
+          "Pub/Sub â†’ Dataflow for Live Order Events",
           "Real-Time Sales Dashboard in Looker Studio",
           "Alerting on Inventory Threshold Breaches",
         ],
@@ -657,14 +661,14 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_RETAILER_NOTES_LINK", // Replace with Retailer notes link
   },
 
-  // ── ADD A NEW COURSE HERE ────────────────────────────────────────
+  // â”€â”€ ADD A NEW COURSE HERE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Copy any block above, change the id, content, price, and colors.
   // The card will appear automatically on the site.
 ];
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Static data
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TICKER = [
   "Rohan from Mumbai just enrolled",
   "Divya from Bangalore just enrolled",
@@ -722,11 +726,11 @@ const CATEGORY_LABELS: Record<CourseCategory, string> = {
   "self-paced": "Self-paced",
 };
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatINR(n: number) {
-  return `₹${n.toLocaleString("en-IN")}`;
+  return `â‚¹${n.toLocaleString("en-IN")}`;
 }
 
 function GradientText({
@@ -792,9 +796,9 @@ function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
   return `https://wa.me/917305101711?text=${encodeURIComponent(message)}`;
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Course Modal
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CourseModal({
   course,
   onClose,
@@ -996,6 +1000,16 @@ function CourseModal({
 
         {/* Footer CTA */}
         <div className="flex-shrink-0 px-5 sm:px-6 py-4 border-t border-white/8 bg-[#080d1a] space-y-3">
+          {course.curriculumDownload && (
+            <a
+              href={course.curriculumDownload}
+              download
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-[#f2b84b]/12 border border-[#f2b84b]/35 text-[#ffe4a3] hover:bg-[#f2b84b]/18 hover:border-[#f2b84b]/60 transition-all"
+            >
+              <Download className="w-4 h-4" />
+              Download Curriculum
+            </a>
+          )}
           {/* Access Link - Zoom for Live, Drive for Recordings */}
           {demoAccess && (
             <a
@@ -1017,11 +1031,11 @@ function CourseModal({
               boxShadow: `0 8px 30px ${course.accentFrom}40`,
             }}
           >
-            Enroll Now · {formatINR(course.price)}
+            Enroll Now Â· {formatINR(course.price)}
           </button>
           <p className="text-center text-xs text-white/30 mt-2.5">
-            Secure payment via Razorpay · UPI · Net Banking ·
-            Cards · EMI
+            Secure payment via Razorpay Â· UPI Â· Net Banking Â·
+            Cards Â· EMI
           </p>
         </div>
       </div>
@@ -1029,9 +1043,9 @@ function CourseModal({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface StudentDetails {
   name: string;
   email: string;
@@ -1053,9 +1067,9 @@ interface EnrollmentRecord {
   paidAt: Date;
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function generateInvoiceNo() {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -1139,8 +1153,8 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     to_email: record.student.email,
     invoice_no: record.invoiceNo,
     payment_id: record.paymentId,
-    course_name: `${record.course.title} — ${record.course.subtitle}`,
-    amount: `₹${record.course.price.toLocaleString("en-IN")}`,
+    course_name: `${record.course.title} â€” ${record.course.subtitle}`,
+    amount: `â‚¹${record.course.price.toLocaleString("en-IN")}`,
     paid_at: record.paidAt.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "long",
@@ -1152,9 +1166,9 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Login/Signup Modal
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function LoginModal({
   onClose,
   onLogin,
@@ -1442,9 +1456,9 @@ function LoginModal({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Student Dashboard
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function StudentDashboard({
   student,
   courses,
@@ -1858,9 +1872,9 @@ function StudentDashboard({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Enrollment Form Modal
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function EnrollmentFormModal({
   course,
   onClose,
@@ -1923,7 +1937,7 @@ function EnrollmentFormModal({
               className="text-xs font-mono uppercase tracking-widest mb-0.5"
               style={{ color: course.accentFrom }}
             >
-              Step 1 of 2 — Your Details
+              Step 1 of 2 â€” Your Details
             </p>
             <h2
               className="font-black text-white text-base"
@@ -1934,7 +1948,7 @@ function EnrollmentFormModal({
               {course.title}
             </h2>
             <p className="text-xs text-white/40">
-              {course.subtitle} · ₹
+              {course.subtitle} Â· â‚¹
               {course.price.toLocaleString("en-IN")}
             </p>
           </div>
@@ -2077,7 +2091,7 @@ function EnrollmentFormModal({
               boxShadow: `0 8px 24px ${course.accentFrom}40`,
             }}
           >
-            Continue to Payment →
+            Continue to Payment â†’
           </button>
         </form>
       </div>
@@ -2085,9 +2099,9 @@ function EnrollmentFormModal({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Invoice Modal
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function InvoiceModal({
   record,
   onClose,
@@ -2154,7 +2168,7 @@ function InvoiceModal({
           )}
           {emailSent === false && (
             <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full">
-              Invoice email setup pending — see guide below
+              Invoice email setup pending â€” see guide below
             </div>
           )}
         </div>
@@ -2217,7 +2231,7 @@ function InvoiceModal({
                 {record.course.subtitle}
               </p>
               <p className="text-xs font-bold text-emerald-400 mt-1">
-                ₹{record.course.price.toLocaleString("en-IN")}{" "}
+                â‚¹{record.course.price.toLocaleString("en-IN")}{" "}
                 paid
               </p>
             </div>
@@ -2265,9 +2279,9 @@ function InvoiceModal({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Course Card
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CourseCard({
   course,
   onViewDetails,
@@ -2282,11 +2296,18 @@ function CourseCard({
   const category: CourseCategory =
     course.type === "live" ? "live-batch" : "self-paced";
   const isLiveBatch = category === "live-batch";
+  const isFeaturedLiveBatch = course.id === "gcp-live";
   const moduleCount = course.curriculum.length;
   const curriculumPreview = course.curriculum.slice(0, 2);
 
   return (
-    <div className="premium-surface group relative flex flex-col rounded-2xl overflow-hidden hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 hover:-translate-y-1.5 transition-all duration-300">
+    <div
+      className={`premium-surface group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 ${
+        isFeaturedLiveBatch
+          ? "border-[#f2b84b]/35 shadow-2xl shadow-[#f2b84b]/10"
+          : ""
+      }`}
+    >
       {/* Accent top bar */}
       <div
         className="h-1.5 w-full"
@@ -2319,7 +2340,11 @@ function CourseCard({
         </div>
       )}
 
-      <div className="p-5 sm:p-6 flex flex-col flex-1">
+      <div
+        className={`flex flex-1 flex-col ${
+          isFeaturedLiveBatch ? "p-5 sm:p-7" : "p-5 sm:p-6"
+        }`}
+      >
         {/* Icon + badge */}
         <div className="flex items-center gap-3 mb-4 relative z-10">
           <div
@@ -2348,7 +2373,9 @@ function CourseCard({
 
         {/* Title */}
         <h3
-          className="text-xl font-black text-white leading-tight mb-1 relative z-10 group-hover:text-[#fff8dd]"
+          className={`relative z-10 mb-1 font-black leading-tight text-white group-hover:text-[#fff8dd] ${
+            isFeaturedLiveBatch ? "text-2xl sm:text-3xl" : "text-xl"
+          }`}
           style={{
             fontFamily:
               "'Space Grotesk', system-ui, sans-serif",
@@ -2359,6 +2386,25 @@ function CourseCard({
         <p className="text-sm text-slate-400 mb-5 relative z-10">
           {course.subtitle}
         </p>
+
+        {isFeaturedLiveBatch && (
+          <div className="relative z-10 mb-4 grid gap-2 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.04] p-3 sm:grid-cols-3">
+            {[
+              { label: "Duration", value: "3 months" },
+              { label: "Timings", value: "7:00 AM - 8:00 AM" },
+              { label: "Demo", value: "July 1, 2, 3" },
+            ].map((item) => (
+              <div key={item.label}>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#f2b84b]">
+                  {item.label}
+                </p>
+                <p className="mt-1 text-sm font-black text-white">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Meta pills */}
         <div className="flex flex-wrap gap-2 mb-4">
@@ -2376,6 +2422,12 @@ function CourseCard({
             <span className="flex items-center gap-1 text-xs text-[#b8fff0] bg-[#18c29c]/12 border border-[#18c29c]/28 px-2.5 py-1 rounded-full shadow-sm shadow-[#18c29c]/10">
               <MonitorPlay className="w-3 h-3" />
               {course.timings}
+            </span>
+          )}
+          {isFeaturedLiveBatch && (
+            <span className="flex items-center gap-1 text-xs text-[#ffe4a3] bg-[#f2b84b]/10 border border-[#f2b84b]/24 px-2.5 py-1 rounded-full">
+              <Play className="w-3 h-3" />
+              3 free demos
             </span>
           )}
           <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
@@ -2453,6 +2505,16 @@ function CourseCard({
 
         {/* Buttons */}
         <div className="relative z-10 space-y-3">
+          {course.curriculumDownload && (
+            <a
+              href={course.curriculumDownload}
+              download
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/35 bg-[#f2b84b]/12 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-all hover:border-[#f2b84b]/60 hover:bg-[#f2b84b]/18"
+            >
+              <Download className="h-4 w-4" />
+              Download Curriculum
+            </a>
+          )}
           {demoAccess && (
             <a
               href={demoAccess.href}
@@ -2487,9 +2549,9 @@ function CourseCard({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main App
-// ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function App() {
   const [ticker, setTicker] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -2608,7 +2670,7 @@ export default function App() {
     setShowDashboard(false);
   };
 
-  // Step 1: Enroll button → show student details form
+  // Step 1: Enroll button â†’ show student details form
   const getSavedStudentDetails = (
     student: LoggedInStudent,
   ): StudentDetails | null => {
@@ -2639,7 +2701,7 @@ export default function App() {
     return null;
   };
 
-  // Step 2: Form submitted → open Razorpay
+  // Step 2: Form submitted â†’ open Razorpay
   const startEnrollmentPayment = async (
     course: Course,
     student: StudentDetails,
@@ -2668,7 +2730,7 @@ export default function App() {
         amount: course.price * 100, // Amount in paise
         currency: "INR",
         name: "SkillVane IT Academy",
-        description: `${course.title} — ${course.subtitle}`,
+        description: `${course.title} â€” ${course.subtitle}`,
         image: "", // Optional: Add your logo URL
         handler: (response: any) => {
           setPayLoading(null);
@@ -2879,7 +2941,7 @@ export default function App() {
     },
     {
       q: "What is the difference between the Live Batch and Recordings course?",
-      a: "The Live Batch gives you real-time interaction with the instructor (Mon–Fri, 7:30–8:30 AM) plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
+      a: "The Live Batch gives you real-time interaction with the instructor (Monâ€“Fri, 7:30â€“8:30 AM) plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
     },
     {
       q: "Can I buy the project courses without the main GCP course?",
@@ -2887,7 +2949,7 @@ export default function App() {
     },
     {
       q: "Is there a refund policy?",
-      a: "Yes — 7-day no-questions-asked refund if you are not satisfied after accessing up to the first two modules of any course.",
+      a: "Yes â€” 7-day no-questions-asked refund if you are not satisfied after accessing up to the first two modules of any course.",
     },
     {
       q: "Is EMI or instalment payment available?",
@@ -2900,7 +2962,7 @@ export default function App() {
       className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-[#f2b84b]/25"
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
-      {/* ── Navbar ──────────────────────────────────────────────── */}
+      {/* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-[#07111f]">
         <div
           className="h-full rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_20px_rgba(242,184,75,0.45)] transition-[width] duration-150"
@@ -3024,7 +3086,7 @@ export default function App() {
                   onClick={() => scrollTo("courses")}
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
                 >
-                  View Courses →
+                  View Courses â†’
                 </button>
               </>
             )}
@@ -3090,7 +3152,7 @@ export default function App() {
                   onClick={() => scrollTo("courses")}
                   className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20"
                 >
-                  View Courses →
+                  View Courses â†’
                 </button>
               </>
             )}
@@ -3165,8 +3227,8 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Floating Contact Buttons ─────────────────────────────── */}
-      {/* ── Hero ────────────────────────────────────────────────── */}
+      {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         className="relative min-h-[88svh] overflow-hidden bg-[#07111f] pt-20 sm:pt-24"
         style={{
@@ -3362,7 +3424,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Courses ─────────────────────────────────────────────── */}
+      {/* â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="courses"
         className="relative py-14 sm:py-20 bg-[#07111f] overflow-hidden"
@@ -3435,7 +3497,7 @@ export default function App() {
           {/* Payment error banner */}
           {payError && (
             <div className="mb-6 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm text-center font-semibold">
-              ❌ {payError}
+              âŒ {payError}
             </div>
           )}
 
@@ -3444,7 +3506,9 @@ export default function App() {
             {visibleCourses.map((course, index) => (
               <div
                 key={course.id}
-                className="animate-fade-in"
+                className={`animate-fade-in ${
+                  course.id === "gcp-live" ? "lg:col-span-2" : ""
+                }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CourseCard
@@ -3457,13 +3521,13 @@ export default function App() {
           </div>
 
           <p className="text-center text-xs text-slate-500 mt-8">
-            More courses coming soon · All prices in INR
+            More courses coming soon Â· All prices in INR
             inclusive of taxes
           </p>
         </div>
       </section>
 
-      {/* ── Instructor ──────────────────────────────────────────── */}
+      {/* â”€â”€ Instructor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="free-learning"
         className="relative overflow-hidden border-y border-white/10 bg-[#08111f] py-12 sm:py-16"
@@ -3555,7 +3619,7 @@ export default function App() {
               <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
                   src={instructorPhoto}
-                  alt="SkillVane IT Academy — GCP Data Engineering Instructor"
+                  alt="SkillVane IT Academy â€” GCP Data Engineering Instructor"
                   className="w-full h-full object-cover object-top"
                 />
               </div>
@@ -3579,7 +3643,7 @@ export default function App() {
                 Shaik Saidhul
               </h3>
               <p className="text-[#8df5d7] font-semibold text-sm mb-4">
-                Solution Architect · SkillVane IT Academy
+                Solution Architect Â· SkillVane IT Academy
               </p>
               <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xl">
                 With over 9+ years of hands-on experience
@@ -3590,7 +3654,7 @@ export default function App() {
                 Certified Professional Data Engineer and Cloud
                 Architect, they bring real-world war stories,
                 battle-tested patterns, and current industry
-                practices into every lesson — no filler, no
+                practices into every lesson â€” no filler, no
                 theory-only slides.
               </p>
 
@@ -3625,7 +3689,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Testimonials ────────────────────────────────────────── */}
+      {/* â”€â”€ Testimonials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="testimonials"
         className="relative py-14 sm:py-20 bg-[#07111f] border-y border-white/10 overflow-hidden"
@@ -3652,7 +3716,7 @@ export default function App() {
                 />
               ))}
               <span className="ml-2 text-slate-400 text-sm">
-                4.9 / 5 · 500+ ratings
+                4.9 / 5 Â· 500+ ratings
               </span>
             </div>
           </div>
@@ -3701,7 +3765,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── FAQ ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="faq" className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
@@ -3753,7 +3817,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Footer CTA ──────────────────────────────────────────── */}
+      {/* â”€â”€ Footer CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative py-14 sm:py-16 border-t border-white/10 bg-[#07111f] overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_80%_30%,rgba(242,184,75,0.12),transparent_32%)]" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
@@ -3774,12 +3838,12 @@ export default function App() {
             onClick={() => scrollTo("courses")}
             className="magnetic-button px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white font-black text-base active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/25"
           >
-            Browse All Courses →
+            Browse All Courses â†’
           </button>
         </div>
       </section>
 
-      {/* ── Footer ──────────────────────────────────────────────── */}
+      {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <footer className="py-8 border-t border-white/10 bg-[#050b14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
@@ -3800,7 +3864,7 @@ export default function App() {
             </span>
           </div>
           <span>
-            © {new Date().getFullYear()} SkillVane IT Academy.
+            Â© {new Date().getFullYear()} SkillVane IT Academy.
             All rights reserved.
           </span>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -3835,7 +3899,7 @@ export default function App() {
         </div>
       </footer>
 
-      {/* ── Course Detail Modal ──────────────────────────────────── */}
+      {/* â”€â”€ Course Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {modalCourse && (
         <CourseModal
           course={modalCourse}
@@ -3844,7 +3908,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Enrollment Form Modal ────────────────────────────────── */}
+      {/* â”€â”€ Enrollment Form Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {formCourse && (
         <EnrollmentFormModal
           course={formCourse}
@@ -3853,7 +3917,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Invoice / Success Modal ──────────────────────────────── */}
+      {/* â”€â”€ Invoice / Success Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {invoice && (
         <InvoiceModal
           record={invoice}
@@ -3861,7 +3925,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Login Modal ──────────────────────────────────────────── */}
+      {/* â”€â”€ Login Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
@@ -3869,7 +3933,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Student Dashboard ────────────────────────────────────── */}
+      {/* â”€â”€ Student Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showDashboard && currentStudent && (
         <StudentDashboard
           student={currentStudent}
@@ -3885,3 +3949,4 @@ export default function App() {
     </div>
   );
 }
+
