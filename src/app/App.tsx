@@ -60,6 +60,7 @@ const EMAILJS_TEMPLATE_ID = "template_jqy6yhj";
 const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
+const ADMIN_ACCESS_CODE = "SkillVane@1711";
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // COURSE DATA - Add a new course here and it appears on the site
@@ -840,7 +841,7 @@ function CourseModal({
       <div className="relative w-full sm:max-w-2xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
         {/* Header */}
         <div
-          className="px-5 sm:px-6 py-5 flex items-start justify-between gap-4 flex-shrink-0"
+          className="px-4 py-4 sm:px-5 flex items-start justify-between gap-4 flex-shrink-0"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}22 0%, ${course.accentTo}11 100%)`,
             borderBottom: `1px solid ${course.accentFrom}30`,
@@ -884,7 +885,7 @@ function CourseModal({
         </div>
 
         {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-5 sm:px-6 py-5 space-y-6">
+        <div className="overflow-y-auto flex-1 px-4 py-4 sm:px-5 space-y-5">
           {/* Price + meta */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -1003,7 +1004,7 @@ function CourseModal({
         </div>
 
         {/* Footer CTA */}
-        <div className="flex-shrink-0 px-5 sm:px-6 py-4 border-t border-white/8 bg-[#080d1a] space-y-3">
+        <div className="flex-shrink-0 px-4 py-4 sm:px-5 border-t border-white/8 bg-[#080d1a] space-y-3">
           {course.curriculumDownload && (
             <a
               href={course.curriculumDownload}
@@ -1061,6 +1062,12 @@ interface LoggedInStudent {
   email: string;
   name: string;
   enrolledCourses: string[]; // Array of course IDs
+}
+
+interface StoredStudent extends LoggedInStudent {
+  phone?: string;
+  password: string;
+  createdAt?: string;
 }
 
 interface EnrollmentRecord {
@@ -1180,7 +1187,7 @@ function LoginModal({
   onClose: () => void;
   onLogin: (student: LoggedInStudent) => void;
 }) {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -1226,6 +1233,32 @@ function LoginModal({
       const students: Record<string, any> = studentsData
         ? JSON.parse(studentsData)
         : {};
+
+      if (mode === "reset") {
+        const student = students[form.email];
+        if (!student) {
+          setErrors({ email: "No student found with this email." });
+          setLoading(false);
+          return;
+        }
+
+        students[form.email] = {
+          ...student,
+          password: form.password,
+        };
+        localStorage.setItem(
+          "skillvane_students",
+          JSON.stringify(students),
+        );
+        setErrors({
+          general:
+            "Password reset successful. You can login with the new password.",
+        });
+        setMode("login");
+        setForm({ ...form, password: "" });
+        setLoading(false);
+        return;
+      }
 
       if (mode === "signup") {
         // Check if user already exists
@@ -1299,7 +1332,7 @@ function LoginModal({
       <div className="relative w-full sm:max-w-md bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(242,184,75,0.12),transparent_36%)]" />
         {/* Header */}
-        <div className="relative px-6 py-5 flex items-center justify-between border-b border-white/10">
+        <div className="relative px-5 py-4 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
               <Lock className="w-5 h-5 text-white" />
@@ -1314,12 +1347,16 @@ function LoginModal({
             >
               {mode === "login"
                 ? "Welcome Back"
-                : "Create Account"}
+                : mode === "signup"
+                  ? "Create Account"
+                  : "Reset Password"}
             </h2>
             <p className="text-xs text-slate-400">
               {mode === "login"
                 ? "Login to access your courses"
-                : "Sign up to get started"}
+                : mode === "signup"
+                  ? "Sign up to get started"
+                  : "Use your registered email"}
             </p>
             </div>
           </div>
@@ -1333,7 +1370,7 @@ function LoginModal({
 
         <form
           onSubmit={handleSubmit}
-          className="relative px-6 py-6 space-y-4"
+          className="relative px-5 py-5 space-y-4"
         >
           {errors.general && (
             <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
@@ -1437,10 +1474,25 @@ function LoginModal({
               ? "Please wait..."
               : mode === "login"
                 ? "Login"
-                : "Sign Up"}
+                : mode === "signup"
+                  ? "Sign Up"
+                  : "Reset Password"}
           </button>
 
-          <div className="text-center">
+          <div className="flex flex-col items-center gap-2 text-center">
+            {mode === "login" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("reset");
+                  setErrors({});
+                  setForm({ ...form, password: "" });
+                }}
+                className="text-sm font-bold text-[#8df5d7] hover:text-white transition-colors"
+              >
+                Forgot password? Reset using email
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -1451,7 +1503,9 @@ function LoginModal({
             >
               {mode === "login"
                 ? "Don't have an account? Sign up"
-                : "Already have an account? Login"}
+                : mode === "signup"
+                  ? "Already have an account? Login"
+                  : "Back to login"}
             </button>
           </div>
         </form>
@@ -1463,6 +1517,300 @@ function LoginModal({
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Student Dashboard
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function AdminStudentsModal({
+  courses,
+  onClose,
+}: {
+  courses: Course[];
+  onClose: () => void;
+}) {
+  const [accessCode, setAccessCode] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+  const [message, setMessage] = useState("");
+  const [students, setStudents] = useState<Record<string, StoredStudent>>(
+    () => {
+      try {
+        return JSON.parse(
+          localStorage.getItem("skillvane_students") || "{}",
+        );
+      } catch {
+        return {};
+      }
+    },
+  );
+  const [form, setForm] = useState<StoredStudent>({
+    email: "",
+    name: "",
+    phone: "",
+    password: "",
+    enrolledCourses: [],
+  });
+
+  const persistStudents = (next: Record<string, StoredStudent>) => {
+    setStudents(next);
+    localStorage.setItem("skillvane_students", JSON.stringify(next));
+  };
+
+  const resetForm = () => {
+    setForm({
+      email: "",
+      name: "",
+      phone: "",
+      password: "",
+      enrolledCourses: [],
+    });
+  };
+
+  const saveStudent = () => {
+    const email = form.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setMessage("Enter a valid student email.");
+      return;
+    }
+    if (!form.name.trim()) {
+      setMessage("Student name is required.");
+      return;
+    }
+    if (!form.password || form.password.length < 6) {
+      setMessage("Password must be at least 6 characters.");
+      return;
+    }
+
+    const next = {
+      ...students,
+      [email]: {
+        ...students[email],
+        email,
+        name: form.name.trim(),
+        phone: form.phone?.trim() || "",
+        password: form.password,
+        enrolledCourses: form.enrolledCourses || [],
+        createdAt: students[email]?.createdAt || new Date().toISOString(),
+      },
+    };
+    persistStudents(next);
+    setMessage("Student login saved.");
+    resetForm();
+  };
+
+  const editStudent = (student: StoredStudent) => {
+    setForm({
+      email: student.email,
+      name: student.name,
+      phone: student.phone || "",
+      password: student.password || "",
+      enrolledCourses: student.enrolledCourses || [],
+    });
+    setMessage("");
+  };
+
+  const deleteStudent = (email: string) => {
+    const next = { ...students };
+    delete next[email];
+    persistStudents(next);
+    if (form.email === email) resetForm();
+    setMessage("Student removed.");
+  };
+
+  const toggleCourse = (courseId: string) => {
+    const enrolled = new Set(form.enrolledCourses || []);
+    if (enrolled.has(courseId)) enrolled.delete(courseId);
+    else enrolled.add(courseId);
+    setForm({ ...form, enrolledCourses: Array.from(enrolled) });
+  };
+
+  const studentList = Object.values(students).sort((a, b) =>
+    a.email.localeCompare(b.email),
+  );
+
+  return (
+    <div className="fixed inset-0 z-[130] flex items-end justify-center p-0 sm:items-center sm:p-4">
+      <div
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-white/10 bg-[#07111f] shadow-2xl sm:max-w-5xl sm:rounded-2xl">
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+              Admin Console
+            </p>
+            <h2 className="text-xl font-black text-white">
+              Student Login Manager
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-xl border border-white/10 bg-white/[0.04] p-2 text-slate-400 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {!unlocked ? (
+          <div className="space-y-4 px-5 py-5">
+            <p className="text-sm text-slate-300">
+              Enter the admin access code to manage student emails and passwords.
+            </p>
+            <input
+              type="password"
+              value={accessCode}
+              onChange={(e) => setAccessCode(e.target.value)}
+              placeholder="Admin access code"
+              className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+            />
+            {message && <p className="text-sm text-red-300">{message}</p>}
+            <button
+              onClick={() => {
+                if (accessCode === ADMIN_ACCESS_CODE) {
+                  setUnlocked(true);
+                  setMessage("");
+                } else {
+                  setMessage("Invalid admin access code.");
+                }
+              }}
+              className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+            >
+              Open Admin Console
+            </button>
+          </div>
+        ) : (
+          <div className="grid flex-1 gap-4 overflow-y-auto px-5 py-5 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+              <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+                Create / Update Student
+              </h3>
+              <div className="space-y-3">
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="Student name"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm({ ...form, email: e.target.value })
+                  }
+                  placeholder="student@email.com"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                <input
+                  value={form.phone || ""}
+                  onChange={(e) =>
+                    setForm({ ...form, phone: e.target.value })
+                  }
+                  placeholder="Phone number"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                <input
+                  value={form.password}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
+                  placeholder="Login password"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                />
+                <div className="rounded-xl border border-white/10 bg-[#07111f]/70 p-3">
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[#f2b84b]">
+                    Enrolled Courses
+                  </p>
+                  <div className="grid gap-2">
+                    {courses.map((course) => (
+                      <label
+                        key={course.id}
+                        className="flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2 text-sm text-slate-200"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.enrolledCourses.includes(course.id)}
+                          onChange={() => toggleCourse(course.id)}
+                        />
+                        {course.title}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                {message && (
+                  <p className="rounded-lg border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-3 py-2 text-sm text-[#ffe4a3]">
+                    {message}
+                  </p>
+                )}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={saveStudent}
+                    className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+                  >
+                    Save Student
+                  </button>
+                  <button
+                    onClick={resetForm}
+                    className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-slate-300 hover:text-white"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+              <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+                Existing Students
+              </h3>
+              <div className="space-y-3">
+                {studentList.length === 0 ? (
+                  <p className="text-sm text-slate-400">
+                    No student logins created yet.
+                  </p>
+                ) : (
+                  studentList.map((student) => (
+                    <div
+                      key={student.email}
+                      className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3"
+                    >
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <p className="font-black text-white">
+                            {student.name}
+                          </p>
+                          <p className="truncate text-xs text-slate-400">
+                            {student.email}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            Password: {student.password}
+                          </p>
+                          <p className="mt-1 text-xs text-[#9cf8dd]">
+                            {(student.enrolledCourses || []).length} enrolled
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => editStudent(student)}
+                            className="rounded-lg border border-[#18c29c]/25 px-3 py-2 text-xs font-black text-[#9cf8dd]"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteStudent(student.email)}
+                            className="rounded-lg border border-red-400/25 px-3 py-2 text-xs font-black text-red-200"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StudentDashboard({
   student,
   courses,
@@ -1509,7 +1857,7 @@ function StudentDashboard({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(24,194,156,0.22),transparent_34%),radial-gradient(ellipse_at_92%_20%,rgba(242,184,75,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_26%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f2b84b]/70 to-transparent" />
 
-        <div className="sticky top-0 z-20 px-5 sm:px-7 py-4 sm:py-5 flex items-center justify-between border-b border-white/10 bg-[#07111f]/92 backdrop-blur-xl">
+        <div className="sticky top-0 z-20 px-4 py-4 sm:px-6 flex items-center justify-between border-b border-white/10 bg-[#07111f]/92 backdrop-blur-xl">
           <div className="min-w-0 flex items-center gap-3">
             <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] flex items-center justify-center shadow-lg shadow-[#18c29c]/25 ring-1 ring-white/20 flex-shrink-0">
               <GraduationCap className="w-6 h-6 text-white" />
@@ -1546,9 +1894,9 @@ function StudentDashboard({
           </div>
         </div>
 
-        <div className="relative overflow-y-auto flex-1 px-4 py-4 sm:px-6 sm:py-5 space-y-6 lms-dashboard-scroll">
+        <div className="relative overflow-y-auto flex-1 px-4 py-4 sm:px-5 space-y-5 lms-dashboard-scroll">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-4">
-            <div className="premium-surface rounded-2xl p-4 sm:p-5">
+            <div className="premium-surface rounded-2xl p-4">
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Access center
@@ -1622,7 +1970,7 @@ function StudentDashboard({
             </div>
           </div>
 
-          <section className="premium-surface rounded-2xl p-4 sm:p-5">
+          <section className="premium-surface rounded-2xl p-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/15 shadow-lg shadow-red-500/10">
@@ -1969,7 +2317,7 @@ function EnrollmentFormModal({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,194,156,0.14),transparent_42%)]" />
         {/* Header */}
         <div
-          className="relative px-6 py-4 flex items-center justify-between border-b border-white/10"
+          className="relative px-5 py-4 flex items-center justify-between border-b border-white/10"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}22, ${course.accentTo}11)`,
           }}
@@ -2003,7 +2351,7 @@ function EnrollmentFormModal({
 
         <form
           onSubmit={handleSubmit}
-          className="relative px-6 py-6 space-y-4"
+          className="relative px-5 py-5 space-y-4"
         >
           {/* Name */}
           <div>
@@ -2185,7 +2533,7 @@ function InvoiceModal({
       <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#18c29c]/30 shadow-2xl overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(24,194,156,0.16),transparent_45%)]" />
         {/* Success header */}
-        <div className="relative px-6 pt-8 pb-6 text-center border-b border-white/10 bg-[#18c29c]/5">
+        <div className="relative px-5 pt-7 pb-5 text-center border-b border-white/10 bg-[#18c29c]/5">
           <div className="w-14 h-14 rounded-xl bg-[#18c29c]/20 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-[#8df5d7]" />
           </div>
@@ -2215,7 +2563,7 @@ function InvoiceModal({
         </div>
 
         {/* Invoice body */}
-        <div className="relative px-6 py-5 space-y-4">
+        <div className="relative px-5 py-5 space-y-4">
           {/* Invoice number */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
             <div>
@@ -2306,7 +2654,7 @@ function InvoiceModal({
           </p>
         </div>
 
-        <div className="px-6 pb-6">
+        <div className="px-5 pb-5">
           <button
             onClick={onClose}
             className="w-full py-3 rounded-xl border border-white/15 text-white/70 hover:bg-white/5 hover:text-white font-semibold text-sm transition-all"
@@ -2381,7 +2729,7 @@ function CourseCard({
 
       <div
         className={`flex flex-1 flex-col ${
-          isFeaturedLiveBatch ? "p-5 sm:p-7" : "p-5 sm:p-6"
+          isFeaturedLiveBatch ? "p-4 sm:p-6" : "p-4 sm:p-5"
         }`}
       >
         {/* Icon + badge */}
@@ -2479,7 +2827,7 @@ function CourseCard({
           </span>
         </div>
 
-        <div className="relative z-10 mb-5 rounded-xl border border-white/10 bg-[#07111f]/72 p-3">
+        <div className="relative z-10 mb-4 rounded-xl border border-white/10 bg-[#07111f]/72 p-3">
           <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]">
             <CheckCircle2 className="h-3.5 w-3.5" />
             What's included
@@ -2498,7 +2846,7 @@ function CourseCard({
         </div>
 
         {/* Price */}
-        <div className="flex flex-wrap items-baseline gap-2 mb-5 relative z-10 rounded-xl border border-white/10 bg-white/[0.045] px-4 py-3 shadow-inner shadow-white/5">
+        <div className="flex flex-wrap items-baseline gap-2 mb-4 relative z-10 rounded-xl border border-white/10 bg-white/[0.045] px-4 py-3 shadow-inner shadow-white/5">
           <span
             className="text-3xl font-black text-white"
             style={{
@@ -2612,6 +2960,7 @@ export default function App() {
   const [currentStudent, setCurrentStudent] =
     useState<LoggedInStudent | null>(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
 
   // Check if user is logged in on mount
@@ -2664,6 +3013,7 @@ export default function App() {
       formCourse ||
       invoice ||
       showLogin ||
+      showAdmin ||
       showDashboard
     );
     document.body.style.overflow = anyOpen ? "hidden" : "";
@@ -2675,6 +3025,7 @@ export default function App() {
     formCourse,
     invoice,
     showLogin,
+    showAdmin,
     showDashboard,
   ]);
 
@@ -3102,15 +3453,31 @@ export default function App() {
             </div>
 
             {currentStudent ? (
-              <button
-                onClick={() => setShowDashboard(true)}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
-              >
-                <GraduationCap className="w-4 h-4" />
-                My Dashboard
-              </button>
+              <>
+                <button
+                  onClick={() => setShowAdmin(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f2b84b]/25 text-[#ffe4a3] hover:text-white hover:border-[#f2b84b]/45 transition-all text-sm font-semibold"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
+                <button
+                  onClick={() => setShowDashboard(true)}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
+                >
+                  <GraduationCap className="w-4 h-4" />
+                  My Dashboard
+                </button>
+              </>
             ) : (
               <>
+                <button
+                  onClick={() => setShowAdmin(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f2b84b]/25 text-[#ffe4a3] hover:text-white hover:border-[#f2b84b]/45 transition-all text-sm font-semibold"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
                 <button
                   onClick={() => setShowLogin(true)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/12 text-muted-foreground hover:text-foreground hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
@@ -3162,6 +3529,17 @@ export default function App() {
               </button>
             ))}
             {currentStudent ? (
+              <>
+                <button
+                  onClick={() => {
+                    setShowAdmin(true);
+                    setMobileOpen(false);
+                  }}
+                  className="mt-3 w-full py-3 rounded-xl border border-[#f2b84b]/25 text-[#ffe4a3] text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
               <button
                 onClick={() => {
                   setShowDashboard(true);
@@ -3172,8 +3550,19 @@ export default function App() {
                 <GraduationCap className="w-4 h-4" />
                 My Dashboard
               </button>
+              </>
             ) : (
               <>
+                <button
+                  onClick={() => {
+                    setShowAdmin(true);
+                    setMobileOpen(false);
+                  }}
+                  className="mt-3 w-full py-3 rounded-xl border border-[#f2b84b]/25 text-[#ffe4a3] text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
                 <button
                   onClick={() => {
                     setShowLogin(true);
@@ -3266,7 +3655,7 @@ export default function App() {
       {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
-        className="relative min-h-[88svh] overflow-hidden bg-[#07111f] pt-20 sm:pt-24"
+        className="relative min-h-[82svh] overflow-hidden bg-[#07111f] pt-[4.5rem] sm:pt-[5.5rem]"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
           backgroundPosition: "center, right 18% top",
@@ -3290,7 +3679,7 @@ export default function App() {
           <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(88svh-6rem)] flex flex-col justify-center py-10 sm:py-14">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(82svh-5rem)] flex flex-col justify-center py-8 sm:py-12">
           <div className="max-w-3xl">
             <button
               onClick={() => scrollTo("courses")}
@@ -3319,11 +3708,11 @@ export default function App() {
               </span>
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
               At SkillVane, we offer industry-focused Google Cloud Data Engineering training through live classes, hands-on projects, real-world case studies, and dedicated career support to help you become job-ready.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => scrollTo("courses")}
                 className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25 active:scale-[0.98]"
@@ -3340,7 +3729,7 @@ export default function App() {
               </button>
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300">
               {[
                 "Daily live sessions",
                 "Recordings shared",
@@ -3358,7 +3747,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 {
@@ -3463,13 +3852,13 @@ export default function App() {
       {/* â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="courses"
-        className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden"
+        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
+          <div className="mx-auto mb-7 max-w-3xl text-center sm:mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-4 shadow-lg shadow-[#18c29c]/10">
               <span className="w-2 h-2 rounded-full bg-[#18c29c] animate-pulse" />
               Premium Programs
@@ -3489,7 +3878,7 @@ export default function App() {
           </div>
 
           {/* Category tabs */}
-          <div className="premium-surface mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
+          <div className="premium-surface mx-auto mb-7 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
@@ -3555,7 +3944,7 @@ export default function App() {
       {/* â”€â”€ Instructor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="free-learning"
-        className="relative overflow-hidden border-y border-white/10 bg-[#08111f] py-12 sm:py-16"
+        className="relative overflow-hidden border-y border-white/10 bg-[#08111f] py-10 sm:py-14"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_10%,rgba(239,68,68,0.14),transparent_30%),radial-gradient(ellipse_at_82%_70%,rgba(24,194,156,0.12),transparent_34%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -3575,7 +3964,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="premium-surface rounded-2xl p-4 sm:p-5">
+          <div className="premium-surface rounded-2xl p-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-4">
                 <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-red-400/25 bg-red-500/15 shadow-xl shadow-red-500/10">
@@ -3621,11 +4010,11 @@ export default function App() {
 
       <section
         id="instructor"
-        className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden"
+        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
+          <div className="text-center mb-7">
             <span className="inline-flex rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-2 text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
               Your Instructor
             </span>
@@ -3639,7 +4028,7 @@ export default function App() {
             </h2>
           </div>
 
-          <div className="premium-surface rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row gap-6 md:gap-9 items-center md:items-start">
+          <div className="premium-surface rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 md:gap-8 items-center md:items-start">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
               <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
@@ -3717,11 +4106,11 @@ export default function App() {
       {/* â”€â”€ Testimonials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="testimonials"
-        className="relative py-14 sm:py-20 bg-[#07111f] border-y border-white/10 overflow-hidden"
+        className="relative py-12 sm:py-16 bg-[#07111f] border-y border-white/10 overflow-hidden"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
+          <div className="text-center mb-7">
             <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#ffe4a3] tracking-widest uppercase">
               Reviews
             </span>
@@ -3750,7 +4139,7 @@ export default function App() {
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.name}
-                className="premium-surface rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-[#18c29c]/35"
+                className="premium-surface rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-1 hover:border-[#18c29c]/35"
               >
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -3791,10 +4180,10 @@ export default function App() {
       </section>
 
       {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section id="faq" className="relative py-14 sm:py-20 bg-[#08111f] overflow-hidden">
+      <section id="faq" className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
+          <div className="text-center mb-7">
             <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
               FAQ
             </span>
@@ -3815,7 +4204,7 @@ export default function App() {
                 className="premium-surface rounded-xl overflow-hidden"
               >
                 <button
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-white/[0.06] transition-colors"
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-white/[0.06] transition-colors"
                   onClick={() =>
                     setOpenFaq(openFaq === i ? null : i)
                   }
@@ -3830,7 +4219,7 @@ export default function App() {
                   />
                 </button>
                 {openFaq === i && (
-                  <div className="px-5 pb-5 border-t border-white/10 bg-[#07111f]/70">
+                  <div className="px-4 pb-4 border-t border-white/10 bg-[#07111f]/70">
                     <p className="text-sm text-slate-300 pt-4 leading-relaxed">
                       {faq.a}
                     </p>
@@ -3843,7 +4232,7 @@ export default function App() {
       </section>
 
       {/* â”€â”€ Footer CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="relative py-14 sm:py-16 border-t border-white/10 bg-[#07111f] overflow-hidden">
+      <section className="relative py-12 sm:py-14 border-t border-white/10 bg-[#07111f] overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_80%_30%,rgba(242,184,75,0.12),transparent_32%)]" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <h2
@@ -3869,7 +4258,7 @@ export default function App() {
       </section>
 
       {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer className="py-8 border-t border-white/10 bg-[#050b14]">
+      <footer className="py-6 border-t border-white/10 bg-[#050b14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center overflow-hidden">
@@ -3955,6 +4344,13 @@ export default function App() {
         <LoginModal
           onClose={() => setShowLogin(false)}
           onLogin={handleLogin}
+        />
+      )}
+
+      {showAdmin && (
+        <AdminStudentsModal
+          courses={COURSES}
+          onClose={() => setShowAdmin(false)}
         />
       )}
 
