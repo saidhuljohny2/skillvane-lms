@@ -1194,6 +1194,20 @@ function getAdminPassword() {
   );
 }
 
+function getEmailJsErrorMessage(error: unknown) {
+  if (typeof error === "object" && error) {
+    const detail =
+      "text" in error
+        ? String((error as { text?: unknown }).text || "")
+        : "message" in error
+          ? String((error as { message?: unknown }).message || "")
+          : "";
+    if (detail) return detail;
+  }
+  if (error instanceof Error) return error.message;
+  return "EmailJS could not send the OTP.";
+}
+
 async function sendOtpEmail(
   toEmail: string,
   toName: string,
@@ -1309,9 +1323,10 @@ function LoginModal({
       setErrors({
         general: "OTP sent to your registered email. Please check your inbox.",
       });
-    } catch {
+    } catch (error) {
+      console.error("Student OTP email failed:", error);
       setErrors({
-        general: "Unable to send OTP right now. Please try again.",
+        general: `Unable to send OTP: ${getEmailJsErrorMessage(error)}`,
       });
     } finally {
       setLoading(false);
@@ -1828,8 +1843,9 @@ function AdminStudentsModal({
       });
       setAdminOtpInput("");
       setMessage("OTP sent to admin Gmail.");
-    } catch {
-      setMessage("Unable to send admin OTP right now.");
+    } catch (error) {
+      console.error("Admin OTP email failed:", error);
+      setMessage(`Unable to send admin OTP: ${getEmailJsErrorMessage(error)}`);
     }
   };
 
