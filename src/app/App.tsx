@@ -3301,11 +3301,11 @@ export default function App() {
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#18c29c]" />
               </span>
 
-              <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
-                New live batch starts July 1, 2026 at 7.30 AM IST
-              </span>
-              <ArrowRight className="h-4 w-4 text-[#f2b84b] transition-transform group-hover:translate-x-1" />
-            </button>
+              <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-semibold">
+                  New live batch starts July 1, 2026 at 7.00 AM IST
+                </span>
+                <ArrowRight className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
+              </button>
 
             <h1
               className="max-w-4xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl"
