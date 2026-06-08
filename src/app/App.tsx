@@ -1208,6 +1208,15 @@ function getEmailJsErrorMessage(error: unknown) {
   return "EmailJS could not send the OTP.";
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 async function sendOtpEmail(
   toEmail: string,
   toName: string,
@@ -1744,6 +1753,10 @@ function AdminStudentsModal({
     password: "",
     enrolledCourses: [],
   });
+  const [certificate, setCertificate] = useState({
+    studentName: "",
+    completionDate: new Date().toISOString().slice(0, 10),
+  });
 
   const persistStudents = (next: Record<string, StoredStudent>) => {
     setStudents(next);
@@ -1884,6 +1897,104 @@ function AdminStudentsModal({
   const studentList = Object.values(students).sort((a, b) =>
     a.email.localeCompare(b.email),
   );
+  const certificateName = certificate.studentName.trim();
+  const certificateDate = certificate.completionDate
+    ? new Date(`${certificate.completionDate}T00:00:00`).toLocaleDateString(
+        "en-IN",
+        {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        },
+      )
+    : "";
+  const certificateId = certificateName
+    ? `SV-GCP-${certificate.completionDate.replaceAll("-", "")}-${certificateName
+        .replace(/[^a-z0-9]/gi, "")
+        .slice(0, 6)
+        .toUpperCase()}`
+    : "SV-GCP-READY";
+
+  const openCertificatePrint = () => {
+    if (!certificateName || !certificate.completionDate) {
+      setMessage("Enter student name and completion date for the certificate.");
+      return;
+    }
+
+    const html = `<!doctype html>
+<html>
+<head>
+  <title>${escapeHtml(certificateName)} - SkillVane Certificate</title>
+  <style>
+    @page { size: A4 landscape; margin: 0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #07111f; color: #07111f; }
+    .page { width: 297mm; height: 210mm; padding: 13mm; background: linear-gradient(135deg, #07111f 0%, #0b2032 42%, #f7fbff 42.2%, #ffffff 100%); }
+    .certificate { height: 100%; border: 2px solid #f2b84b; background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(245,250,255,0.98)); position: relative; overflow: hidden; padding: 18mm; }
+    .certificate:before { content: ""; position: absolute; inset: 9mm; border: 1px solid rgba(24,194,156,0.35); pointer-events: none; }
+    .mark { position: absolute; right: 16mm; top: 12mm; width: 34mm; opacity: 0.12; }
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative; z-index: 1; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand img { width: 18mm; height: 18mm; object-fit: contain; background: #ffffff; border-radius: 10px; padding: 2mm; border: 1px solid #dfe8f3; }
+    .brand h1 { margin: 0; font-size: 20px; letter-spacing: 0.3px; }
+    .brand p, .id { margin: 4px 0 0; color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; }
+    .content { margin-top: 18mm; text-align: center; position: relative; z-index: 1; }
+    .eyebrow { color: #18a884; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; font-size: 13px; }
+    .title { margin: 8px 0 0; font-size: 46px; line-height: 1; font-weight: 900; color: #07111f; }
+    .line { width: 92px; height: 4px; background: linear-gradient(90deg, #18c29c, #2f80ed, #f2b84b); margin: 12mm auto 8mm; border-radius: 999px; }
+    .copy { color: #475569; font-size: 18px; margin: 0; }
+    .name { margin: 7mm auto 5mm; color: #07111f; font-size: 40px; font-weight: 900; border-bottom: 2px solid #d4af37; width: 72%; padding-bottom: 4mm; }
+    .course { margin: 0 auto; max-width: 760px; color: #334155; font-size: 18px; line-height: 1.65; }
+    .course strong { color: #07111f; }
+    .footer { position: absolute; left: 18mm; right: 18mm; bottom: 16mm; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 20px; z-index: 1; }
+    .field { border-top: 1.5px solid #94a3b8; padding-top: 8px; color: #334155; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .signature { text-align: center; }
+    .signature .sign { color: #07111f; font-family: Georgia, serif; font-size: 24px; font-style: italic; text-transform: none; letter-spacing: 0; margin-bottom: 5px; }
+    .seal { justify-self: center; width: 28mm; height: 28mm; border-radius: 50%; border: 2px solid #f2b84b; display: grid; place-items: center; color: #07111f; font-size: 10px; font-weight: 900; text-align: center; background: #fff7df; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="certificate">
+      <img class="mark" src="${skillVaneLogo}" alt="">
+      <div class="top">
+        <div class="brand">
+          <img src="${skillVaneLogo}" alt="SkillVane logo">
+          <div>
+            <h1>SkillVane IT Academy</h1>
+            <p>Industry focused cloud training</p>
+          </div>
+        </div>
+        <div class="id">Certificate ID<br>${escapeHtml(certificateId)}</div>
+      </div>
+      <div class="content">
+        <div class="eyebrow">Certificate of Completion</div>
+        <div class="title">GCP Data Engineering</div>
+        <div class="line"></div>
+        <p class="copy">This certifies that</p>
+        <div class="name">${escapeHtml(certificateName)}</div>
+        <p class="course">has successfully completed the <strong>GCP Data Engineering</strong> training program covering BigQuery, Dataflow, Dataproc, Cloud Composer, production pipelines, and real-world data engineering projects.</p>
+      </div>
+      <div class="footer">
+        <div class="field">Completion Date<br>${escapeHtml(certificateDate)}</div>
+        <div class="seal">SkillVane<br>Verified<br>Certificate</div>
+        <div class="field signature"><div class="sign">Shaik Saidhul</div>Lead Instructor</div>
+      </div>
+    </section>
+  </main>
+  <script>window.onload = () => { window.focus(); window.print(); };</script>
+</body>
+</html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      setMessage("Allow popups to print or save the certificate.");
+      return;
+    }
+    printWindow.document.write(html);
+    printWindow.document.close();
+    setMessage("Certificate generated. Use Save as PDF from the print window.");
+  };
 
   return (
     <div className="fixed inset-0 z-[130] flex items-end justify-center p-0 sm:items-center sm:p-4">
@@ -2031,7 +2142,119 @@ function AdminStudentsModal({
             )}
           </div>
         ) : (
-          <div className="grid flex-1 gap-4 overflow-y-auto px-5 py-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
+            <div className="rounded-2xl border border-[#f2b84b]/25 bg-[#f2b84b]/[0.06] p-4">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                    Certificate Generator
+                  </p>
+                  <h3 className="mt-1 text-lg font-black text-white">
+                    GCP Data Engineering Completion Certificate
+                  </h3>
+                </div>
+                <button
+                  onClick={openCertificatePrint}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
+                >
+                  <Download className="h-4 w-4" />
+                  Generate PDF
+                </button>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
+                <div className="space-y-3">
+                  <input
+                    value={certificate.studentName}
+                    onChange={(e) =>
+                      setCertificate({
+                        ...certificate,
+                        studentName: e.target.value,
+                      })
+                    }
+                    placeholder="Student full name"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
+                  />
+                  <input
+                    type="date"
+                    value={certificate.completionDate}
+                    onChange={(e) =>
+                      setCertificate({
+                        ...certificate,
+                        completionDate: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
+                  />
+                  <p className="text-xs leading-5 text-slate-400">
+                    Enter the name exactly as it should appear on the
+                    certificate. The print window can be saved as PDF.
+                  </p>
+                </div>
+
+                <div className="relative overflow-hidden rounded-2xl border border-[#f2b84b]/30 bg-white p-5 text-[#07111f] shadow-2xl shadow-black/20">
+                  <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-[#f2b84b]/15" />
+                  <div className="relative flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={skillVaneLogo}
+                        alt="SkillVane logo"
+                        className="h-12 w-12 rounded-xl border border-slate-200 bg-white object-contain p-1"
+                      />
+                      <div>
+                        <p className="text-sm font-black text-[#07111f]">
+                          SkillVane IT Academy
+                        </p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
+                          Verified Certificate
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-right text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+                      {certificateId}
+                    </p>
+                  </div>
+
+                  <div className="relative py-7 text-center">
+                    <p className="text-xs font-black uppercase tracking-[0.26em] text-[#18a884]">
+                      Certificate of Completion
+                    </p>
+                    <h4 className="mt-2 text-2xl font-black">
+                      GCP Data Engineering
+                    </h4>
+                    <div className="mx-auto my-4 h-1 w-24 rounded-full bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#f2b84b]" />
+                    <p className="text-sm text-slate-500">
+                      This certifies that
+                    </p>
+                    <p className="mx-auto mt-2 max-w-lg border-b border-[#d4af37] pb-2 text-3xl font-black">
+                      {certificateName || "Student Name"}
+                    </p>
+                    <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-600">
+                      has successfully completed the GCP Data Engineering
+                      training program covering cloud data pipelines,
+                      BigQuery, Dataflow, Dataproc, Composer, and projects.
+                    </p>
+                  </div>
+
+                  <div className="relative grid grid-cols-3 items-end gap-4 text-center text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+                    <div className="border-t border-slate-300 pt-2">
+                      {certificateDate || "Completion Date"}
+                    </div>
+                    <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-[#f2b84b] bg-[#fff7df] text-[9px] text-[#07111f]">
+                      SkillVane<br />Verified
+                    </div>
+                    <div className="border-t border-slate-300 pt-2">
+                      <span className="block font-serif text-base normal-case tracking-normal text-[#07111f]">
+                        Shaik Saidhul
+                      </span>
+                      Lead Instructor
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
             <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
               <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
                 Create / Update Student
@@ -2159,6 +2382,7 @@ function AdminStudentsModal({
                   ))
                 )}
               </div>
+            </div>
             </div>
           </div>
         )}
