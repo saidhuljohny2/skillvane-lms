@@ -1,52 +1,49 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
-import { Reveal } from "@/app/components/effects/Reveal";
-import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
-import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
-import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
-import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
-import { LandingHero } from "@/app/components/landing/LandingHero";
-import { SectionHeading } from "@/app/components/landing/SectionHeading";
-import { FeaturesBento } from "@/app/components/landing/FeaturesBento";
-import { FinalCTA } from "@/app/components/landing/FinalCTA";
-import { BackToTop } from "@/app/components/landing/BackToTop";
-import { Navbar } from "@/app/components/landing/Navbar";
-import { useActiveSection } from "@/app/hooks/useActiveSection";
-import { CourseCard } from "@/app/components/course/CourseCard";
-import { CourseModal } from "@/app/components/course/CourseModal";
-import { LoginModal } from "@/app/components/modals/LoginModal";
-import { AdminStudentsModal } from "@/app/components/modals/AdminStudentsModal";
-import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
-import { EnrollmentFormModal } from "@/app/components/modals/EnrollmentFormModal";
-import { InvoiceModal } from "@/app/components/modals/InvoiceModal";
-import { RAZORPAY_KEY, TRAINER_WHATSAPP_LINK } from "@/app/config";
-import { COURSES } from "@/app/data/courses";
-import {
-  FREE_LEARNING_PLAYLIST_URL,
-  TESTIMONIALS,
-  TICKER,
-} from "@/app/data/marketing";
-import { SOCIAL_LINKS } from "@/app/data/social";
-import { celebrateEnrollment } from "@/app/lib/confetti";
-import { generateInvoiceNo } from "@/app/lib/format";
-import { loadRazorpay } from "@/app/lib/services";
-import { STORAGE_KEYS } from "@/app/lib/storage";
-import type { Course, CourseCategory, EnrollmentRecord, LoggedInStudent, StudentDetails } from "@/app/types";
-import { toast } from "sonner";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
+import gcpDataEngineeringCurriculum from "@/imports/gcp-data-engineering-curriculum.pdf";
 import {
   ChevronDown,
   Star,
+  Users,
+  Clock,
+  Award,
+  Check,
+  Menu,
+  X,
+  Shield,
+  Zap,
+  Database,
+  Play,
+  TrendingUp,
+  Code2,
   Layers,
+  GitBranch,
   Video,
+  BookOpen,
+  Briefcase,
+  Heart,
+  ShoppingCart,
+  ArrowRight,
   MonitorPlay,
+  FileText,
   MessageCircle,
+  Mail,
+  Phone,
+  User,
+  Download,
+  CheckCircle2,
+  Copy,
+  LogIn,
+  LogOut,
+  GraduationCap,
+  Lock,
   Youtube,
+  Send,
+  Linkedin,
 } from "lucide-react";
 
-<<<<<<< HEAD
-=======
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONFIG - Update these two values after setup (see guide below)
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1211,6 +1208,15 @@ function getEmailJsErrorMessage(error: unknown) {
   return "EmailJS could not send the OTP.";
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 async function sendOtpEmail(
   toEmail: string,
   toName: string,
@@ -1747,6 +1753,10 @@ function AdminStudentsModal({
     password: "",
     enrolledCourses: [],
   });
+  const [certificate, setCertificate] = useState({
+    studentName: "",
+    completionDate: new Date().toISOString().slice(0, 10),
+  });
 
   const persistStudents = (next: Record<string, StoredStudent>) => {
     setStudents(next);
@@ -1887,6 +1897,104 @@ function AdminStudentsModal({
   const studentList = Object.values(students).sort((a, b) =>
     a.email.localeCompare(b.email),
   );
+  const certificateName = certificate.studentName.trim();
+  const certificateDate = certificate.completionDate
+    ? new Date(`${certificate.completionDate}T00:00:00`).toLocaleDateString(
+        "en-IN",
+        {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        },
+      )
+    : "";
+  const certificateId = certificateName
+    ? `SV-GCP-${certificate.completionDate.replaceAll("-", "")}-${certificateName
+        .replace(/[^a-z0-9]/gi, "")
+        .slice(0, 6)
+        .toUpperCase()}`
+    : "SV-GCP-READY";
+
+  const openCertificatePrint = () => {
+    if (!certificateName || !certificate.completionDate) {
+      setMessage("Enter student name and completion date for the certificate.");
+      return;
+    }
+
+    const html = `<!doctype html>
+<html>
+<head>
+  <title>${escapeHtml(certificateName)} - SkillVane Certificate</title>
+  <style>
+    @page { size: A4 landscape; margin: 0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #07111f; color: #07111f; }
+    .page { width: 297mm; height: 210mm; padding: 13mm; background: linear-gradient(135deg, #07111f 0%, #0b2032 42%, #f7fbff 42.2%, #ffffff 100%); }
+    .certificate { height: 100%; border: 2px solid #f2b84b; background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(245,250,255,0.98)); position: relative; overflow: hidden; padding: 18mm; }
+    .certificate:before { content: ""; position: absolute; inset: 9mm; border: 1px solid rgba(24,194,156,0.35); pointer-events: none; }
+    .mark { position: absolute; right: 16mm; top: 12mm; width: 34mm; opacity: 0.12; }
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative; z-index: 1; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand img { width: 18mm; height: 18mm; object-fit: contain; background: #ffffff; border-radius: 10px; padding: 2mm; border: 1px solid #dfe8f3; }
+    .brand h1 { margin: 0; font-size: 20px; letter-spacing: 0.3px; }
+    .brand p, .id { margin: 4px 0 0; color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; }
+    .content { margin-top: 18mm; text-align: center; position: relative; z-index: 1; }
+    .eyebrow { color: #18a884; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; font-size: 13px; }
+    .title { margin: 8px 0 0; font-size: 46px; line-height: 1; font-weight: 900; color: #07111f; }
+    .line { width: 92px; height: 4px; background: linear-gradient(90deg, #18c29c, #2f80ed, #f2b84b); margin: 12mm auto 8mm; border-radius: 999px; }
+    .copy { color: #475569; font-size: 18px; margin: 0; }
+    .name { margin: 7mm auto 5mm; color: #07111f; font-size: 40px; font-weight: 900; border-bottom: 2px solid #d4af37; width: 72%; padding-bottom: 4mm; }
+    .course { margin: 0 auto; max-width: 760px; color: #334155; font-size: 18px; line-height: 1.65; }
+    .course strong { color: #07111f; }
+    .footer { position: absolute; left: 18mm; right: 18mm; bottom: 16mm; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 20px; z-index: 1; }
+    .field { border-top: 1.5px solid #94a3b8; padding-top: 8px; color: #334155; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .signature { text-align: center; }
+    .signature .sign { color: #07111f; font-family: Georgia, serif; font-size: 24px; font-style: italic; text-transform: none; letter-spacing: 0; margin-bottom: 5px; }
+    .seal { justify-self: center; width: 28mm; height: 28mm; border-radius: 50%; border: 2px solid #f2b84b; display: grid; place-items: center; color: #07111f; font-size: 10px; font-weight: 900; text-align: center; background: #fff7df; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="certificate">
+      <img class="mark" src="${skillVaneLogo}" alt="">
+      <div class="top">
+        <div class="brand">
+          <img src="${skillVaneLogo}" alt="SkillVane logo">
+          <div>
+            <h1>SkillVane IT Academy</h1>
+            <p>Industry focused cloud training</p>
+          </div>
+        </div>
+        <div class="id">Certificate ID<br>${escapeHtml(certificateId)}</div>
+      </div>
+      <div class="content">
+        <div class="eyebrow">Certificate of Completion</div>
+        <div class="title">GCP Data Engineering</div>
+        <div class="line"></div>
+        <p class="copy">This certifies that</p>
+        <div class="name">${escapeHtml(certificateName)}</div>
+        <p class="course">has successfully completed the <strong>GCP Data Engineering</strong> training program covering BigQuery, Dataflow, Dataproc, Cloud Composer, production pipelines, and real-world data engineering projects.</p>
+      </div>
+      <div class="footer">
+        <div class="field">Completion Date<br>${escapeHtml(certificateDate)}</div>
+        <div class="seal">SkillVane<br>Verified<br>Certificate</div>
+        <div class="field signature"><div class="sign">Shaik Saidhul</div>Lead Instructor</div>
+      </div>
+    </section>
+  </main>
+  <script>window.onload = () => { window.focus(); window.print(); };</script>
+</body>
+</html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      setMessage("Allow popups to print or save the certificate.");
+      return;
+    }
+    printWindow.document.write(html);
+    printWindow.document.close();
+    setMessage("Certificate generated. Use Save as PDF from the print window.");
+  };
 
   return (
     <div className="fixed inset-0 z-[130] flex items-end justify-center p-0 sm:items-center sm:p-4">
@@ -2034,7 +2142,119 @@ function AdminStudentsModal({
             )}
           </div>
         ) : (
-          <div className="grid flex-1 gap-4 overflow-y-auto px-5 py-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
+            <div className="rounded-2xl border border-[#f2b84b]/25 bg-[#f2b84b]/[0.06] p-4">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                    Certificate Generator
+                  </p>
+                  <h3 className="mt-1 text-lg font-black text-white">
+                    GCP Data Engineering Completion Certificate
+                  </h3>
+                </div>
+                <button
+                  onClick={openCertificatePrint}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
+                >
+                  <Download className="h-4 w-4" />
+                  Generate PDF
+                </button>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
+                <div className="space-y-3">
+                  <input
+                    value={certificate.studentName}
+                    onChange={(e) =>
+                      setCertificate({
+                        ...certificate,
+                        studentName: e.target.value,
+                      })
+                    }
+                    placeholder="Student full name"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
+                  />
+                  <input
+                    type="date"
+                    value={certificate.completionDate}
+                    onChange={(e) =>
+                      setCertificate({
+                        ...certificate,
+                        completionDate: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
+                  />
+                  <p className="text-xs leading-5 text-slate-400">
+                    Enter the name exactly as it should appear on the
+                    certificate. The print window can be saved as PDF.
+                  </p>
+                </div>
+
+                <div className="relative overflow-hidden rounded-2xl border border-[#f2b84b]/30 bg-white p-5 text-[#07111f] shadow-2xl shadow-black/20">
+                  <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-[#f2b84b]/15" />
+                  <div className="relative flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={skillVaneLogo}
+                        alt="SkillVane logo"
+                        className="h-12 w-12 rounded-xl border border-slate-200 bg-white object-contain p-1"
+                      />
+                      <div>
+                        <p className="text-sm font-black text-[#07111f]">
+                          SkillVane IT Academy
+                        </p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
+                          Verified Certificate
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-right text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+                      {certificateId}
+                    </p>
+                  </div>
+
+                  <div className="relative py-7 text-center">
+                    <p className="text-xs font-black uppercase tracking-[0.26em] text-[#18a884]">
+                      Certificate of Completion
+                    </p>
+                    <h4 className="mt-2 text-2xl font-black">
+                      GCP Data Engineering
+                    </h4>
+                    <div className="mx-auto my-4 h-1 w-24 rounded-full bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#f2b84b]" />
+                    <p className="text-sm text-slate-500">
+                      This certifies that
+                    </p>
+                    <p className="mx-auto mt-2 max-w-lg border-b border-[#d4af37] pb-2 text-3xl font-black">
+                      {certificateName || "Student Name"}
+                    </p>
+                    <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-600">
+                      has successfully completed the GCP Data Engineering
+                      training program covering cloud data pipelines,
+                      BigQuery, Dataflow, Dataproc, Composer, and projects.
+                    </p>
+                  </div>
+
+                  <div className="relative grid grid-cols-3 items-end gap-4 text-center text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+                    <div className="border-t border-slate-300 pt-2">
+                      {certificateDate || "Completion Date"}
+                    </div>
+                    <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-[#f2b84b] bg-[#fff7df] text-[9px] text-[#07111f]">
+                      SkillVane<br />Verified
+                    </div>
+                    <div className="border-t border-slate-300 pt-2">
+                      <span className="block font-serif text-base normal-case tracking-normal text-[#07111f]">
+                        Shaik Saidhul
+                      </span>
+                      Lead Instructor
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
             <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
               <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
                 Create / Update Student
@@ -2162,6 +2382,7 @@ function AdminStudentsModal({
                   ))
                 )}
               </div>
+            </div>
             </div>
           </div>
         )}
@@ -3295,8 +3516,8 @@ function CourseCard({
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main App
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
->>>>>>> parent of 7a06e5b (certs)
 export default function App() {
+  const [ticker, setTicker] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] =
@@ -3321,24 +3542,17 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
-  const [ticker, setTicker] = useState(0);
-
-  const navSections = [
-    { id: "courses", label: "Courses" },
-    { id: "instructor", label: "Instructor" },
-    { id: "testimonials", label: "Reviews" },
-    { id: "faq", label: "FAQ" },
-  ] as const;
-  const activeSection = useActiveSection(navSections.map((s) => s.id));
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const studentData = localStorage.getItem(STORAGE_KEYS.currentStudent);
+    const studentData = localStorage.getItem(
+      "skillvane_current_student",
+    );
     if (studentData) {
       try {
         setCurrentStudent(JSON.parse(studentData));
       } catch (e) {
-        localStorage.removeItem(STORAGE_KEYS.currentStudent);
+        localStorage.removeItem("skillvane_current_student");
       }
     }
   }, []);
@@ -3398,7 +3612,7 @@ export default function App() {
   const scrollTo = (id: string) => {
     const section = document.getElementById(id);
     if (section) {
-      const fixedTopOffset = 100;
+      const fixedTopOffset = 112;
       window.scrollTo({
         top:
           section.getBoundingClientRect().top +
@@ -3418,7 +3632,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem(STORAGE_KEYS.currentStudent);
+    localStorage.removeItem("skillvane_current_student");
     setCurrentStudent(null);
     setShowDashboard(false);
   };
@@ -3428,7 +3642,7 @@ export default function App() {
     student: LoggedInStudent,
   ): StudentDetails | null => {
     try {
-      const studentsData = localStorage.getItem(STORAGE_KEYS.students);
+      const studentsData = localStorage.getItem("skillvane_students");
       const students: Record<string, any> = studentsData
         ? JSON.parse(studentsData)
         : {};
@@ -3493,7 +3707,6 @@ export default function App() {
             setPayError(
               "Payment verification failed. Please contact support.",
             );
-            toast.error("Payment verification failed");
             setTimeout(() => setPayError(null), 6000);
             return;
           }
@@ -3508,7 +3721,9 @@ export default function App() {
 
           // Auto-create/update student account and enroll in course
           try {
-            const studentsData = localStorage.getItem(STORAGE_KEYS.students);
+            const studentsData = localStorage.getItem(
+              "skillvane_students",
+            );
             const students: Record<string, any> = studentsData
               ? JSON.parse(studentsData)
               : {};
@@ -3543,7 +3758,7 @@ export default function App() {
             }
 
             localStorage.setItem(
-              STORAGE_KEYS.students,
+              "skillvane_students",
               JSON.stringify(students),
             );
 
@@ -3555,15 +3770,11 @@ export default function App() {
                 students[student.email].enrolledCourses,
             };
             localStorage.setItem(
-              STORAGE_KEYS.currentStudent,
+              "skillvane_current_student",
               JSON.stringify(loggedStudent),
             );
             setCurrentStudent(loggedStudent);
 
-            celebrateEnrollment();
-            toast.success("Enrollment successful!", {
-              description: `Welcome to ${course.title}. Check your email for the invoice.`,
-            });
             setInvoice(record);
           } catch (err) {
             console.error("Error saving enrollment:", err);
@@ -3618,7 +3829,6 @@ export default function App() {
         setPayError(
           `Payment failed: ${errorMsg}. Please try again.`,
         );
-        toast.error("Payment failed", { description: errorMsg });
         setTimeout(() => setPayError(null), 8000);
       });
 
@@ -3631,7 +3841,6 @@ export default function App() {
         errorMsg +
           ". Please check your internet connection and try again.",
       );
-      toast.error("Could not start payment", { description: errorMsg });
       setTimeout(() => setPayError(null), 8000);
       console.error("Razorpay error:", err);
     }
@@ -3643,7 +3852,6 @@ export default function App() {
     if (currentStudent?.enrolledCourses.includes(course.id)) {
       setShowDashboard(true);
       setPayError("You are already enrolled in this course.");
-      toast.info("You are already enrolled in this course.");
       setTimeout(() => setPayError(null), 4000);
       return;
     }
@@ -3717,99 +3925,496 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-[#f2b84b]/25">
+    <div
+      className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-[#f2b84b]/25"
+      style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+    >
       {/* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-background">
+      <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-[#07111f]">
         <div
           className="h-full rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_20px_rgba(242,184,75,0.45)] transition-[width] duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
-      <Navbar
-        logoSrc={skillVaneLogo}
-        activeSection={activeSection}
-        mobileOpen={mobileOpen}
-        currentStudent={currentStudent}
-        onToggleMobile={() => setMobileOpen((o) => !o)}
-        onScrollTo={scrollTo}
-        onLogin={() => {
-          setShowLogin(true);
-          setMobileOpen(false);
-        }}
-        onAdmin={() => {
-          setShowAdmin(true);
-          setMobileOpen(false);
-        }}
-        onDashboard={() => {
-          setShowDashboard(true);
-          setMobileOpen(false);
-        }}
-      />
+      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-white/10 bg-[#07111f]/88 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+          <div className="flex items-center gap-2.5">
+            <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
+              <img
+                src={skillVaneLogo}
+                alt="SkillVane logo"
+                className="h-10 w-10 object-contain"
+              />
+            </div>
+            <span
+              className="font-bold text-base tracking-tight"
+              style={{
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              SkillVane{" "}
+              <span className="bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
+                IT Academy
+              </span>
+            </span>
+          </div>
 
-      <EnrollmentTicker
-        messages={TICKER}
-        activeIndex={ticker}
-        onEnrollClick={() => scrollTo("courses")}
-      />
+          <div className="hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.045] p-1 text-sm text-muted-foreground">
+            <button
+              onClick={() => scrollTo("courses")}
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
+            >
+              Courses
+            </button>
+            <button
+              onClick={() => scrollTo("free-learning")}
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
+            >
+              Free Lessons
+            </button>
+            <button
+              onClick={() => scrollTo("instructor")}
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
+            >
+              Instructor
+            </button>
+            <button
+              onClick={() => scrollTo("testimonials")}
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
+            >
+              Reviews
+            </button>
+            <button
+              onClick={() => scrollTo("faq")}
+              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
+            >
+              FAQ
+            </button>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3">
+            {currentStudent ? (
+              <>
+                <button
+                  onClick={() => setShowAdmin(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f2b84b]/25 text-[#ffe4a3] hover:text-white hover:border-[#f2b84b]/45 transition-all text-sm font-semibold"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
+                <button
+                  onClick={() => setShowDashboard(true)}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
+                >
+                  <GraduationCap className="w-4 h-4" />
+                  My Dashboard
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowAdmin(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f2b84b]/25 text-[#ffe4a3] hover:text-white hover:border-[#f2b84b]/45 transition-all text-sm font-semibold"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/12 text-muted-foreground hover:text-foreground hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </button>
+                <button
+                  onClick={() => scrollTo("courses")}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
+                >
+                  View Courses
+                </button>
+              </>
+            )}
+          </div>
+
+          <button
+            className="md:hidden p-2 text-muted-foreground"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {mobileOpen && (
+          <div className="md:hidden bg-[#0b1524] border-t border-white/10 px-4 py-4 flex flex-col gap-1">
+            {[
+              "courses",
+              "free-learning",
+              "instructor",
+              "testimonials",
+              "faq",
+            ].map((s) => (
+              <button
+                key={s}
+                onClick={() => scrollTo(s)}
+                className="capitalize text-sm text-muted-foreground hover:text-foreground py-2.5 text-left border-b border-border/40 last:border-0"
+              >
+                {s === "faq"
+                  ? "FAQ"
+                  : s === "free-learning"
+                    ? "Free Lessons"
+                  : s.charAt(0).toUpperCase() + s.slice(1)}
+              </button>
+            ))}
+            {currentStudent ? (
+              <>
+                <button
+                  onClick={() => {
+                    setShowAdmin(true);
+                    setMobileOpen(false);
+                  }}
+                  className="mt-3 w-full py-3 rounded-xl border border-[#f2b84b]/25 text-[#ffe4a3] text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
+              <button
+                onClick={() => {
+                  setShowDashboard(true);
+                  setMobileOpen(false);
+                }}
+                className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20 flex items-center justify-center gap-2"
+              >
+                <GraduationCap className="w-4 h-4" />
+                My Dashboard
+              </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setShowAdmin(true);
+                    setMobileOpen(false);
+                  }}
+                  className="mt-3 w-full py-3 rounded-xl border border-[#f2b84b]/25 text-[#ffe4a3] text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  Admin
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLogin(true);
+                    setMobileOpen(false);
+                  }}
+                  className="mt-3 w-full py-3 rounded-xl border border-white/12 text-foreground text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </button>
+                <button
+                  onClick={() => scrollTo("courses")}
+                  className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20"
+                >
+                View Courses
+              </button>
+            </>
+          )}
+          </div>
+        )}
+      </nav>
 
       {!showDashboard && (
-        <a
-          href={TRAINER_WHATSAPP_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="whatsapp-fab sv-safe-bottom sv-safe-right fixed z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white transition-transform hover:scale-105"
-          aria-label="WhatsApp trainer support"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </a>
+        <div className="trainer-support-card fixed bottom-5 right-5 z-50 w-[min(calc(100vw-1.5rem),320px)] rounded-2xl border border-[#f2b84b]/30 bg-[#07111f]/92 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+          <div className="space-y-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
+                <MessageCircle className="h-4 w-4 text-[#1b1202]" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f2b84b]">
+                  Trainer Support
+                </p>
+                <p className="mt-1 text-sm font-bold leading-5 text-white">
+                  Questions about courses, access, or enrollment?
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={TRAINER_WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-[#25D366]/20"
+              aria-label="Message the trainer on WhatsApp"
+            >
+              WhatsApp Trainer
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
       )}
 
-      <LandingHero onExploreCourses={() => scrollTo("courses")} />
+      {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section
+        className="relative min-h-[76svh] overflow-hidden bg-[#07111f] pt-[4.5rem] sm:pt-[5.5rem]"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.99) 0%, rgba(7,17,31,0.93) 38%, rgba(7,17,31,0.5) 68%, rgba(7,17,31,0.82) 100%), url(${instructorPhoto})`,
+          backgroundPosition: "center, right 18% top",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover, min(50rem, 58vw) auto",
+        }}
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            className="absolute inset-0 opacity-[0.09]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.9) 1px, transparent 1px)",
+              backgroundSize: "72px 72px",
+              maskImage:
+                "linear-gradient(to bottom, black 0%, transparent 82%)",
+            }}
+          />
+          <div className="absolute left-0 top-0 h-full w-full bg-[radial-gradient(ellipse_at_20%_12%,rgba(24,194,156,0.2),transparent_38%),radial-gradient(ellipse_at_82%_78%,rgba(242,184,75,0.16),transparent_34%)]" />
+          <div className="absolute right-[5%] top-28 hidden h-64 w-64 rounded-full border border-[#f2b84b]/15 bg-[#f2b84b]/5 blur-3xl lg:block" />
+          <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-background to-transparent" />
+        </div>
 
-      <GcpTechMarquee />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(76svh-5rem)] flex flex-col justify-center py-7 sm:py-9">
+          <div className="max-w-3xl">
+            <button
+              onClick={() => scrollTo("courses")}
+              className="attention-vibrate group mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/45 bg-[#f2b84b]/12 px-4 py-2 text-left text-xs font-black uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/20 backdrop-blur-md hover:border-[#f2b84b]/70"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#18c29c]" />
+              </span>
 
-      <FeaturesBento />
+              <span className="bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-black">
+                  New live batch starts 1st July at 7.00 AM IST
+                </span>
+                <ArrowRight className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
+              </button>
 
-      <section id="courses" className="landing-section landing-section-alt">
-        <div className="sv-page">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Courses"
-              title={
-                <>
-                  Your{" "}
-                  <span className="bg-gradient-to-r from-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent">
-                    GCP learning path
+            <h1
+              className="max-w-4xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl"
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              <span className="block">Learn GCP Data Engineering</span>
+              <span className="block">
+                From{" "}
+                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Shaik Saidhul
+                </span>
+              </span>
+            </h1>
+
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+              At SkillVane, we offer industry-focused Google Cloud Data Engineering training through live classes, hands-on projects, real-world case studies, and dedicated career support to help you become job-ready.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={() => scrollTo("courses")}
+                className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25 active:scale-[0.98]"
+              >
+                Explore Courses
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </button>
+              <button
+                onClick={() => scrollTo("instructor")}
+                className="magnetic-button inline-flex items-center justify-center gap-3 rounded-xl border border-white/18 bg-white/8 px-7 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/50 hover:bg-white/12"
+              >
+                <Play className="h-5 w-5 text-[#f2b84b]" />
+                Meet Instructor
+              </button>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+              {[
+                "Daily live sessions",
+                "Recordings shared",
+                "Portfolio projects",
+                "Resume guidance",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-2 shadow-lg shadow-black/10 backdrop-blur-md hover:border-[#18c29c]/35"
+                >
+                  <CheckCircle2 className="h-4 w-4 text-[#18c29c]" />
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                {
+                  icon: Users,
+                  val: "2500+",
+                  sub: "Learners",
+                },
+                {
+                  icon: Star,
+                  val: "4.9/5",
+                  sub: "Rating",
+                },
+                {
+                  icon: Award,
+                  val: "9+ yrs",
+                  sub: "Experience",
+                },
+                {
+                  icon: BookOpen,
+                  val: "5",
+                  sub: "Programs",
+                },
+              ].map(({ icon: Ic, val, sub }) => (
+                <div
+                  key={sub}
+                  className="premium-surface rounded-xl p-4 transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <Ic className="mb-3 h-5 w-5 text-[#f2b84b]" />
+                  <div
+                    className="text-2xl font-black text-white"
+                    style={{
+                      fontFamily:
+                        "'Space Grotesk', system-ui, sans-serif",
+                    }}
+                  >
+                    {val}
+                  </div>
+                  <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                    {sub}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="premium-surface rounded-xl p-3 sm:p-4">
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f2b84b]">
+                  Connect With SkillVane
+                </p>
+                <h2
+                  className="mt-1 text-base font-black text-white sm:text-lg"
+                  style={{
+                    fontFamily:
+                      "'Space Grotesk', system-ui, sans-serif",
+                  }}
+                >
+                  Join the community or speak with us.
+                </h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <a
+                  href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-[#25D366]/25 bg-[#25D366]/12 px-3 py-2.5 text-xs font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#25D366]/18">
+                    <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
                   </span>
-                </>
-              }
-              description="Live morning batch or self-paced recordings — pick what fits your schedule."
-            />
-          </Reveal>
+                  WhatsApp
+                </a>
+                <a
+                  href="https://t.me/gcpdataengineering"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-3 py-2.5 text-xs font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2f80ed]/18">
+                    <Send className="h-4 w-4 transition-transform group-hover:scale-110" />
+                  </span>
+                  Telegram
+                </a>
+                <a
+                  href="https://www.youtube.com/@SkillVane1711"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-red-400/25 bg-red-500/12 px-3 py-2.5 text-xs font-black text-red-200 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/18">
+                    <Youtube className="h-4 w-4 transition-transform group-hover:scale-110" />
+                  </span>
+                  YouTube
+                </a>
+                <a
+                  href="tel:+917305101711"
+                  className="group flex items-center justify-center gap-2 rounded-lg border border-[#18c29c]/25 bg-[#18c29c]/12 px-3 py-2.5 text-xs font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#18c29c]/18">
+                    <Phone className="h-4 w-4 transition-transform group-hover:scale-110" />
+                  </span>
+                  Call
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section
+        id="courses"
+        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
+      >
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="mx-auto mb-7 max-w-3xl text-center sm:mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-4 shadow-lg shadow-[#18c29c]/10">
+              <span className="w-2 h-2 rounded-full bg-[#18c29c] animate-pulse" />
+              Premium Programs
+            </div>
+            <h2
+              className="text-3xl sm:text-5xl font-black mb-4 text-white"
+              style={{
+                fontFamily:
+                  "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              Pick your GCP learning path.
+            </h2>
+            <p className="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Choose the format that fits your schedule and career goals.
+            </p>
+          </div>
 
           {/* Category tabs */}
-          <div className="sv-panel mx-auto mb-6 flex w-full max-w-md flex-wrap justify-center gap-1 p-1 sm:mb-8">
+          <div className="premium-surface mx-auto mb-7 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
-                type="button"
                 onClick={() => setActiveCategory(value)}
-                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors sm:flex-none sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm ${
+                className={`relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-black transition-all ${
                   activeCategory === value
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white shadow-lg shadow-[#18c29c]/20"
+                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#f2b84b]/35 hover:text-white"
                 }`}
               >
-                <CategoryIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span>{label}</span>
-                <span
-                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                    activeCategory === value
-                      ? "bg-background/15 text-background"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
+                {activeCategory === value && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/12 to-white/0" />
+                )}
+                <CategoryIcon className="relative z-10 h-4 w-4" />
+                <span className="relative z-10">{label}</span>
+                <span className="relative z-10 rounded-full bg-black/18 px-2 py-0.5 text-[10px] font-black">
                   {
                     value === "all"
                       ? COURSES.length
@@ -3832,59 +4437,120 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3 xl:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {visibleCourses.map((course, index) => (
-              <Reveal key={course.id} delay={index * 60}>
+              <div
+                key={course.id}
+                className={`animate-fade-in ${
+                  course.id === "gcp-live" ? "lg:col-span-2" : ""
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <CourseCard
                   course={course}
                   onEnroll={handleEnroll}
-                  onViewDetails={setModalCourse}
-                  isEnrolling={payLoading === course.id}
-                  index={index}
                 />
-              </Reveal>
+              </div>
             ))}
           </div>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground sm:mt-8">
+          <p className="text-center text-xs text-slate-500 mt-8">
             More courses coming soon - All prices in INR
             inclusive of taxes
           </p>
         </div>
       </section>
 
-      <section id="free-learning" className="sv-strip">
-        <Reveal className="sv-page flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-center text-sm text-muted-foreground sm:text-left">
-            <span className="font-semibold text-foreground">Free on YouTube</span>
-            {" — "}start with the GCP Data Engineering playlist before you enroll
-          </p>
-          <a
-            href={FREE_LEARNING_PLAYLIST_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sv-btn-ghost shrink-0 !rounded-full"
-          >
-            <Youtube className="h-4 w-4 text-red-400" />
-            Watch Free
-          </a>
-        </Reveal>
+      {/* â”€â”€ Instructor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section
+        id="free-learning"
+        className="relative overflow-hidden border-y border-white/10 bg-[#08111f] py-10 sm:py-14"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_10%,rgba(239,68,68,0.14),transparent_30%),radial-gradient(ellipse_at_82%_70%,rgba(24,194,156,0.12),transparent_34%)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-red-400/25 bg-red-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-red-200">
+              <Youtube className="h-4 w-4" />
+              Free Learning
+            </span>
+            <h2
+              className="mt-4 max-w-2xl text-3xl font-black leading-tight text-white sm:text-4xl"
+              style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+            >
+              Start learning GCP Data Engineering for free.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+              Watch the SkillVane free playlist first, then choose a live or self-paced path when you are ready.
+            </p>
+          </div>
+
+          <div className="premium-surface rounded-2xl p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-4">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-red-400/25 bg-red-500/15 shadow-xl shadow-red-500/10">
+                  <Play className="h-7 w-7 fill-red-200 text-red-200" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                    YouTube Playlist
+                  </p>
+                  <h3 className="mt-1 text-xl font-black text-white">
+                    Free GCP Data Engineering Lessons
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-400">
+                    Beginner-friendly lessons from SkillVane.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:w-52">
+                <a
+                  href={FREE_LEARNING_PLAYLIST_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-black text-white shadow-xl shadow-red-500/20 transition-all hover:bg-red-400"
+                >
+                  <Youtube className="h-4 w-4" />
+                  Play Playlist
+                </a>
+                <a
+                  href="https://www.youtube.com/@SkillVane1711"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 transition-all hover:border-red-400/35 hover:text-white"
+                >
+                  Visit Channel
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section id="instructor" className="landing-section landing-section-base">
-        <div className="sv-page">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Instructor"
-              title="Learn from a working GCP professional"
-              align="center"
-            />
-          </Reveal>
+      <section
+        id="instructor"
+        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-7">
+            <span className="inline-flex rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-2 text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
+              Your Instructor
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl font-black mt-3 text-white"
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              Learn From a Working Professional
+            </h2>
+          </div>
 
-          <Reveal delay={100}>
-          <div className="sv-panel-lg flex flex-col items-center gap-8 sm:flex-row sm:items-start">
-            <div className="flex flex-shrink-0 flex-col items-center gap-3">
-              <div className="relative h-48 w-40 overflow-hidden rounded-2xl border border-border sm:h-56 sm:w-44">
+          <div className="premium-surface rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 md:gap-8 items-center md:items-start">
+            <div className="flex-shrink-0 flex flex-col items-center gap-3">
+              <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy - GCP Data Engineering Instructor"
@@ -3901,132 +4567,268 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex-1 text-center sm:text-left">
+            <div className="flex-1 text-center md:text-left">
               <h3
-                className="text-2xl font-bold text-foreground"
-                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                className="text-2xl sm:text-3xl font-black mb-1 text-white"
+                style={{
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                }}
               >
                 Shaik Saidhul
               </h3>
-              <p className="mt-1 text-sm font-medium text-primary">
-                Solution Architect · SkillVane IT Academy
+              <p className="text-[#8df5d7] font-semibold text-sm mb-4">
+                Solution Architect - SkillVane IT Academy
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                9+ years building data pipelines on GCP for enterprises across
-                BFSI, e-commerce, and logistics. Google Certified Professional
-                Data Engineer bringing real-world patterns into every session.
+              <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xl">
+                With over 9+ years of hands-on experience
+                designing large-scale data pipelines on Google
+                Cloud Platform, your instructor has architected
+                solutions for Fortune 500 enterprises across
+                BFSI, e-commerce, and logistics. As a Google
+                Certified Professional Data Engineer and Cloud
+                Architect, they bring real-world war stories,
+                battle-tested patterns, and current industry
+                practices into every lesson - no filler, no
+                theory-only slides.
               </p>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                   { value: "9+", label: "Years on GCP" },
                   { value: "2500+", label: "Students Trained" },
                   { value: "5", label: "GCP Certifications" },
                   { value: "30+", label: "Live Projects" },
                 ].map(({ value, label }) => (
-                  <div key={label} className="sv-panel !py-3 text-center">
+                  <div
+                    key={label}
+                      className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3 text-center shadow-lg shadow-black/10 sm:p-4"
+                  >
                     <div
-                      className="text-lg font-bold text-foreground"
-                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                      className="text-xl sm:text-2xl font-black text-[#f2b84b]"
+                      style={{
+                        fontFamily:
+                          "'Outfit', system-ui, sans-serif",
+                      }}
                     >
-                      <AnimatedCounter value={value} />
+                      {value}
                     </div>
-                    <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+                    <div className="text-xs text-slate-400 mt-1">
+                      {label}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          </Reveal>
         </div>
       </section>
 
-      <section id="testimonials" className="landing-section landing-section-alt">
-        <div className="sv-page">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Reviews"
-              title="Trusted by professionals across India"
-              description="4.9 / 5 average rating from 500+ learners"
-            />
-          </Reveal>
+      {/* â”€â”€ Testimonials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section
+        id="testimonials"
+        className="relative py-12 sm:py-16 bg-[#07111f] border-y border-white/10 overflow-hidden"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-7">
+            <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#ffe4a3] tracking-widest uppercase">
+              Reviews
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl font-black mt-2 mb-3 text-white"
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              Trusted by Professionals Across India
+            </h2>
+            <div className="flex items-center justify-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className="w-5 h-5 text-yellow-400 fill-yellow-400"
+                />
+              ))}
+              <span className="ml-2 text-slate-400 text-sm">
+                4.9 / 5 - 500+ ratings
+              </span>
+            </div>
+          </div>
 
-          <TestimonialMarquee testimonials={TESTIMONIALS} />
-        </div>
-      </section>
-
-      <section id="faq" className="landing-section landing-section-base">
-        <div className="sv-page max-w-3xl">
-          <Reveal>
-            <SectionHeading eyebrow="FAQ" title="Common questions" align="center" />
-          </Reveal>
-
-          <div className="space-y-2">
-            {faqs.map((faq, i) => (
-              <Reveal key={i} delay={i * 60}>
-              <div className="sv-panel overflow-hidden !p-0">
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/40 sm:px-5 sm:py-4"
-                  onClick={() =>
-                    setOpenFaq(openFaq === i ? null : i)
-                  }
-                >
-                  <span className="pr-4 text-sm font-medium text-foreground">
-                    {faq.q}
-                  </span>
-                  <ChevronDown
-                    className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200 ${
-                      openFaq === i ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {openFaq === i && (
-                  <div className="border-t border-border px-4 pb-4 sm:px-5">
-                    <p className="pt-4 text-sm leading-relaxed text-muted-foreground">
-                      {faq.a}
-                    </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {TESTIMONIALS.map((t) => (
+              <div
+                key={t.name}
+                className="premium-surface rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-1 hover:border-[#18c29c]/35"
+              >
+                <div className="flex gap-0.5 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 text-yellow-400 fill-yellow-400"
+                    />
+                  ))}
+                </div>
+                <p className="text-slate-300 text-sm leading-relaxed mb-5">
+                  "{t.text}"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
+                  >
+                    {t.initials}
                   </div>
-                )}
+                  <div>
+                    <div
+                        className="font-semibold text-sm text-white"
+                      style={{
+                        fontFamily:
+                          "'Outfit', system-ui, sans-serif",
+                      }}
+                    >
+                      {t.name}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {t.role}
+                    </div>
+                  </div>
+                </div>
               </div>
-              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <FinalCTA onExploreCourses={() => scrollTo("courses")} />
-
-      <BackToTop />
-
-      {/* ── Footer ── */}
-      <footer className="border-t border-border bg-background py-10">
-        <div className="sv-page flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border border-border bg-card">
-              <img src={skillVaneLogo} alt="SkillVane logo" className="h-7 w-7 object-contain" />
-            </div>
-            <span className="text-sm font-semibold text-foreground">SkillVane IT Academy</span>
+      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section id="faq" className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-7">
+            <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
+              FAQ
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl font-black mt-2 text-white"
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              }}
+            >
+              Common Questions
+            </h2>
           </div>
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} SkillVane IT Academy
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {SOCIAL_LINKS.map((link) => {
-              const Icon = link.icon;
-              return (
-                <a
-                  key={link.id}
-                  href={link.href}
-                  target={link.href.startsWith("tel:") ? undefined : "_blank"}
-                  rel={link.href.startsWith("tel:") ? undefined : "noopener noreferrer"}
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-colors ${link.border} ${link.bg} ${link.text} ${link.hoverBorder} hover:text-white`}
+
+          <div className="space-y-2">
+            {faqs.map((faq, i) => (
+              <div
+                key={i}
+                className="premium-surface rounded-xl overflow-hidden"
+              >
+                <button
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-white/[0.06] transition-colors"
+                  onClick={() =>
+                    setOpenFaq(openFaq === i ? null : i)
+                  }
                 >
-                  <Icon className="h-3.5 w-3.5" />
-                  {link.label}
-                </a>
-              );
-            })}
+                  <span className="font-semibold text-sm pr-4 text-slate-100">
+                    {faq.q}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${
+                      openFaq === i ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {openFaq === i && (
+                  <div className="px-4 pb-4 border-t border-white/10 bg-[#07111f]/70">
+                    <p className="text-sm text-slate-300 pt-4 leading-relaxed">
+                      {faq.a}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* â”€â”€ Footer CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative py-12 sm:py-14 border-t border-white/10 bg-[#07111f] overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_80%_30%,rgba(242,184,75,0.12),transparent_32%)]" />
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
+          <h2
+            className="text-3xl sm:text-5xl font-black mb-4 text-white"
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            }}
+          >
+            Start your GCP journey today
+          </h2>
+          <p className="text-slate-300 text-sm sm:text-base mb-8">
+            5 courses. Live batch, recordings, foundation &
+            projects. One academy, trusted by 500+
+            professionals.
+          </p>
+          <button
+            onClick={() => scrollTo("courses")}
+            className="magnetic-button px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white font-black text-base active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/25"
+          >
+            Browse All Courses
+          </button>
+        </div>
+      </section>
+
+      {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <footer className="py-6 border-t border-white/10 bg-[#050b14]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center overflow-hidden">
+              <img
+                src={skillVaneLogo}
+                alt="SkillVane logo"
+                className="h-7 w-7 object-contain"
+              />
+            </div>
+            <span
+              className="font-bold text-white"
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
+            >
+              SkillVane IT Academy
+            </span>
+          </div>
+          <span>
+            (c) {new Date().getFullYear()} SkillVane IT Academy.
+            All rights reserved.
+          </span>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="https://www.linkedin.com/in/shaik-saidhul-1286ab146"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#2f80ed]/25 bg-[#2f80ed]/10 px-3 py-1.5 text-[#bfe3ff] hover:border-[#7cc7ff]/45 hover:text-white transition-colors"
+            >
+              <Linkedin className="h-3.5 w-3.5" />
+              LinkedIn
+            </a>
+            <a
+              href="https://www.youtube.com/@SkillVane1711"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-red-200 hover:border-red-400/45 hover:text-white transition-colors"
+            >
+              <Youtube className="h-3.5 w-3.5" />
+              YouTube
+            </a>
+            <a
+              href="https://t.me/gcpdataengineering"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#18c29c]/20 bg-[#18c29c]/10 px-3 py-1.5 text-[#9cf8dd] hover:border-[#18c29c]/45 hover:text-white transition-colors"
+            >
+              <Send className="h-3.5 w-3.5" />
+              Telegram
+            </a>
           </div>
         </div>
       </footer>
