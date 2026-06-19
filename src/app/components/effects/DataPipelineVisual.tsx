@@ -1,12 +1,12 @@
 import { Database, Cloud, GitBranch, BarChart3, Workflow, HardDrive } from "lucide-react";
 
 const NODES = [
-  { id: "ingest", label: "Pub/Sub", icon: Workflow, x: 8, y: 18, color: "#4285f4" },
-  { id: "storage", label: "GCS", icon: HardDrive, x: 8, y: 50, color: "#34a853" },
-  { id: "process", label: "Dataflow", icon: GitBranch, x: 42, y: 34, color: "#fbbc04" },
-  { id: "warehouse", label: "BigQuery", icon: BarChart3, x: 76, y: 22, color: "#4285f4" },
+  { id: "ingest", label: "Pub/Sub", icon: Workflow, x: 8, y: 18, color: "#0abab5" },
+  { id: "storage", label: "GCS", icon: HardDrive, x: 8, y: 50, color: "#81d8d0" },
+  { id: "process", label: "Dataflow", icon: GitBranch, x: 42, y: 34, color: "#3d3d3d" },
+  { id: "warehouse", label: "BigQuery", icon: BarChart3, x: 76, y: 22, color: "#0abab5" },
   { id: "orchestrate", label: "Composer", icon: Cloud, x: 76, y: 58, color: "#ea4335" },
-  { id: "lake", label: "Delta Lake", icon: Database, x: 42, y: 72, color: "#18c29c" },
+  { id: "lake", label: "Delta Lake", icon: Database, x: 42, y: 72, color: "#0abab5" },
 ];
 
 const PATHS = [
@@ -20,16 +20,16 @@ const PATHS = [
 export function DataPipelineVisual() {
   return (
     <div className="pipeline-visual relative w-full max-w-lg mx-auto aspect-[4/3] select-none">
-      <div className="absolute inset-0 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0d1f38]/90 via-[#07111f]/80 to-[#0a1628]/90 shadow-2xl shadow-[#18c29c]/5 backdrop-blur-xl overflow-hidden">
+      <div className="absolute inset-0 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0d1f38]/90 via-[#1e1e1e]/80 to-[#0a1628]/90 shadow-2xl shadow-[#0abab5]/5 backdrop-blur-xl overflow-hidden">
         <div className="absolute inset-0 pipeline-grid opacity-40" />
-        <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-[#4285f4]/15 blur-3xl animate-orb-drift" />
-        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#34a853]/12 blur-3xl animate-orb-drift-reverse" />
+        <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-[#0abab5]/15 blur-3xl animate-orb-drift" />
+        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#81d8d0]/12 blur-3xl animate-orb-drift-reverse" />
 
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-[#ea4335]/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#fbbc04]/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#34a853]/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#3d3d3d]/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#81d8d0]/80" />
           </div>
           <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-slate-500">
             gcp-pipeline.live
@@ -43,9 +43,9 @@ export function DataPipelineVisual() {
         >
           <defs>
             <linearGradient id="pipeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#4285f4" stopOpacity="0.2" />
-              <stop offset="50%" stopColor="#18c29c" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#fbbc04" stopOpacity="0.3" />
+              <stop offset="0%" stopColor="#0abab5" stopOpacity="0.2" />
+              <stop offset="50%" stopColor="#0abab5" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#3d3d3d" stopOpacity="0.3" />
             </linearGradient>
           </defs>
 
@@ -62,7 +62,7 @@ export function DataPipelineVisual() {
               <path
                 d={d}
                 fill="none"
-                stroke="#7cc7ff"
+                stroke="#81d8d0"
                 strokeWidth="0.8"
                 strokeLinecap="round"
                 strokeDasharray="3 12"
@@ -118,10 +118,10 @@ export function DataPipelineVisual() {
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 rounded-xl border border-white/8 bg-black/30 px-3 py-2 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#34a853] opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34a853]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#81d8d0] opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#81d8d0]" />
             </span>
-            <span className="text-[10px] font-mono text-[#9cf8dd]">Pipeline active</span>
+            <span className="text-[10px] font-mono text-[#b2e8e6]">Pipeline active</span>
           </div>
           <span className="text-[10px] font-mono text-slate-500">batch + streaming</span>
         </div>

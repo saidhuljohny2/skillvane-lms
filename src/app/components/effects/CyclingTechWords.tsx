@@ -29,7 +29,7 @@ export function CyclingTechWords() {
   return (
     <span className="relative inline-block min-w-[10ch] align-bottom">
       <span
-        className={`inline-block bg-gradient-to-r from-[#4285f4] via-[#34a853] to-[#fbbc04] bg-clip-text text-transparent transition-all duration-300 ${
+        className={`inline-block bg-gradient-to-r from-accent via-primary to-[#089691] bg-clip-text text-transparent transition-all duration-300 ${
           visible ? "translate-y-0 opacity-100 blur-0" : "translate-y-2 opacity-0 blur-sm"
         }`}
       >

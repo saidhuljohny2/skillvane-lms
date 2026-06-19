@@ -94,7 +94,7 @@ export function EnrollmentFormModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#0abab5]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.name && (
@@ -121,7 +121,7 @@ export function EnrollmentFormModal({
                   setForm({ ...form, email: e.target.value })
                 }
                 placeholder="you@example.com"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#0abab5]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.email && (
@@ -156,7 +156,7 @@ export function EnrollmentFormModal({
                   })
                 }
                 placeholder="9876543210"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#0abab5]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.phone && (
@@ -183,7 +183,7 @@ export function EnrollmentFormModal({
                   setForm({ ...form, password: e.target.value })
                 }
                 placeholder="Create a password"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#0abab5]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.password && (

@@ -38,7 +38,7 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
                 style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
               >
                 Become a{" "}
-                <span className="bg-gradient-to-r from-[#7cc7ff] via-[#4285f4] to-[#34a853] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-accent via-primary to-[#089691] bg-clip-text text-transparent">
                   GCP Data Engineer
                 </span>
               </h1>
@@ -47,7 +47,7 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
                 style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
               >
                 with{" "}
-                <span className="bg-gradient-to-r from-cyan-500 via-[#7cc7ff] to-primary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-accent via-primary to-[#089691] bg-clip-text text-transparent">
                   Shaik Saidhul
                 </span>
               </p>

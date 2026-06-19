@@ -78,16 +78,16 @@ export function buildCertificatePrintHtml(
   <style>
     @page { size: A4 landscape; margin: 0; }
     * { box-sizing: border-box; }
-    body { margin: 0; background: #050b14; font-family: "Space Grotesk", Arial, sans-serif; }
+    body { margin: 0; background: #1e1e1e; font-family: "Space Grotesk", Arial, sans-serif; }
     .page {
       width: 297mm; height: 210mm; padding: 10mm;
       background:
         radial-gradient(circle at 12% 18%, rgba(66,133,244,0.22), transparent 34%),
         radial-gradient(circle at 88% 82%, rgba(52,168,83,0.18), transparent 30%),
-        linear-gradient(135deg, #07111f 0%, #0a1628 38%, #f8fbff 38.2%, #ffffff 100%);
+        linear-gradient(135deg, #1e1e1e 0%, #0a1628 38%, #f8fbff 38.2%, #ffffff 100%);
     }
     .frame {
-      height: 100%; border: 2px solid #f2b84b; border-radius: 6px; position: relative; overflow: hidden;
+      height: 100%; border: 2px solid #81d8d0; border-radius: 6px; position: relative; overflow: hidden;
       background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,251,255,0.96));
       box-shadow: inset 0 0 0 1px rgba(24,194,156,0.25);
     }
@@ -98,13 +98,13 @@ export function buildCertificatePrintHtml(
     .grid-bg {
       position: absolute; inset: 0; opacity: 0.05;
       background-image:
-        linear-gradient(#4285f4 1px, transparent 1px),
-        linear-gradient(90deg, #4285f4 1px, transparent 1px);
+        linear-gradient(#0abab5 1px, transparent 1px),
+        linear-gradient(90deg, #0abab5 1px, transparent 1px);
       background-size: 18px 18px;
     }
     .ribbon {
       position: absolute; left: -42mm; top: 16mm; width: 150mm; transform: rotate(-28deg);
-      background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04);
+      background: linear-gradient(90deg, #0abab5, #81d8d0, #3d3d3d);
       color: white; text-align: center; font-size: 9px; font-weight: 800; letter-spacing: 3px;
       text-transform: uppercase; padding: 4px 0; opacity: 0.9;
     }
@@ -115,21 +115,21 @@ export function buildCertificatePrintHtml(
     .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand img { width: 16mm; height: 16mm; object-fit: contain; background: #fff; border-radius: 8px; padding: 1.5mm; border: 1px solid #e2e8f0; }
-    .brand h1 { margin: 0; font-size: 17px; font-weight: 800; color: #07111f; }
+    .brand h1 { margin: 0; font-size: 17px; font-weight: 800; color: #1e1e1e; }
     .brand p { margin: 3px 0 0; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #64748b; }
     .meta { text-align: right; font-family: "JetBrains Mono", monospace; font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; line-height: 1.6; }
-    .meta strong { color: #07111f; font-size: 10px; }
+    .meta strong { color: #1e1e1e; font-size: 10px; }
     .content { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 4mm 8mm 0; }
     .eyebrow { color: #18a884; font-weight: 800; letter-spacing: 5px; text-transform: uppercase; font-size: 11px; }
-    .title { margin: 6px 0 0; font-size: 42px; line-height: 1.05; font-weight: 800; color: #07111f; }
-    .divider { width: 96px; height: 4px; margin: 10mm auto 7mm; border-radius: 999px; background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04); }
+    .title { margin: 6px 0 0; font-size: 42px; line-height: 1.05; font-weight: 800; color: #1e1e1e; }
+    .divider { width: 96px; height: 4px; margin: 10mm auto 7mm; border-radius: 999px; background: linear-gradient(90deg, #0abab5, #81d8d0, #3d3d3d); }
     .copy { color: #64748b; font-size: 16px; margin: 0; }
     .name {
-      margin: 5mm auto 4mm; color: #07111f; font-size: 36px; font-weight: 800;
+      margin: 5mm auto 4mm; color: #1e1e1e; font-size: 36px; font-weight: 800;
       border-bottom: 2px solid #d4af37; width: 74%; padding-bottom: 3mm;
     }
     .course { margin: 0 auto; max-width: 720px; color: #475569; font-size: 15px; line-height: 1.7; }
-    .course strong { color: #07111f; }
+    .course strong { color: #1e1e1e; }
     .skills { margin-top: 5mm; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
     .skill {
       font-family: "JetBrains Mono", monospace; font-size: 8px; font-weight: 700;
@@ -138,15 +138,15 @@ export function buildCertificatePrintHtml(
     }
     .footer { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 16px; margin-top: auto; }
     .field { border-top: 1.5px solid #94a3b8; padding-top: 7px; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; }
-    .field strong { display: block; margin-top: 4px; color: #07111f; font-size: 12px; letter-spacing: 0; text-transform: none; }
+    .field strong { display: block; margin-top: 4px; color: #1e1e1e; font-size: 12px; letter-spacing: 0; text-transform: none; }
     .seal {
-      width: 30mm; height: 30mm; border-radius: 50%; border: 2px solid #f2b84b;
-      display: grid; place-items: center; text-align: center; color: #07111f;
+      width: 30mm; height: 30mm; border-radius: 50%; border: 2px solid #81d8d0;
+      display: grid; place-items: center; text-align: center; color: #1e1e1e;
       font-size: 9px; font-weight: 800; line-height: 1.35; background: radial-gradient(circle at 30% 20%, #fff9e8, #fff7df);
       box-shadow: 0 0 0 4px rgba(242,184,75,0.15);
     }
     .signature { text-align: right; }
-    .signature .sign { color: #07111f; font-family: Georgia, serif; font-size: 22px; font-style: italic; text-transform: none; letter-spacing: 0; margin-bottom: 4px; }
+    .signature .sign { color: #1e1e1e; font-family: Georgia, serif; font-size: 22px; font-style: italic; text-transform: none; letter-spacing: 0; margin-bottom: 4px; }
   </style>
 </head>
 <body>

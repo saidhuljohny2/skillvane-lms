@@ -466,11 +466,11 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-[#f2b84b]/25">
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-primary/25">
       {/* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-background">
         <div
-          className="h-full rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_20px_rgba(242,184,75,0.45)] transition-[width] duration-150"
+          className="h-full rounded-r-full bg-gradient-to-r from-primary via-accent to-secondary shadow-[0_0_20px_rgba(10,186,181,0.35)] transition-[width] duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
@@ -528,7 +528,7 @@ export default function App() {
               title={
                 <>
                   Your{" "}
-                  <span className="bg-gradient-to-r from-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
                     GCP learning path
                   </span>
                 </>
@@ -546,7 +546,7 @@ export default function App() {
                 onClick={() => setActiveCategory(value)}
                 className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors sm:flex-none sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm ${
                   activeCategory === value
-                    ? "bg-foreground text-background"
+                    ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -555,7 +555,7 @@ export default function App() {
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                     activeCategory === value
-                      ? "bg-background/15 text-background"
+                      ? "bg-primary-foreground/20 text-primary-foreground"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >

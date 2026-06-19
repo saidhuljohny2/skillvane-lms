@@ -199,7 +199,7 @@ export function CourseModal({
             <a
               href={course.curriculumDownload}
               download
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-[#f2b84b]/12 border border-[#f2b84b]/35 text-[#ffe4a3] hover:bg-[#f2b84b]/18 hover:border-[#f2b84b]/60 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-[#81d8d0]/12 border border-[#81d8d0]/35 text-[#b2e8e6] hover:bg-[#81d8d0]/18 hover:border-[#81d8d0]/60 transition-all"
             >
               <Download className="w-4 h-4" />
               Download Curriculum
@@ -211,7 +211,7 @@ export function CourseModal({
               href={demoAccess.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-[#18c29c]/15 to-[#2f80ed]/15 border border-[#18c29c]/35 text-[#8df5d7] hover:from-[#18c29c]/25 hover:to-[#2f80ed]/25 hover:border-[#18c29c]/60 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-[#0abab5]/15 to-[#3d3d3d]/15 border border-[#0abab5]/35 text-[#8df5d7] hover:from-[#0abab5]/25 hover:to-[#3d3d3d]/25 hover:border-[#0abab5]/60 transition-all"
             >
               <demoAccess.icon className="w-4 h-4" />
               {demoAccess.longLabel}
