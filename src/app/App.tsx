@@ -48,7 +48,6 @@ import { Navbar } from "@/app/components/landing/Navbar";
 import { LandingHero } from "@/app/components/landing/LandingHero";
 import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
 import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
-import { LiveBatchBanner } from "@/app/components/landing/LiveBatchBanner";
 import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { AdminStudentsModal } from "@/app/components/modals/AdminStudentsModal";
 import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
@@ -2808,7 +2807,6 @@ export default function App() {
       <LandingHero instructorPhoto={instructorPhoto} scrollTo={scrollTo} />
       <EnrollmentTicker />
       <GcpTechMarquee />
-      <LiveBatchBanner onCta={() => scrollTo("courses")} />
 
       {/* Courses */}
       <section
