@@ -6,6 +6,7 @@ import { CyclingTechWords } from "@/app/components/effects/CyclingTechWords";
 import { DataPipelineVisual } from "@/app/components/effects/DataPipelineVisual";
 import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
 import { FloatingOrbs } from "@/app/components/effects/FloatingOrbs";
+import { FloatingBadges } from "@/app/components/effects/FloatingBadges";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
@@ -694,6 +695,7 @@ export default function App() {
       <section className="relative min-h-[92svh] overflow-hidden bg-[#050b14] pt-[4.5rem] sm:pt-[5.5rem]">
         <HeroBackground />
         <FloatingOrbs />
+        <FloatingBadges variant="hero" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050b14] to-transparent" />
 
         <div className="relative mx-auto flex min-h-[calc(92svh-5rem)] max-w-7xl flex-col justify-center px-4 py-10 sm:px-6 sm:py-14">
@@ -757,7 +759,15 @@ export default function App() {
                   ].map((item) => (
                     <span
                       key={item}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-slate-300 backdrop-blur-md transition-colors hover:border-[#18c29c]/35"
+                      className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-slate-300 backdrop-blur-md transition-colors hover:border-[#18c29c]/35 float-gentle ${
+                        item === "Recordings shared"
+                          ? "float-gentle-delay-1"
+                          : item === "Portfolio projects"
+                            ? "float-gentle-delay-2"
+                            : item === "Resume guidance"
+                              ? "float-gentle-delay-3"
+                              : ""
+                      }`}
                     >
                       <CheckCircle2 className="h-3.5 w-3.5 text-[#18c29c]" />
                       {item}
@@ -782,8 +792,13 @@ export default function App() {
                   { icon: Star, val: "4.9/5", label: "Rating" },
                   { icon: Award, val: "9+", label: "Years" },
                   { icon: BookOpen, val: "5", label: "Programs" },
-                ].map(({ icon: Icon, val, label }) => (
-                  <div key={label} className="hero-stat-chip rounded-xl p-3 sm:p-4">
+                ].map(({ icon: Icon, val, label }, i) => (
+                  <div
+                    key={label}
+                    className={`hero-stat-chip float-gentle rounded-xl p-3 sm:p-4 ${
+                      i === 1 ? "float-gentle-delay-1" : i === 2 ? "float-gentle-delay-2" : i === 3 ? "float-gentle-delay-3" : ""
+                    }`}
+                  >
                     <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
                     <div
                       className="text-xl font-black text-white sm:text-2xl"
@@ -811,6 +826,7 @@ export default function App() {
         id="courses"
         className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
       >
+        <FloatingBadges variant="section" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(66,133,244,0.12),transparent_40%),radial-gradient(ellipse_at_70%_100%,rgba(24,194,156,0.1),transparent_38%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
@@ -888,6 +904,7 @@ export default function App() {
                 <CourseCard
                   course={course}
                   onEnroll={handleEnroll}
+                  index={index}
                 />
               </Reveal>
             ))}

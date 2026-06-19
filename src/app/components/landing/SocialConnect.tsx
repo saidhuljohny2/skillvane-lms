@@ -4,7 +4,7 @@ import { SOCIAL_LINKS } from "@/app/data/social";
 export function SocialConnect() {
   return (
     <Reveal delay={360}>
-      <div className="social-connect-card premium-surface relative overflow-hidden rounded-2xl p-4 sm:p-5">
+      <div className="social-connect-card premium-surface float-gentle float-gentle-delay-2 relative overflow-hidden rounded-2xl p-4 sm:p-5">
         <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#4285f4]/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-10 -left-6 h-28 w-28 rounded-full bg-[#18c29c]/12 blur-3xl" />
 

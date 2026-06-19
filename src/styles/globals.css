@@ -402,6 +402,135 @@ body {
   filter: drop-shadow(0 0 40px rgba(24, 194, 156, 0.15));
 }
 
+/* ── Floating badges & gentle float ── */
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-14px) translateX(6px); }
+  66% { transform: translateY(-6px) translateX(-4px); }
+}
+
+.float-gentle {
+  animation: floatGentle 5.5s ease-in-out infinite;
+}
+
+.float-gentle-delay-1 { animation-delay: 0.7s; }
+.float-gentle-delay-2 { animation-delay: 1.4s; }
+.float-gentle-delay-3 { animation-delay: 2.1s; }
+
+.float-badge {
+  animation: floatBadge 7s ease-in-out infinite;
+}
+
+/* ── Modern course cards ── */
+@keyframes courseBorderSpin {
+  to { --course-angle: 360deg; }
+}
+
+@property --course-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.course-card-modern {
+  animation: courseCardEnter 0.65s ease-out both;
+}
+
+@keyframes courseCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.course-card-border {
+  padding: 1px;
+  background: conic-gradient(
+    from var(--course-angle),
+    transparent 0%,
+    rgba(24, 194, 156, 0.5) 12%,
+    transparent 24%,
+    rgba(66, 133, 244, 0.4) 36%,
+    transparent 48%
+  );
+  animation: courseBorderSpin 6s linear infinite;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.course-card-modern:hover .course-card-border,
+.course-card-featured .course-card-border {
+  opacity: 1;
+}
+
+.course-card-featured .course-card-border {
+  background: conic-gradient(
+    from var(--course-angle),
+    rgba(242, 184, 75, 0.6),
+    rgba(24, 194, 156, 0.5),
+    rgba(66, 133, 244, 0.5),
+    rgba(242, 184, 75, 0.6)
+  );
+}
+
+.course-card-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%) skewX(-12deg);
+  transition: transform 0.6s ease;
+}
+
+.course-card-modern:hover .course-card-shine::after {
+  transform: translateX(120%) skewX(-12deg);
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.course-icon-float {
+  animation: iconFloat 4s ease-in-out infinite;
+}
+
+@keyframes depthBarGrow {
+  from { transform: scaleX(0); transform-origin: left; }
+  to { transform: scaleX(1); transform-origin: left; }
+}
+
+.course-depth-bar {
+  animation: depthBarGrow 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes savingsPop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.savings-badge {
+  animation: savingsPop 2.5s ease-in-out infinite;
+}
+
+.live-pulse-badge {
+  box-shadow: 0 0 16px rgba(24, 194, 156, 0.25);
+}
+
 .whatsapp-fab {
   box-shadow: 0 12px 32px rgba(37, 211, 102, 0.35);
   animation: fabPulse 3s ease-in-out infinite;
@@ -730,6 +859,11 @@ button, a, input, select, textarea {
   .hero-aurora,
   .hero-particle,
   .pipeline-hero-float,
+  .float-gentle,
+  .float-badge,
+  .course-icon-float,
+  .course-card-border,
+  .savings-badge,
   .whatsapp-fab {
     animation: none !important;
   }
