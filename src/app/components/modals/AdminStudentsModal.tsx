@@ -287,11 +287,11 @@ export function AdminStudentsModal({
       <div className="sv-modal sv-modal-xl flex max-h-[94dvh]">
         <div className="sv-modal-header">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#81d8d0] to-[#b2e8e6] shadow-lg shadow-[#81d8d0]/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
               <Shield className="h-5 w-5 text-[#1b1202]" />
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#81d8d0]">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2b84b]">
                 SkillVane Admin
               </p>
               <h2
@@ -311,8 +311,8 @@ export function AdminStudentsModal({
           <div className="sv-modal-body space-y-4">
             <div className="sv-panel-lg">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#81d8d0]/30 bg-[#81d8d0]/10">
-                  <Lock className="h-4 w-4 text-[#b2e8e6]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10">
+                  <Lock className="h-4 w-4 text-[#ffe4a3]" />
                 </div>
                 <div>
                   <p className="text-sm font-black text-white">Secure admin access</p>
@@ -333,7 +333,7 @@ export function AdminStudentsModal({
                     })
                   }
                   placeholder="Admin Gmail"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                 />
                 <input
                   type="password"
@@ -345,12 +345,12 @@ export function AdminStudentsModal({
                     })
                   }
                   placeholder="Admin password"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                 />
                 {message && <p className="text-sm text-red-300">{message}</p>}
                 <button
                   onClick={openAdminConsole}
-                  className="w-full rounded-xl bg-gradient-to-r from-[#0abab5] to-[#3d3d3d] px-4 py-3 text-sm font-black text-white"
+                  className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
                 >
                   Open Admin Console
                 </button>
@@ -381,11 +381,11 @@ export function AdminStudentsModal({
                     })
                   }
                   placeholder="Admin Gmail"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                 />
                 <button
                   onClick={sendAdminResetOtp}
-                  className="w-full rounded-xl border border-[#81d8d0]/30 bg-[#81d8d0]/10 px-4 py-3 text-sm font-black text-[#b2e8e6]"
+                  className="w-full rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3]"
                 >
                   {adminOtp ? "Resend Admin OTP" : "Send Admin OTP"}
                 </button>
@@ -396,7 +396,7 @@ export function AdminStudentsModal({
                       value={adminOtpInput}
                       onChange={(e) => setAdminOtpInput(e.target.value)}
                       placeholder="6-digit OTP"
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                     />
                     <button
                       onClick={verifyAdminOtp}
@@ -413,17 +413,17 @@ export function AdminStudentsModal({
                       value={newAdminPassword}
                       onChange={(e) => setNewAdminPassword(e.target.value)}
                       placeholder="New admin password"
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                     />
                     <button
                       onClick={saveAdminPassword}
-                      className="w-full rounded-xl bg-gradient-to-r from-[#0abab5] to-[#3d3d3d] px-4 py-3 text-sm font-black text-white"
+                      className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
                     >
                       Save New Admin Password
                     </button>
                   </>
                 )}
-                {message && <p className="text-sm text-[#b2e8e6]">{message}</p>}
+                {message && <p className="text-sm text-[#ffe4a3]">{message}</p>}
                 <button
                   onClick={() => {
                     setAdminMode("login");
@@ -452,7 +452,7 @@ export function AdminStudentsModal({
                   onClick={() => setActiveTab(id)}
                   className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-black transition-all sm:text-sm ${
                     activeTab === id
-                      ? "bg-gradient-to-r from-[#0abab5] to-[#3d3d3d] text-white shadow-lg shadow-[#0abab5]/20"
+                      ? "bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white shadow-lg shadow-[#18c29c]/20"
                       : "border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white"
                   }`}
                 >
@@ -470,7 +470,7 @@ export function AdminStudentsModal({
                   { label: "Courses", value: courses.length, icon: GraduationCap },
                 ].map(({ label, value, icon: Icon }) => (
                   <div key={label} className="premium-surface rounded-2xl p-3 sm:p-4">
-                    <Icon className="mb-2 h-4 w-4 text-[#81d8d0]" />
+                    <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
                     <div className="text-2xl font-black text-white">{value}</div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
                       {label}
@@ -480,7 +480,7 @@ export function AdminStudentsModal({
               </div>
 
               {message && (
-                <p className="rounded-xl border border-[#81d8d0]/25 bg-[#81d8d0]/10 px-4 py-3 text-sm text-[#b2e8e6]">
+                <p className="rounded-xl border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-3 text-sm text-[#ffe4a3]">
                   {message}
                 </p>
               )}
@@ -489,7 +489,7 @@ export function AdminStudentsModal({
                 <div className="premium-surface rounded-2xl p-4 sm:p-5">
                   <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#81d8d0]">
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
                         Certificate Studio
                       </p>
                       <h3 className="mt-1 text-lg font-black text-white">
@@ -498,7 +498,7 @@ export function AdminStudentsModal({
                     </div>
                     <button
                       onClick={openCertificatePrint}
-                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#81d8d0] to-[#b2e8e6] px-4 py-3 text-sm font-black text-[#1e1e1e] shadow-lg shadow-[#81d8d0]/15"
+                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
                     >
                       <Download className="h-4 w-4" />
                       Issue & Export PDF
@@ -516,13 +516,13 @@ export function AdminStudentsModal({
                           else
                             setCertificate({ ...certificate, studentEmail: email });
                         }}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#81d8d0]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
                       >
-                        <option value="" className="bg-[#1e1e1e]">
+                        <option value="" className="bg-[#07111f]">
                           Select student to auto-fill
                         </option>
                         {studentList.map((s) => (
-                          <option key={s.email} value={s.email} className="bg-[#1e1e1e]">
+                          <option key={s.email} value={s.email} className="bg-[#07111f]">
                             {s.name} — {s.email}
                           </option>
                         ))}
@@ -533,7 +533,7 @@ export function AdminStudentsModal({
                           setCertificate({ ...certificate, studentName: e.target.value })
                         }
                         placeholder="Student full name"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#81d8d0]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
                       />
                       <input
                         type="email"
@@ -542,7 +542,7 @@ export function AdminStudentsModal({
                           setCertificate({ ...certificate, studentEmail: e.target.value })
                         }
                         placeholder="Student email (publishes to dashboard)"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#81d8d0]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
                       />
                       <input
                         type="date"
@@ -550,7 +550,7 @@ export function AdminStudentsModal({
                         onChange={(e) =>
                           setCertificate({ ...certificate, completionDate: e.target.value })
                         }
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#81d8d0]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
                       />
                       <p className="text-xs leading-5 text-slate-400">
                         Add the student email to publish the certificate to their dashboard.
@@ -573,29 +573,29 @@ export function AdminStudentsModal({
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         placeholder="Student name"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                       />
                       <input
                         type="email"
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                         placeholder="student@email.com"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                       />
                       <input
                         value={form.phone || ""}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
                         placeholder="Phone number"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                       />
                       <input
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                         placeholder="Login password"
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                       />
-                      <div className="rounded-xl border border-white/10 bg-[#1e1e1e]/70 p-3">
-                        <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[#81d8d0]">
+                      <div className="rounded-xl border border-white/10 bg-[#07111f]/70 p-3">
+                        <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[#f2b84b]">
                           Enrolled Courses
                         </p>
                         <div className="grid max-h-40 gap-2 overflow-y-auto">
@@ -617,7 +617,7 @@ export function AdminStudentsModal({
                       <div className="grid grid-cols-2 gap-3">
                         <button
                           onClick={saveStudent}
-                          className="rounded-xl bg-gradient-to-r from-[#0abab5] to-[#3d3d3d] px-4 py-3 text-sm font-black text-white"
+                          className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
                         >
                           Save Student
                         </button>
@@ -642,7 +642,7 @@ export function AdminStudentsModal({
                           value={studentSearch}
                           onChange={(e) => setStudentSearch(e.target.value)}
                           placeholder="Search students..."
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-[#0abab5]/60 focus:outline-none"
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -653,26 +653,26 @@ export function AdminStudentsModal({
                         filteredStudents.map((student) => (
                           <div
                             key={student.email}
-                            className="rounded-xl border border-white/10 bg-[#1e1e1e]/72 p-3 transition-colors hover:border-[#0abab5]/30"
+                            className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3 transition-colors hover:border-[#18c29c]/30"
                           >
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                               <div className="min-w-0">
                                 <p className="font-black text-white">{student.name}</p>
                                 <p className="truncate text-xs text-slate-400">{student.email}</p>
-                                <p className="mt-1 text-xs text-[#b2e8e6]">
+                                <p className="mt-1 text-xs text-[#9cf8dd]">
                                   {(student.enrolledCourses || []).length} enrolled course(s)
                                 </p>
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 <button
                                   onClick={() => fillCertificateFromStudent(student)}
-                                  className="rounded-lg border border-[#81d8d0]/25 px-3 py-2 text-xs font-black text-[#b2e8e6]"
+                                  className="rounded-lg border border-[#f2b84b]/25 px-3 py-2 text-xs font-black text-[#ffe4a3]"
                                 >
                                   Certificate
                                 </button>
                                 <button
                                   onClick={() => editStudent(student)}
-                                  className="rounded-lg border border-[#0abab5]/25 px-3 py-2 text-xs font-black text-[#b2e8e6]"
+                                  className="rounded-lg border border-[#18c29c]/25 px-3 py-2 text-xs font-black text-[#9cf8dd]"
                                 >
                                   Edit
                                 </button>
@@ -694,7 +694,7 @@ export function AdminStudentsModal({
 
               {activeTab === "security" && (
                 <div className="premium-surface max-w-xl rounded-2xl p-5">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#81d8d0]">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
                     Admin Security
                   </p>
                   <h3 className="mt-2 text-lg font-black text-white">Password reset</h3>
@@ -707,7 +707,7 @@ export function AdminStudentsModal({
                       setUnlocked(false);
                       setAdminMode("forgot");
                     }}
-                    className="mt-4 rounded-xl border border-[#81d8d0]/30 bg-[#81d8d0]/10 px-4 py-3 text-sm font-black text-[#b2e8e6]"
+                    className="mt-4 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3]"
                   >
                     Open password reset
                   </button>

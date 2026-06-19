@@ -40,7 +40,7 @@ export function InvoiceModal({
       <div className="sv-modal-backdrop" onClick={onClose} />
       <div className="sv-modal sv-modal-lg max-h-[92dvh] overflow-hidden">
         <div className="sv-modal-body overflow-y-auto text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#0abab5]/25 bg-[#0abab5]/10">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10">
             <CheckCircle2 className="h-8 w-8 text-[#8df5d7]" />
           </div>
           <h2

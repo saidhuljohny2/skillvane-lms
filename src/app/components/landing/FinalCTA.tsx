@@ -10,8 +10,7 @@ export function FinalCTA({ onExploreCourses }: FinalCTAProps) {
     <section className="landing-section landing-section-alt">
       <div className="sv-page">
         <Reveal>
-          <div className="sv-narrow">
-            <div className="sv-panel-lg relative overflow-hidden p-6 text-center sm:p-10">
+          <div className="sv-panel-lg relative overflow-hidden p-6 text-center sm:p-10">
             <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-secondary/10 blur-3xl" />
 
@@ -34,7 +33,6 @@ export function FinalCTA({ onExploreCourses }: FinalCTAProps) {
                 Browse courses & enroll
                 <ArrowRight className="h-4 w-4" />
               </button>
-            </div>
             </div>
           </div>
         </Reveal>

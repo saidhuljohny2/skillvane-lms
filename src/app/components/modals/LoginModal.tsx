@@ -235,7 +235,7 @@ export function LoginModal({
       <div className="sv-modal sv-modal-md max-h-[92dvh] overflow-hidden">
         <div className="sv-modal-header">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0abab5] to-[#3d3d3d] flex items-center justify-center shadow-lg shadow-[#0abab5]/20">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
               <Lock className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -271,7 +271,7 @@ export function LoginModal({
             <div
               className={`p-3 rounded-lg border text-sm ${
                 /sent|verified|successful/i.test(errors.general)
-                  ? "bg-[#0abab5]/10 border-[#0abab5]/30 text-[#b2e8e6]"
+                  ? "bg-[#18c29c]/10 border-[#18c29c]/30 text-[#9cf8dd]"
                   : "bg-red-500/10 border-red-500/30 text-red-300"
               }`}
             >
@@ -290,7 +290,7 @@ export function LoginModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#0abab5]/60 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
               />
               {errors.name && (
                 <p className="text-xs text-red-300 mt-1">
@@ -311,7 +311,7 @@ export function LoginModal({
                 setForm({ ...form, email: e.target.value.toLowerCase() })
               }
               placeholder="your.email@example.com"
-              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#0abab5]/60 transition-all"
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
             />
             {errors.email && (
               <p className="text-xs text-red-300 mt-1">
@@ -332,7 +332,7 @@ export function LoginModal({
                   setForm({ ...form, phone: e.target.value })
                 }
                 placeholder="10-digit mobile number"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#0abab5]/60 transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
               />
               {errors.phone && (
                 <p className="text-xs text-red-300 mt-1">
@@ -348,7 +348,7 @@ export function LoginModal({
                 type="button"
                 onClick={sendStudentResetOtp}
                 disabled={loading}
-                className="rounded-xl border border-[#81d8d0]/30 bg-[#81d8d0]/10 px-4 py-3 text-sm font-black text-[#b2e8e6] transition-colors hover:bg-[#81d8d0]/16 disabled:opacity-50"
+                className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-colors hover:bg-[#f2b84b]/16 disabled:opacity-50"
               >
                 {otpState ? "Resend OTP" : "Send OTP to Email"}
               </button>
@@ -364,7 +364,7 @@ export function LoginModal({
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value)}
                       placeholder="6-digit OTP"
-                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#0abab5]/60 transition-all"
+                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
                     />
                     <button
                       type="button"
@@ -395,7 +395,7 @@ export function LoginModal({
                   ? "Enter your password"
                   : "Create a password (min 6 chars)"
               }
-              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#0abab5]/60 transition-all"
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
             />
             {errors.password && (
               <p className="text-xs text-red-300 mt-1">
@@ -408,7 +408,7 @@ export function LoginModal({
           <button
             type="submit"
             disabled={loading || (mode === "reset" && !otpState?.verified)}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#0abab5] to-[#3d3d3d] text-white font-black text-sm hover:shadow-xl hover:shadow-[#0abab5]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#18c29c]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading
               ? "Please wait..."

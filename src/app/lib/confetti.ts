@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 
-const BRAND_COLORS = ["#0abab5", "#81d8d0", "#089691", "#6dd5d0", "#3d3d3d", "#b2e8e6"];
+const GCP_COLORS = ["#4285f4", "#34a853", "#fbbc04", "#18c29c", "#7cc7ff", "#f2b84b"];
 
 export function celebrateEnrollment() {
   const end = Date.now() + 2200;
@@ -11,7 +11,7 @@ export function celebrateEnrollment() {
       angle: 60,
       spread: 55,
       origin: { x: 0, y: 0.65 },
-      colors: BRAND_COLORS,
+      colors: GCP_COLORS,
       zIndex: 9999,
     });
     confetti({
@@ -19,7 +19,7 @@ export function celebrateEnrollment() {
       angle: 120,
       spread: 55,
       origin: { x: 1, y: 0.65 },
-      colors: BRAND_COLORS,
+      colors: GCP_COLORS,
       zIndex: 9999,
     });
 
@@ -32,7 +32,7 @@ export function celebrateEnrollment() {
     particleCount: 120,
     spread: 80,
     origin: { y: 0.6 },
-    colors: BRAND_COLORS,
+    colors: GCP_COLORS,
     zIndex: 9999,
   });
 

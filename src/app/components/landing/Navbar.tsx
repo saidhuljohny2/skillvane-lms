@@ -63,7 +63,7 @@ export function Navbar({
               onClick={() => onScrollTo(id)}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeSection === id
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-foreground text-background"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >

@@ -466,11 +466,11 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-primary/25">
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-[#f2b84b]/25">
       {/* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-background">
         <div
-          className="h-full rounded-r-full bg-gradient-to-r from-primary via-accent to-secondary shadow-[0_0_20px_rgba(10,186,181,0.35)] transition-[width] duration-150"
+          className="h-full rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_20px_rgba(242,184,75,0.45)] transition-[width] duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
@@ -514,10 +514,7 @@ export default function App() {
         </a>
       )}
 
-      <LandingHero
-        onExploreCourses={() => scrollTo("courses")}
-        onMeetInstructor={() => scrollTo("instructor")}
-      />
+      <LandingHero onExploreCourses={() => scrollTo("courses")} />
 
       <GcpTechMarquee />
 
@@ -531,7 +528,7 @@ export default function App() {
               title={
                 <>
                   Your{" "}
-                  <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent">
                     GCP learning path
                   </span>
                 </>
@@ -541,16 +538,16 @@ export default function App() {
           </Reveal>
 
           {/* Category tabs */}
-          <div className="sv-panel sv-narrow mb-7 flex w-full flex-wrap justify-center gap-1.5 p-1.5 sm:mb-8">
+          <div className="sv-panel mx-auto mb-6 flex w-full max-w-md flex-wrap justify-center gap-1 p-1 sm:mb-8">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setActiveCategory(value)}
-                className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors sm:rounded-xl ${
+                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors sm:flex-none sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm ${
                   activeCategory === value
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <CategoryIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -558,7 +555,7 @@ export default function App() {
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                     activeCategory === value
-                      ? "bg-primary-foreground/20 text-primary-foreground"
+                      ? "bg-background/15 text-background"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
@@ -584,13 +581,9 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3 xl:gap-6">
             {visibleCourses.map((course, index) => (
-              <Reveal
-                key={course.id}
-                delay={index * 60}
-                className={course.id === "gcp-live" ? "lg:col-span-2" : ""}
-              >
+              <Reveal key={course.id} delay={index * 60}>
                 <CourseCard
                   course={course}
                   onEnroll={handleEnroll}
@@ -610,24 +603,20 @@ export default function App() {
       </section>
 
       <section id="free-learning" className="sv-strip">
-        <Reveal className="sv-page">
-          <div className="sv-narrow flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-            <div className="flex-1">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">Free on YouTube</span>
-                {" — "}start with the GCP Data Engineering playlist before you enroll.
-              </p>
-            </div>
-            <a
-              href={FREE_LEARNING_PLAYLIST_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sv-btn-ghost shrink-0 !rounded-full"
-            >
-              <Youtube className="h-4 w-4 text-red-500" />
-              Watch Free
-            </a>
-          </div>
+        <Reveal className="sv-page flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <p className="text-center text-sm text-muted-foreground sm:text-left">
+            <span className="font-semibold text-foreground">Free on YouTube</span>
+            {" — "}start with the GCP Data Engineering playlist before you enroll
+          </p>
+          <a
+            href={FREE_LEARNING_PLAYLIST_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sv-btn-ghost shrink-0 !rounded-full"
+          >
+            <Youtube className="h-4 w-4 text-red-400" />
+            Watch Free
+          </a>
         </Reveal>
       </section>
 
@@ -642,7 +631,7 @@ export default function App() {
           </Reveal>
 
           <Reveal delay={100}>
-          <div className="sv-panel-lg sv-narrow flex flex-col items-center gap-8 sm:flex-row sm:items-start">
+          <div className="sv-panel-lg flex flex-col items-center gap-8 sm:flex-row sm:items-start">
             <div className="flex flex-shrink-0 flex-col items-center gap-3">
               <div className="relative h-48 w-40 overflow-hidden rounded-2xl border border-border sm:h-56 sm:w-44">
                 <ImageWithFallback
@@ -716,12 +705,12 @@ export default function App() {
       </section>
 
       <section id="faq" className="landing-section landing-section-base">
-        <div className="sv-page">
+        <div className="sv-page max-w-3xl">
           <Reveal>
             <SectionHeading eyebrow="FAQ" title="Common questions" align="center" />
           </Reveal>
 
-          <div className="sv-narrow space-y-3">
+          <div className="space-y-2">
             {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 60}>
               <div className="sv-panel overflow-hidden !p-0">

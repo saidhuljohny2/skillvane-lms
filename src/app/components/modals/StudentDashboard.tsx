@@ -107,7 +107,7 @@ export function StudentDashboard({
       <div className="premium-ring sv-modal sv-modal-xl flex h-[96dvh] max-h-[90vh] sm:h-auto">
         <div className="sv-modal-header">
           <div className="min-w-0 flex items-center gap-3">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#0abab5] via-[#3d3d3d] to-[#81d8d0] flex items-center justify-center shadow-lg shadow-[#0abab5]/25 ring-1 ring-white/20 flex-shrink-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] flex items-center justify-center shadow-lg shadow-[#18c29c]/25 ring-1 ring-white/20 flex-shrink-0">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div className="min-w-0">
@@ -128,7 +128,7 @@ export function StudentDashboard({
           <div className="flex flex-shrink-0 items-center gap-2">
             <button
               onClick={onLogout}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/12 bg-white/[0.04] text-slate-300 hover:text-white hover:border-[#0abab5]/40 transition-all text-sm font-semibold"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/12 bg-white/[0.04] text-slate-300 hover:text-white hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
             >
               <LogOut className="w-4 h-4" />
               Logout
@@ -147,14 +147,14 @@ export function StudentDashboard({
                 onClick={() => setActiveTab(id)}
                 className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-[11px] font-black transition-all sm:gap-2 sm:px-3 sm:text-xs ${
                   activeTab === id
-                    ? "lms-tab-active-glow bg-gradient-to-r from-[#0abab5] to-[#3d3d3d] text-white"
+                    ? "lms-tab-active-glow bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white"
                     : "border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white"
                 }`}
               >
                 <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="truncate">{label}</span>
                 {id === "certificate" && issuedCertificate && (
-                  <span className="h-2 w-2 rounded-full bg-[#81d8d0] animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-[#f2b84b] animate-pulse" />
                 )}
               </button>
             ))}
@@ -166,7 +166,7 @@ export function StudentDashboard({
           <>
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-4">
             <div className="premium-surface rounded-2xl p-4">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#0abab5]/25 bg-[#0abab5]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#b2e8e6]">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Access center
               </div>
@@ -185,13 +185,13 @@ export function StudentDashboard({
               <div className="mt-4">
                 <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
                   <span>Learning journey</span>
-                  <span className="text-[#b2e8e6]">{progressPercent}% complete</span>
+                  <span className="text-[#9cf8dd]">{progressPercent}% complete</span>
                 </div>
                 <div className="lms-progress-track">
                   <div className="lms-progress-fill" style={{ width: `${progressPercent}%` }} />
                 </div>
               </div>
-              <div className="mt-3 rounded-xl border border-[#81d8d0]/20 bg-[#81d8d0]/10 px-4 py-3 text-xs leading-5 text-[#b2e8e6]">
+              <div className="mt-3 rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe4a3]">
                 Drive invitations are sent to{" "}
                 <span className="font-black text-white">
                   {student.email}
@@ -205,14 +205,14 @@ export function StudentDashboard({
                       .getElementById("student-available-courses")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="magnetic-button inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#0abab5] via-[#3d3d3d] to-[#81d8d0] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#0abab5]/20"
+                  className="magnetic-button inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   Enroll New Course
                 </button>
                 <button
                   onClick={onClose}
-                  className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 hover:border-[#81d8d0]/40"
+                  className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 hover:border-[#f2b84b]/40"
                 >
                   <ArrowRight className="w-4 h-4" />
                   Back to Website
@@ -230,7 +230,7 @@ export function StudentDashboard({
                   key={item.label}
                   className="premium-surface rounded-2xl p-3 sm:p-4 transition-transform duration-300 hover:-translate-y-1"
                 >
-                  <item.icon className="mb-3 h-4 w-4 text-[#81d8d0]" />
+                  <item.icon className="mb-3 h-4 w-4 text-[#f2b84b]" />
                   <div
                     className="text-3xl font-black text-white"
                     style={{
@@ -249,11 +249,11 @@ export function StudentDashboard({
           </div>
 
           {issuedCertificate && (
-            <div className="premium-surface rounded-2xl border border-[#81d8d0]/25 p-4">
+            <div className="premium-surface rounded-2xl border border-[#f2b84b]/25 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#81d8d0]/15">
-                    <BadgeCheck className="h-5 w-5 text-[#b2e8e6]" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f2b84b]/15">
+                    <BadgeCheck className="h-5 w-5 text-[#ffe4a3]" />
                   </div>
                   <div>
                     <p className="text-sm font-black text-white">Certificate ready</p>
@@ -262,7 +262,7 @@ export function StudentDashboard({
                 </div>
                 <button
                   onClick={() => setActiveTab("certificate")}
-                  className="rounded-xl bg-gradient-to-r from-[#81d8d0] to-[#b2e8e6] px-4 py-2.5 text-sm font-black text-[#1e1e1e]"
+                  className="rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-2.5 text-sm font-black text-[#1d1602]"
                 >
                   View Certificate
                 </button>
@@ -314,14 +314,14 @@ export function StudentDashboard({
                   Enrolled Courses
                 </h3>
               </div>
-              <span className="rounded-full border border-[#0abab5]/25 bg-[#0abab5]/10 px-3 py-1 text-xs font-black text-[#b2e8e6]">
+              <span className="rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-xs font-black text-[#9cf8dd]">
                 {enrolledCourses.length} active
               </span>
             </div>
 
             {enrolledCourses.length === 0 ? (
               <div className="premium-surface rounded-2xl border-dashed px-5 py-10 text-center">
-                <BookOpen className="mx-auto mb-3 h-10 w-10 text-[#81d8d0]" />
+                <BookOpen className="mx-auto mb-3 h-10 w-10 text-[#f2b84b]" />
                 <p className="font-bold text-white">No enrolled courses yet</p>
                 <p className="mt-1 text-sm text-slate-400">
                   Pick a program below and complete enrollment to unlock access.
@@ -399,7 +399,7 @@ export function StudentDashboard({
                           href={courseAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#0abab5]/30 bg-[#0abab5]/10 px-4 py-3 text-sm font-black text-[#b2e8e6] hover:border-[#0abab5]/55 hover:bg-[#0abab5]/16 transition-all"
+                          className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
                         >
                           <courseAccess.icon className="h-4 w-4" />
                           {courseAccess.label}
@@ -412,7 +412,7 @@ export function StudentDashboard({
                       )}
 
                       {hasConfirmedAccess ? (
-                        <div className="mt-3 rounded-xl border border-[#0abab5]/25 bg-[#0abab5]/10 px-4 py-3 text-xs font-bold leading-5 text-[#b2e8e6]">
+                        <div className="mt-3 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-3 text-xs font-bold leading-5 text-[#9cf8dd]">
                           <div className="flex items-center gap-2 font-black uppercase tracking-[0.12em]">
                             <CheckCircle2 className="h-3.5 w-3.5" />
                             Access confirmed
@@ -424,7 +424,7 @@ export function StudentDashboard({
                             href={driveAccessRequestHref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0abab5] via-[#3d3d3d] to-[#81d8d0] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#0abab5]/20 transition-all"
+                            className="magnetic-button mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20 transition-all"
                           >
                             <Mail className="h-4 w-4" />
                             Ask Admin for Drive Access
@@ -433,14 +433,14 @@ export function StudentDashboard({
                           <button
                             type="button"
                             onClick={() => confirmAccessReceived(course.id)}
-                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#0abab5]/30 bg-[#0abab5]/10 px-4 py-3 text-sm font-black text-[#b2e8e6] transition-all hover:border-[#0abab5]/55 hover:bg-[#0abab5]/16"
+                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] transition-all hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16"
                           >
                             <CheckCircle2 className="h-4 w-4" />
                             I Received Access
                           </button>
 
-                          <div className="mt-3 rounded-xl border border-[#81d8d0]/25 bg-gradient-to-r from-[#81d8d0]/12 to-white/[0.035] px-4 py-2.5 text-xs leading-5 text-[#b2e8e6]">
-                            <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-[0.12em] text-[#81d8d0]">
+                          <div className="mt-3 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.035] px-4 py-2.5 text-xs leading-5 text-[#ffe1a3]">
+                            <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-[0.12em] text-[#f2b84b]">
                               <Clock className="h-3.5 w-3.5" />
                               24 hour access window
                             </div>
@@ -464,14 +464,14 @@ export function StudentDashboard({
           <section id="student-available-courses">
             <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#81d8d0]">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2b84b]">
                   Grow Next
                 </p>
                 <h3 className="mt-1 text-xl font-black text-white">
                   Enroll New Courses
                 </h3>
               </div>
-              <span className="w-fit rounded-full border border-[#81d8d0]/25 bg-[#81d8d0]/10 px-3 py-1 text-xs font-black text-[#b2e8e6]">
+              <span className="w-fit rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-3 py-1 text-xs font-black text-[#ffe4a3]">
                 {availableCourses.length} options
               </span>
             </div>
@@ -535,7 +535,7 @@ export function StudentDashboard({
                         </div>
                         <button
                           onClick={() => onEnroll(course)}
-                          className="magnetic-button rounded-xl bg-gradient-to-r from-[#0abab5] via-[#3d3d3d] to-[#81d8d0] px-4 py-2 text-sm font-black text-white shadow-lg shadow-[#0abab5]/20"
+                          className="magnetic-button rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-4 py-2 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
                         >
                           Enroll
                         </button>
@@ -546,7 +546,7 @@ export function StudentDashboard({
                           href={demoAccess.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2 text-xs font-bold text-slate-300 hover:border-[#0abab5]/30 hover:text-white"
+                          className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2 text-xs font-bold text-slate-300 hover:border-[#18c29c]/30 hover:text-white"
                         >
                           <demoAccess.icon className="w-3.5 h-3.5" />
                           {demoAccess.longLabel}
@@ -566,7 +566,7 @@ export function StudentDashboard({
               <div className="premium-surface rounded-2xl p-4 sm:p-5">
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#81d8d0]">
+                    <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
                       <Sparkles className="h-4 w-4" />
                       Achievement
                     </p>
@@ -580,7 +580,7 @@ export function StudentDashboard({
                   {issuedCertificate && (
                     <button
                       onClick={downloadCertificate}
-                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#81d8d0] to-[#b2e8e6] px-5 py-3 text-sm font-black text-[#1e1e1e] shadow-lg shadow-[#81d8d0]/15"
+                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-5 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
                     >
                       <Download className="h-4 w-4" />
                       Download PDF
@@ -591,8 +591,8 @@ export function StudentDashboard({
                 {issuedCertificate ? (
                   <div className="grid gap-4 xl:grid-cols-[1fr_1.1fr]">
                     <div className="space-y-3">
-                      <div className="rounded-xl border border-[#0abab5]/25 bg-[#0abab5]/10 px-4 py-3">
-                        <p className="text-xs font-black uppercase tracking-[0.14em] text-[#b2e8e6]">
+                      <div className="rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-3">
+                        <p className="text-xs font-black uppercase tracking-[0.14em] text-[#9cf8dd]">
                           Certificate issued
                         </p>
                         <p className="mt-2 text-sm text-slate-300">
@@ -611,7 +611,7 @@ export function StudentDashboard({
                         href={TRAINER_WHATSAPP_LINK}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm font-bold text-slate-200 hover:border-[#0abab5]/35"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm font-bold text-slate-200 hover:border-[#18c29c]/35"
                       >
                         Questions? WhatsApp your trainer
                       </a>
@@ -626,7 +626,7 @@ export function StudentDashboard({
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-6 py-12 text-center">
-                    <BadgeCheck className="mx-auto mb-4 h-12 w-12 text-[#81d8d0]" />
+                    <BadgeCheck className="mx-auto mb-4 h-12 w-12 text-[#f2b84b]" />
                     <p className="text-lg font-black text-white">Certificate pending</p>
                     <p className="mx-auto mt-2 max-w-md text-sm text-slate-400">
                       Complete your GCP Data Engineering program and your instructor will publish the certificate here with your name.
