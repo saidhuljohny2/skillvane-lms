@@ -10,7 +10,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { GcpCloudMark } from "./GcpCloudMark";
 
 const GCP_SERVICES: {
   name: string;
@@ -37,16 +37,23 @@ function polarToPercent(angleDeg: number, radiusPercent: number) {
   };
 }
 
-export function GcpInstructorVisual({
-  instructorPhoto,
-}: {
-  instructorPhoto: string;
-}) {
+export function GcpCloudVisual() {
   const orbitRadius = 44;
 
   return (
-    <div className="gcp-orbit-stage relative mx-auto aspect-square w-full max-w-[min(100%,460px)]">
+    <div className="gcp-orbit-stage relative mx-auto aspect-square w-full max-w-[min(100%,480px)]">
       <div className="glass-orbit-ring pointer-events-none absolute inset-[5%] rounded-full" />
+
+      <motion.div
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[62%] w-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          background:
+            "conic-gradient(from 180deg, rgba(66,133,244,0.25), rgba(52,168,83,0.2), rgba(251,188,4,0.18), rgba(234,67,53,0.2), rgba(66,133,244,0.25))",
+        }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+      />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[50%] w-[50%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4285F4]/15 blur-3xl" />
 
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full"
@@ -55,9 +62,9 @@ export function GcpInstructorVisual({
       >
         <defs>
           <linearGradient id="gcp-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4285F4" stopOpacity="0.45" />
-            <stop offset="50%" stopColor="#18c29c" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#f2b84b" stopOpacity="0.3" />
+            <stop offset="0%" stopColor="#4285F4" stopOpacity="0.5" />
+            <stop offset="50%" stopColor="#34A853" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#EA4335" stopOpacity="0.35" />
           </linearGradient>
         </defs>
         <circle
@@ -65,8 +72,8 @@ export function GcpInstructorVisual({
           cy="50"
           r={orbitRadius}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
-          strokeWidth="0.4"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="0.45"
         />
         {GCP_SERVICES.map((svc) => {
           const rad = (svc.angle * Math.PI) / 180;
@@ -80,9 +87,9 @@ export function GcpInstructorVisual({
               x2={x2}
               y2={y2}
               stroke="url(#gcp-line-grad)"
-              strokeWidth="0.35"
-              strokeDasharray="1.2 1"
-              opacity="0.7"
+              strokeWidth="0.4"
+              strokeDasharray="1.2 0.9"
+              opacity="0.75"
             />
           );
         })}
@@ -128,28 +135,32 @@ export function GcpInstructorVisual({
         );
       })}
 
+      {/* Google Cloud hub */}
       <motion.div
-        className="glass-portrait relative absolute left-1/2 top-1/2 z-30 w-[48%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[1.65rem]"
-        initial={{ opacity: 0, scale: 0.9 }}
+        className="gcp-cloud-hub glass-panel absolute left-1/2 top-1/2 z-30 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
+        initial={{ opacity: 0, scale: 0.88 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{ scale: 1.03 }}
       >
-        <div className="glass-portrait-shine pointer-events-none absolute inset-0 z-10" />
-        <ImageWithFallback
-          src={instructorPhoto}
-          alt="Shaik Saidhul — GCP Data Engineering Instructor"
-          className="aspect-[3/4] w-full object-cover object-[center_8%]"
-        />
-        <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[#07111f]/95 via-[#07111f]/55 to-transparent px-2 pb-3 pt-12 text-center backdrop-blur-[2px]">
-          <p className="text-[8px] font-black uppercase tracking-[0.22em] text-[#8df5d7]">
-            Lead Instructor
+        <div className="glass-portrait-shine pointer-events-none absolute inset-0 rounded-[inherit]" />
+        <motion.div
+          className="gcp-cloud-mark-wrap"
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <GcpCloudMark className="h-auto w-full" />
+        </motion.div>
+        <div className="relative mt-2 text-center">
+          <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#7cc7ff]">
+            Google Cloud
           </p>
-          <p className="text-sm font-black text-white">Shaik Saidhul</p>
+          <p className="mt-0.5 text-xs font-bold text-white sm:text-sm">
+            Data Engineering
+          </p>
         </div>
       </motion.div>
-
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[55%] w-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-[#4285F4]/20 via-[#18c29c]/15 to-transparent blur-2xl" />
     </div>
   );
 }

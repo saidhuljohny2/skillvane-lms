@@ -2804,7 +2804,7 @@ export default function App() {
       )}
 
       {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <LandingHero instructorPhoto={instructorPhoto} scrollTo={scrollTo} />
+      <LandingHero scrollTo={scrollTo} />
       <EnrollmentTicker />
       <GcpTechMarquee />
 

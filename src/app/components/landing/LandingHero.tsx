@@ -3,12 +3,13 @@ import {
   ArrowRight,
   Award,
   CheckCircle2,
+  Cloud,
   Play,
   Sparkles,
   Star,
   Users,
 } from "lucide-react";
-import { GcpInstructorVisual } from "@/app/components/effects/GcpInstructorVisual";
+import { GcpCloudVisual } from "@/app/components/effects/GcpCloudVisual";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { FloatingOrbs } from "@/app/components/effects/FloatingOrbs";
 import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
@@ -18,14 +19,12 @@ const STATS = [
   { icon: Users, val: "2500+", sub: "Learners" },
   { icon: Star, val: "4.9/5", sub: "Rating" },
   { icon: Award, val: "9+ yrs", sub: "Experience" },
-  { icon: Sparkles, val: "12+", sub: "GCP services" },
+  { icon: Cloud, val: "12+", sub: "GCP services" },
 ];
 
 export function LandingHero({
-  instructorPhoto,
   scrollTo,
 }: {
-  instructorPhoto: string;
   scrollTo: (id: string) => void;
 }) {
   return (
@@ -33,18 +32,16 @@ export function LandingHero({
       <HeroBackground />
       <FloatingOrbs />
 
-      {/* Soft color washes for glass depth */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
         style={{
           background:
-            "radial-gradient(ellipse 55% 45% at 75% 35%, rgba(66,133,244,0.12), transparent 55%), radial-gradient(ellipse 40% 35% at 20% 70%, rgba(24,194,156,0.1), transparent 50%)",
+            "radial-gradient(ellipse 55% 45% at 75% 35%, rgba(66,133,244,0.14), transparent 55%), radial-gradient(ellipse 40% 35% at 20% 70%, rgba(52,168,83,0.08), transparent 50%)",
         }}
       />
 
       <div className="relative mx-auto grid min-h-[100svh] max-w-7xl items-center gap-10 px-4 pb-20 pt-24 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:pb-24 lg:pt-28">
-        {/* Copy — glass panel */}
         <div className="relative z-10 order-2 lg:order-1">
           <Reveal>
             <div className="glass-pill mb-6 inline-flex items-center gap-2 px-4 py-2">
@@ -59,7 +56,7 @@ export function LandingHero({
             <div className="glass-panel rounded-3xl p-6 sm:p-8">
               <h1 className="text-[2.2rem] font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3rem]">
                 Master{" "}
-                <span className="text-shimmer bg-gradient-to-r from-[#4285F4] via-[#18c29c] to-[#f2b84b] bg-clip-text text-transparent">
+                <span className="text-shimmer bg-gradient-to-r from-[#4285F4] via-[#34A853] to-[#FBBC04] bg-clip-text text-transparent">
                   GCP Data Engineering
                 </span>
               </h1>
@@ -86,7 +83,7 @@ export function LandingHero({
                 <button
                   type="button"
                   onClick={() => scrollTo("courses")}
-                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#18c29c] to-[#2f80ed] px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#18c29c]/25 backdrop-blur-sm sm:text-base sm:px-8 sm:py-4"
+                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#34A853] to-[#2f80ed] px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#4285F4]/20 backdrop-blur-sm sm:text-base sm:px-8 sm:py-4"
                 >
                   Explore Courses
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -123,13 +120,12 @@ export function LandingHero({
           </RevealStagger>
         </div>
 
-        {/* Instructor + GCP orbit visual */}
         <Reveal delay={0.1} className="relative order-1 lg:order-2">
           <div className="glass-panel glass-panel-glow rounded-[2rem] p-4 sm:p-6">
             <p className="mb-4 text-center text-[10px] font-black uppercase tracking-[0.24em] text-[#8df5d7]">
-              Your trainer at the center of the GCP stack
+              Google Cloud data platform
             </p>
-            <GcpInstructorVisual instructorPhoto={instructorPhoto} />
+            <GcpCloudVisual />
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
               {["BigQuery", "Dataflow", "Composer", "Pub/Sub", "DataProc"].map(
                 (tag) => (
@@ -143,16 +139,9 @@ export function LandingHero({
               )}
             </div>
             <div className="glass-pill mx-auto mt-4 flex max-w-sm items-center justify-center gap-2 px-4 py-2.5">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-3 w-3 fill-[#f2b84b] text-[#f2b84b]"
-                  />
-                ))}
-              </div>
+              <Cloud className="h-4 w-4 text-[#4285F4]" />
               <span className="text-xs font-bold text-slate-300">
-                4.9 · Google Certified Trainer
+                Production-grade GCP training
               </span>
             </div>
           </div>
