@@ -45,7 +45,7 @@ export function CourseCard({
         style={{ background: `linear-gradient(90deg, ${course.accentFrom}, ${course.accentTo})` }}
       />
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div

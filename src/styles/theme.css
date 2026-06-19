@@ -31,7 +31,7 @@
   --accent-foreground: #1e1e1e;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(43, 43, 43, 0.14);
+  --border: rgba(43, 43, 43, 0.16);
   --input: #e8eded;
   --input-background: #ffffff;
   --switch-background: #c5cece;
@@ -81,7 +81,7 @@
   --accent-foreground: #1e1e1e;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.12);
   --input: #333333;
   --input-background: #333333;
   --switch-background: #4a4a4a;

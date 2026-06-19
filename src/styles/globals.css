@@ -3,7 +3,7 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 6.5rem;
+  scroll-padding-top: 7rem;
 }
 
 @supports (padding: max(0px)) {
@@ -329,8 +329,8 @@ body {
 
 @media (min-width: 640px) {
   .landing-section {
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 }
 
@@ -355,11 +355,11 @@ body {
 .sv-page {
   position: relative;
   width: 100%;
-  max-width: 80rem;
+  max-width: 72rem;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 
 @media (min-width: 640px) {
@@ -369,12 +369,33 @@ body {
   }
 }
 
+@media (min-width: 1024px) {
+  .sv-page {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Narrow reading column — headings, FAQ, instructor copy */
+.sv-narrow {
+  width: 100%;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sv-prose {
+  width: 100%;
+  max-width: 42rem;
+}
+
 .sv-card {
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: 0.875rem;
   background: var(--card);
   color: var(--card-foreground);
   overflow: hidden;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
 }
 
 .sv-chip {
@@ -392,9 +413,10 @@ body {
 
 .sv-panel {
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: 0.875rem;
   background: var(--card);
   padding: 1.25rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
 }
 
 @media (min-width: 640px) {
@@ -418,8 +440,8 @@ body {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   background: var(--background);
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .sv-modal-root {

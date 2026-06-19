@@ -16,7 +16,7 @@ export function SectionHeading({
   const alignClass = align === "center" ? "text-center mx-auto" : "text-left";
 
   return (
-    <div className={`mb-8 max-w-2xl sm:mb-10 ${alignClass}`}>
+    <div className={`sv-narrow mb-8 sm:mb-10 ${alignClass}`}>
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
         {eyebrow}
       </p>
@@ -27,7 +27,7 @@ export function SectionHeading({
         {title}
       </h2>
       {description && (
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base">
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base">
           {description}
         </p>
       )}
