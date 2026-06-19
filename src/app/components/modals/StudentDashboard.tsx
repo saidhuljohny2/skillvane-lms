@@ -32,6 +32,7 @@ import {
   openCertificatePrint as printCertificate,
 } from "@/app/lib/certificate";
 import { formatINR } from "@/app/lib/format";
+import { STORAGE_KEYS } from "@/app/lib/storage";
 import type { Course, LoggedInStudent } from "@/app/types";
 import skillVaneLogo from "@/imports/logo1.png";
 
@@ -88,7 +89,7 @@ export function StudentDashboard({
     Record<string, boolean>
   >(() => {
     try {
-      return JSON.parse(localStorage.getItem(accessStorageKey) || "{}");
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.accessConfirmed) || "{}");
     } catch {
       return {};
     }
@@ -97,7 +98,7 @@ export function StudentDashboard({
   const confirmAccessReceived = (courseId: string) => {
     const next = { ...confirmedAccess, [courseId]: true };
     setConfirmedAccess(next);
-    localStorage.setItem(accessStorageKey, JSON.stringify(next));
+    localStorage.setItem(STORAGE_KEYS.accessConfirmed, JSON.stringify(next));
   };
 
   return (

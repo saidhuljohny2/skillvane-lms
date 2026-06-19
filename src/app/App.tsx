@@ -7,7 +7,11 @@ import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
 import { LandingHero } from "@/app/components/landing/LandingHero";
 import { SectionHeading } from "@/app/components/landing/SectionHeading";
+import { FeaturesBento } from "@/app/components/landing/FeaturesBento";
+import { FinalCTA } from "@/app/components/landing/FinalCTA";
+import { BackToTop } from "@/app/components/landing/BackToTop";
 import { ThemeToggle } from "@/app/components/theme/ThemeToggle";
+import { useActiveSection } from "@/app/hooks/useActiveSection";
 import { CourseCard } from "@/app/components/course/CourseCard";
 import { CourseModal } from "@/app/components/course/CourseModal";
 import { LoginModal } from "@/app/components/modals/LoginModal";
@@ -26,7 +30,9 @@ import { SOCIAL_LINKS } from "@/app/data/social";
 import { celebrateEnrollment } from "@/app/lib/confetti";
 import { generateInvoiceNo } from "@/app/lib/format";
 import { loadRazorpay } from "@/app/lib/services";
+import { STORAGE_KEYS } from "@/app/lib/storage";
 import type { Course, CourseCategory, EnrollmentRecord, LoggedInStudent, StudentDetails } from "@/app/types";
+import { toast } from "sonner";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
 import {
@@ -72,16 +78,24 @@ export default function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [ticker, setTicker] = useState(0);
 
+  const navSections = [
+    { id: "courses", label: "Courses" },
+    { id: "free-learning", label: "Free Lessons" },
+    { id: "why-skillvane", label: "Why Us" },
+    { id: "instructor", label: "Instructor" },
+    { id: "testimonials", label: "Reviews" },
+    { id: "faq", label: "FAQ" },
+  ] as const;
+  const activeSection = useActiveSection(navSections.map((s) => s.id));
+
   // Check if user is logged in on mount
   useEffect(() => {
-    const studentData = localStorage.getItem(
-      "skillvane_current_student",
-    );
+    const studentData = localStorage.getItem(STORAGE_KEYS.currentStudent);
     if (studentData) {
       try {
         setCurrentStudent(JSON.parse(studentData));
       } catch (e) {
-        localStorage.removeItem("skillvane_current_student");
+        localStorage.removeItem(STORAGE_KEYS.currentStudent);
       }
     }
   }, []);
@@ -161,7 +175,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("skillvane_current_student");
+    localStorage.removeItem(STORAGE_KEYS.currentStudent);
     setCurrentStudent(null);
     setShowDashboard(false);
   };
@@ -171,7 +185,7 @@ export default function App() {
     student: LoggedInStudent,
   ): StudentDetails | null => {
     try {
-      const studentsData = localStorage.getItem("skillvane_students");
+      const studentsData = localStorage.getItem(STORAGE_KEYS.students);
       const students: Record<string, any> = studentsData
         ? JSON.parse(studentsData)
         : {};
@@ -236,6 +250,7 @@ export default function App() {
             setPayError(
               "Payment verification failed. Please contact support.",
             );
+            toast.error("Payment verification failed");
             setTimeout(() => setPayError(null), 6000);
             return;
           }
@@ -250,9 +265,7 @@ export default function App() {
 
           // Auto-create/update student account and enroll in course
           try {
-            const studentsData = localStorage.getItem(
-              "skillvane_students",
-            );
+            const studentsData = localStorage.getItem(STORAGE_KEYS.students);
             const students: Record<string, any> = studentsData
               ? JSON.parse(studentsData)
               : {};
@@ -287,7 +300,7 @@ export default function App() {
             }
 
             localStorage.setItem(
-              "skillvane_students",
+              STORAGE_KEYS.students,
               JSON.stringify(students),
             );
 
@@ -299,12 +312,15 @@ export default function App() {
                 students[student.email].enrolledCourses,
             };
             localStorage.setItem(
-              "skillvane_current_student",
+              STORAGE_KEYS.currentStudent,
               JSON.stringify(loggedStudent),
             );
             setCurrentStudent(loggedStudent);
 
             celebrateEnrollment();
+            toast.success("Enrollment successful!", {
+              description: `Welcome to ${course.title}. Check your email for the invoice.`,
+            });
             setInvoice(record);
           } catch (err) {
             console.error("Error saving enrollment:", err);
@@ -359,6 +375,7 @@ export default function App() {
         setPayError(
           `Payment failed: ${errorMsg}. Please try again.`,
         );
+        toast.error("Payment failed", { description: errorMsg });
         setTimeout(() => setPayError(null), 8000);
       });
 
@@ -371,6 +388,7 @@ export default function App() {
         errorMsg +
           ". Please check your internet connection and try again.",
       );
+      toast.error("Could not start payment", { description: errorMsg });
       setTimeout(() => setPayError(null), 8000);
       console.error("Razorpay error:", err);
     }
@@ -382,6 +400,7 @@ export default function App() {
     if (currentStudent?.enrolledCourses.includes(course.id)) {
       setShowDashboard(true);
       setPayError("You are already enrolled in this course.");
+      toast.info("You are already enrolled in this course.");
       setTimeout(() => setPayError(null), 4000);
       return;
     }
@@ -455,20 +474,17 @@ export default function App() {
   ];
 
   return (
-    <div
-      className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-[#f2b84b]/25"
-      style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
-    >
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-[#f2b84b]/25">
       {/* â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-[#07111f]">
+      <div className="fixed inset-x-0 top-0 z-[90] h-1 bg-background">
         <div
           className="h-full rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_20px_rgba(242,184,75,0.45)] transition-[width] duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
-      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-white/[0.06] bg-[#050b14]/85 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-border bg-background/90 backdrop-blur-xl">
+        <div className="sv-page flex h-16 items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
               <img
@@ -491,37 +507,20 @@ export default function App() {
             </span>
           </div>
 
-          <div className="hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.045] p-1 text-sm text-muted-foreground">
-            <button
-              onClick={() => scrollTo("courses")}
-              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
-            >
-              Courses
-            </button>
-            <button
-              onClick={() => scrollTo("free-learning")}
-              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
-            >
-              Free Lessons
-            </button>
-            <button
-              onClick={() => scrollTo("instructor")}
-              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
-            >
-              Instructor
-            </button>
-            <button
-              onClick={() => scrollTo("testimonials")}
-              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
-            >
-              Reviews
-            </button>
-            <button
-              onClick={() => scrollTo("faq")}
-              className="rounded-full px-4 py-2 font-bold hover:bg-white/[0.08] hover:text-foreground transition-colors"
-            >
-              FAQ
-            </button>
+          <div className="hidden md:flex items-center gap-1 rounded-full border border-border bg-muted/40 p-1 text-sm">
+            {navSections.map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => scrollTo(id)}
+                className={`rounded-full px-4 py-2 font-semibold transition-colors ${
+                  activeSection === id
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -585,24 +584,14 @@ export default function App() {
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden bg-[#0b1524] border-t border-white/10 px-4 py-4 flex flex-col gap-1">
-            {[
-              "courses",
-              "free-learning",
-              "instructor",
-              "testimonials",
-              "faq",
-            ].map((s) => (
+          <div className="border-t border-border bg-background px-4 py-4 md:hidden">
+            {navSections.map(({ id, label }) => (
               <button
-                key={s}
-                onClick={() => scrollTo(s)}
-                className="capitalize text-sm text-muted-foreground hover:text-foreground py-2.5 text-left border-b border-border/40 last:border-0"
+                key={id}
+                onClick={() => scrollTo(id)}
+                className="block w-full border-b border-border/50 py-2.5 text-left text-sm text-muted-foreground last:border-0 hover:text-foreground"
               >
-                {s === "faq"
-                  ? "FAQ"
-                  : s === "free-learning"
-                    ? "Free Lessons"
-                  : s.charAt(0).toUpperCase() + s.slice(1)}
+                {label}
               </button>
             ))}
             {currentStudent ? (
@@ -684,6 +673,8 @@ export default function App() {
 
       <GcpTechMarquee />
 
+      <FeaturesBento />
+
       <section id="courses" className="landing-section landing-section-alt">
         <div className="sv-page">
           <Reveal>
@@ -750,6 +741,8 @@ export default function App() {
                 <CourseCard
                   course={course}
                   onEnroll={handleEnroll}
+                  onViewDetails={setModalCourse}
+                  isEnrolling={payLoading === course.id}
                   index={index}
                 />
               </Reveal>
@@ -904,8 +897,12 @@ export default function App() {
         </div>
       </section>
 
+      <FinalCTA onExploreCourses={() => scrollTo("courses")} />
+
+      <BackToTop />
+
       {/* ── Footer ── */}
-      <footer className="border-t border-white/[0.06] bg-[#050b14] py-10">
+      <footer className="border-t border-border bg-background py-10">
         <div className="sv-page flex flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white">

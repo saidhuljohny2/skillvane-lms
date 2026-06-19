@@ -1,4 +1,5 @@
 import { escapeHtml } from "@/app/lib/services";
+import { STORAGE_KEYS } from "@/app/lib/storage";
 
 export type CertificateData = {
   studentName: string;
@@ -13,7 +14,7 @@ export type IssuedCertificate = CertificateData & {
   courseTitle: string;
 };
 
-const CERT_STORAGE_KEY = "skillvane_issued_certificates";
+const CERT_STORAGE_KEY = STORAGE_KEYS.certificates;
 
 export function formatCertificateDate(isoDate: string) {
   return new Date(`${isoDate}T00:00:00`).toLocaleDateString("en-IN", {

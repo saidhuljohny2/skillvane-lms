@@ -24,10 +24,14 @@ const HIGHLIGHT_PREVIEW = 3;
 export function CourseCard({
   course,
   onEnroll,
+  onViewDetails,
+  isEnrolling = false,
   index = 0,
 }: {
   course: Course;
   onEnroll: (c: Course) => void;
+  onViewDetails?: (c: Course) => void;
+  isEnrolling?: boolean;
   index?: number;
 }) {
   const [highlightsOpen, setHighlightsOpen] = useState(false);
@@ -314,14 +318,26 @@ export function CourseCard({
             <button
               type="button"
               onClick={() => onEnroll(course)}
-              className="magnetic-button group/enroll flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99]"
+              disabled={isEnrolling}
+              className="magnetic-button group/enroll flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99] disabled:cursor-wait disabled:opacity-70"
               style={{
                 background: `linear-gradient(135deg, ${course.accentFrom}, ${course.accentTo})`,
               }}
             >
-              Enroll Now
-              <ArrowRight className="h-4 w-4 transition-transform group-hover/enroll:translate-x-1" />
+              {isEnrolling ? "Processing…" : "Enroll Now"}
+              {!isEnrolling && (
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/enroll:translate-x-1" />
+              )}
             </button>
+            {onViewDetails && (
+              <button
+                type="button"
+                onClick={() => onViewDetails(course)}
+                className="w-full rounded-xl border border-white/[0.1] bg-white/[0.03] py-3 text-sm font-semibold text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+              >
+                View full curriculum
+              </button>
+            )}
           </div>
         </div>
       </div>

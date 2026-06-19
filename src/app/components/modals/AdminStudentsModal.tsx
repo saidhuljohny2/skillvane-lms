@@ -25,6 +25,7 @@ import {
   getEmailJsErrorMessage,
   sendOtpEmail,
 } from "@/app/lib/services";
+import { STORAGE_KEYS } from "@/app/lib/storage";
 import type { Course, StoredStudent } from "@/app/types";
 import skillVaneLogo from "@/imports/logo1.png";
 
@@ -55,7 +56,7 @@ export function AdminStudentsModal({
     () => {
       try {
         return JSON.parse(
-          localStorage.getItem("skillvane_students") || "{}",
+          localStorage.getItem(STORAGE_KEYS.students) || "{}",
         );
       } catch {
         return {};
@@ -79,7 +80,7 @@ export function AdminStudentsModal({
 
   const persistStudents = (next: Record<string, StoredStudent>) => {
     setStudents(next);
-    localStorage.setItem("skillvane_students", JSON.stringify(next));
+    localStorage.setItem(STORAGE_KEYS.students, JSON.stringify(next));
   };
 
   const resetForm = () => {

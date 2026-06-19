@@ -3,7 +3,8 @@ import { LogIn, Lock, Mail, User, X, Eye, EyeOff } from "lucide-react";
 import { OTP_VALIDITY_MS } from "@/app/config";
 import { generateOtp } from "@/app/lib/format";
 import { getEmailJsErrorMessage, sendOtpEmail } from "@/app/lib/services";
-import type { LoggedInStudent } from "@/app/types";
+import { STORAGE_KEYS } from "@/app/lib/storage";
+import type { LoggedInStudent, StoredStudent } from "@/app/types";
 
 export function LoginModal({
   onClose,
@@ -53,7 +54,7 @@ export function LoginModal({
 
   const loadStudents = (): Record<string, StoredStudent> => {
     try {
-      return JSON.parse(localStorage.getItem("skillvane_students") || "{}");
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.students) || "{}");
     } catch {
       return {};
     }
@@ -148,7 +149,7 @@ export function LoginModal({
           password: form.password,
         };
         localStorage.setItem(
-          "skillvane_students",
+          STORAGE_KEYS.students,
           JSON.stringify(students),
         );
         setErrors({
@@ -184,7 +185,7 @@ export function LoginModal({
           createdAt: new Date().toISOString(),
         };
         localStorage.setItem(
-          "skillvane_students",
+          STORAGE_KEYS.students,
           JSON.stringify(students),
         );
 
@@ -195,7 +196,7 @@ export function LoginModal({
           enrolledCourses: [],
         };
         localStorage.setItem(
-          "skillvane_current_student",
+          STORAGE_KEYS.currentStudent,
           JSON.stringify(loggedStudent),
         );
         onLogin(loggedStudent);
@@ -215,7 +216,7 @@ export function LoginModal({
           enrolledCourses: student.enrolledCourses || [],
         };
         localStorage.setItem(
-          "skillvane_current_student",
+          STORAGE_KEYS.currentStudent,
           JSON.stringify(loggedStudent),
         );
         onLogin(loggedStudent);
