@@ -1,13 +1,41 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  ArrowRight, Award, BookOpen, CheckCircle2, Clock, Download, ExternalLink,
-  GraduationCap, LogOut, Mail, MonitorPlay, Play, ShoppingCart, X, Youtube,
+  ArrowRight,
+  Award,
+  BadgeCheck,
+  BookOpen,
+  CheckCircle2,
+  Clock,
+  Download,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Play,
+  ShoppingCart,
+  Sparkles,
+  X,
+  Youtube,
 } from "lucide-react";
+import { CertificatePreview } from "@/app/components/certificate/CertificatePreview";
+import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
 import { TRAINER_WHATSAPP_LINK } from "@/app/config";
+import { TYPE_LABELS } from "@/app/data/labels";
+import { FREE_LEARNING_PLAYLIST_URL } from "@/app/data/marketing";
 import {
-  getDemoAccess, getDriveAccessRequestHref, getEnrolledCourseAccess,
+  getDemoAccess,
+  getDriveAccessRequestHref,
+  getEnrolledCourseAccess,
 } from "@/app/lib/courseAccess";
+import {
+  getStudentCertificate,
+  openCertificatePrint as printCertificate,
+} from "@/app/lib/certificate";
+import { formatINR } from "@/app/lib/format";
 import type { Course, LoggedInStudent } from "@/app/types";
+import skillVaneLogo from "@/imports/logo1.png";
+
+type DashboardTab = "overview" | "courses" | "certificate";
 
 export function StudentDashboard({
   student,
@@ -28,7 +56,34 @@ export function StudentDashboard({
   const availableCourses = courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
-  const accessStorageKey = `skillvane_drive_access_confirmed_${student.email}`;
+  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
+  const issuedCertificate = getStudentCertificate(student.email);
+  const progressPercent = courses.length
+    ? Math.round((enrolledCourses.length / courses.length) * 100)
+    : 0;
+
+  const tabs = useMemo(
+    () =>
+      [
+        { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
+        { id: "courses" as const, label: "My Courses", icon: BookOpen },
+        { id: "certificate" as const, label: "Certificate", icon: BadgeCheck },
+      ] as const,
+    [],
+  );
+
+  const downloadCertificate = () => {
+    if (!issuedCertificate) return;
+    printCertificate(
+      {
+        studentName: issuedCertificate.studentName,
+        completionDate: issuedCertificate.completionDate,
+        studentEmail: issuedCertificate.studentEmail,
+      },
+      skillVaneLogo,
+      issuedCertificate.courseTitle,
+    );
+  };
   const [confirmedAccess, setConfirmedAccess] = useState<
     Record<string, boolean>
   >(() => {
@@ -92,7 +147,31 @@ export function StudentDashboard({
           </div>
         </div>
 
+        <div className="relative border-b border-white/10 px-4 py-3 sm:px-6">
+          <div className="grid grid-cols-3 gap-2">
+            {tabs.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-[11px] font-black transition-all sm:gap-2 sm:px-3 sm:text-xs ${
+                  activeTab === id
+                    ? "lms-tab-active-glow bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white"
+                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="truncate">{label}</span>
+                {id === "certificate" && issuedCertificate && (
+                  <span className="h-2 w-2 rounded-full bg-[#f2b84b] animate-pulse" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="relative overflow-y-auto flex-1 px-4 py-4 sm:px-5 space-y-5 lms-dashboard-scroll">
+          {activeTab === "overview" && (
+          <>
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-4">
             <div className="premium-surface rounded-2xl p-4">
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
@@ -111,6 +190,15 @@ export function StudentDashboard({
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
                 Access enrolled courses, request Google Drive access for your registered email, and add the next program to your SkillVane roadmap.
               </p>
+              <div className="mt-4">
+                <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                  <span>Learning journey</span>
+                  <span className="text-[#9cf8dd]">{progressPercent}% complete</span>
+                </div>
+                <div className="lms-progress-track">
+                  <div className="lms-progress-fill" style={{ width: `${progressPercent}%` }} />
+                </div>
+              </div>
               <div className="mt-3 rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-4 py-3 text-xs leading-5 text-[#ffe4a3]">
                 Drive invitations are sent to{" "}
                 <span className="font-black text-white">
@@ -158,7 +246,7 @@ export function StudentDashboard({
                         "'Space Grotesk', system-ui, sans-serif",
                     }}
                   >
-                    {item.value}
+                    <AnimatedCounter value={String(item.value)} />
                   </div>
                   <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                     {item.label}
@@ -167,6 +255,28 @@ export function StudentDashboard({
               ))}
             </div>
           </div>
+
+          {issuedCertificate && (
+            <div className="premium-surface rounded-2xl border border-[#f2b84b]/25 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f2b84b]/15">
+                    <BadgeCheck className="h-5 w-5 text-[#ffe4a3]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-white">Certificate ready</p>
+                    <p className="text-xs text-slate-400">Your GCP completion certificate has been issued.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveTab("certificate")}
+                  className="rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-2.5 text-sm font-black text-[#1d1602]"
+                >
+                  View Certificate
+                </button>
+              </div>
+            </div>
+          )}
 
           <section className="premium-surface rounded-2xl p-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -197,7 +307,11 @@ export function StudentDashboard({
               </a>
             </div>
           </section>
+          </>
+          )}
 
+          {activeTab === "courses" && (
+          <>
           <section>
             <div className="mb-3 flex items-end justify-between gap-4">
               <div>
@@ -234,8 +348,14 @@ export function StudentDashboard({
                   return (
                     <div
                       key={course.id}
-                      className="premium-surface rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
+                      className="tilt-card premium-surface relative overflow-hidden rounded-2xl p-4 pt-5"
                     >
+                      <div
+                        className="absolute inset-x-0 top-0 h-1 rounded-t-2xl"
+                        style={{
+                          background: `linear-gradient(90deg, ${course.accentFrom}, ${course.accentTo})`,
+                        }}
+                      />
                       <div className="flex items-start gap-3">
                         <div
                           className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg ring-1 ring-white/10"
@@ -376,7 +496,7 @@ export function StudentDashboard({
                   return (
                     <div
                       key={course.id}
-                      className="premium-surface rounded-2xl p-3.5 sm:p-4 transition-transform duration-300 hover:-translate-y-1"
+                      className="tilt-card premium-surface rounded-2xl p-3.5 sm:p-4"
                     >
                       <div className="flex items-start gap-3">
                         <div
@@ -446,6 +566,87 @@ export function StudentDashboard({
               </div>
             )}
           </section>
+          </>
+          )}
+
+          {activeTab === "certificate" && (
+            <section className="space-y-4">
+              <div className="premium-surface rounded-2xl p-4 sm:p-5">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                      <Sparkles className="h-4 w-4" />
+                      Achievement
+                    </p>
+                    <h3 className="mt-2 text-2xl font-black text-white">
+                      Your completion certificate
+                    </h3>
+                    <p className="mt-2 max-w-2xl text-sm text-slate-400">
+                      Official GCP Data Engineering certificates are issued by your instructor after course completion.
+                    </p>
+                  </div>
+                  {issuedCertificate && (
+                    <button
+                      onClick={downloadCertificate}
+                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-5 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download PDF
+                    </button>
+                  )}
+                </div>
+
+                {issuedCertificate ? (
+                  <div className="grid gap-4 xl:grid-cols-[1fr_1.1fr]">
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-3">
+                        <p className="text-xs font-black uppercase tracking-[0.14em] text-[#9cf8dd]">
+                          Certificate issued
+                        </p>
+                        <p className="mt-2 text-sm text-slate-300">
+                          ID: <span className="font-mono text-white">{issuedCertificate.certificateId}</span>
+                        </p>
+                        <p className="mt-1 text-sm text-slate-400">
+                          Issued on{" "}
+                          {new Date(issuedCertificate.issuedAt).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                      <a
+                        href={TRAINER_WHATSAPP_LINK}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] px-4 py-3 text-sm font-bold text-slate-200 hover:border-[#18c29c]/35"
+                      >
+                        Questions? WhatsApp your trainer
+                      </a>
+                    </div>
+                    <CertificatePreview
+                      data={{
+                        studentName: issuedCertificate.studentName,
+                        completionDate: issuedCertificate.completionDate,
+                      }}
+                      courseTitle={issuedCertificate.courseTitle}
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-6 py-12 text-center">
+                    <BadgeCheck className="mx-auto mb-4 h-12 w-12 text-[#f2b84b]" />
+                    <p className="text-lg font-black text-white">Certificate pending</p>
+                    <p className="mx-auto mt-2 max-w-md text-sm text-slate-400">
+                      Complete your GCP Data Engineering program and your instructor will publish the certificate here with your name.
+                    </p>
+                    <p className="mt-4 text-xs text-slate-500">
+                      Logged in as <span className="text-white">{student.email}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           <button
             onClick={onLogout}
@@ -459,6 +660,3 @@ export function StudentDashboard({
     </div>
   );
 }
-
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Enrollment Form Modal

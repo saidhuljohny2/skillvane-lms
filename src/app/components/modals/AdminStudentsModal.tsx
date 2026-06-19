@@ -1,16 +1,34 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Award, Check, Copy, Download, GraduationCap, Lock, LogOut, Mail, Phone, Plus,
-  Search, Trash2, User, X,
+  Award,
+  BadgeCheck,
+  Download,
+  GraduationCap,
+  Lock,
+  Search,
+  Shield,
+  Users,
+  X,
 } from "lucide-react";
+import { CertificatePreview } from "@/app/components/certificate/CertificatePreview";
 import {
-  ADMIN_EMAIL, OTP_VALIDITY_MS,
+  ADMIN_EMAIL,
+  OTP_VALIDITY_MS,
 } from "@/app/config";
+import {
+  issueCertificate,
+  openCertificatePrint as printCertificate,
+} from "@/app/lib/certificate";
 import { generateOtp } from "@/app/lib/format";
 import {
-  escapeHtml, getAdminPassword, getEmailJsErrorMessage, sendOtpEmail,
+  getAdminPassword,
+  getEmailJsErrorMessage,
+  sendOtpEmail,
 } from "@/app/lib/services";
 import type { Course, StoredStudent } from "@/app/types";
+import skillVaneLogo from "@/imports/logo1.png";
+
+type AdminTab = "students" | "certificates" | "security";
 
 export function AdminStudentsModal({
   courses,
@@ -53,8 +71,11 @@ export function AdminStudentsModal({
   });
   const [certificate, setCertificate] = useState({
     studentName: "",
+    studentEmail: "",
     completionDate: new Date().toISOString().slice(0, 10),
   });
+  const [activeTab, setActiveTab] = useState<AdminTab>("students");
+  const [studentSearch, setStudentSearch] = useState("");
 
   const persistStudents = (next: Record<string, StoredStudent>) => {
     setStudents(next);
@@ -195,137 +216,121 @@ export function AdminStudentsModal({
   const studentList = Object.values(students).sort((a, b) =>
     a.email.localeCompare(b.email),
   );
-  const certificateName = certificate.studentName.trim();
-  const certificateDate = certificate.completionDate
-    ? new Date(`${certificate.completionDate}T00:00:00`).toLocaleDateString(
-        "en-IN",
-        {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        },
-      )
-    : "";
-  const certificateId = certificateName
-    ? `SV-GCP-${certificate.completionDate.replaceAll("-", "")}-${certificateName
-        .replace(/[^a-z0-9]/gi, "")
-        .slice(0, 6)
-        .toUpperCase()}`
-    : "SV-GCP-READY";
+
+  const filteredStudents = useMemo(() => {
+    const q = studentSearch.trim().toLowerCase();
+    if (!q) return studentList;
+    return studentList.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.email.toLowerCase().includes(q) ||
+        (s.phone || "").includes(q),
+    );
+  }, [studentList, studentSearch]);
+
+  const totalEnrollments = studentList.reduce(
+    (sum, s) => sum + (s.enrolledCourses?.length || 0),
+    0,
+  );
 
   const openCertificatePrint = () => {
-    if (!certificateName || !certificate.completionDate) {
+    const studentName = certificate.studentName.trim();
+    if (!studentName || !certificate.completionDate) {
       setMessage("Enter student name and completion date for the certificate.");
       return;
     }
 
-    const html = `<!doctype html>
-<html>
-<head>
-  <title>${escapeHtml(certificateName)} - SkillVane Certificate</title>
-  <style>
-    @page { size: A4 landscape; margin: 0; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, sans-serif; background: #07111f; color: #07111f; }
-    .page { width: 297mm; height: 210mm; padding: 13mm; background: linear-gradient(135deg, #07111f 0%, #0b2032 42%, #f7fbff 42.2%, #ffffff 100%); }
-    .certificate { height: 100%; border: 2px solid #f2b84b; background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(245,250,255,0.98)); position: relative; overflow: hidden; padding: 18mm; }
-    .certificate:before { content: ""; position: absolute; inset: 9mm; border: 1px solid rgba(24,194,156,0.35); pointer-events: none; }
-    .mark { position: absolute; right: 16mm; top: 12mm; width: 34mm; opacity: 0.12; }
-    .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative; z-index: 1; }
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .brand img { width: 18mm; height: 18mm; object-fit: contain; background: #ffffff; border-radius: 10px; padding: 2mm; border: 1px solid #dfe8f3; }
-    .brand h1 { margin: 0; font-size: 20px; letter-spacing: 0.3px; }
-    .brand p, .id { margin: 4px 0 0; color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; }
-    .content { margin-top: 18mm; text-align: center; position: relative; z-index: 1; }
-    .eyebrow { color: #18a884; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; font-size: 13px; }
-    .title { margin: 8px 0 0; font-size: 46px; line-height: 1; font-weight: 900; color: #07111f; }
-    .line { width: 92px; height: 4px; background: linear-gradient(90deg, #18c29c, #2f80ed, #f2b84b); margin: 12mm auto 8mm; border-radius: 999px; }
-    .copy { color: #475569; font-size: 18px; margin: 0; }
-    .name { margin: 7mm auto 5mm; color: #07111f; font-size: 40px; font-weight: 900; border-bottom: 2px solid #d4af37; width: 72%; padding-bottom: 4mm; }
-    .course { margin: 0 auto; max-width: 760px; color: #334155; font-size: 18px; line-height: 1.65; }
-    .course strong { color: #07111f; }
-    .footer { position: absolute; left: 18mm; right: 18mm; bottom: 16mm; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 20px; z-index: 1; }
-    .field { border-top: 1.5px solid #94a3b8; padding-top: 8px; color: #334155; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-    .signature { text-align: center; }
-    .signature .sign { color: #07111f; font-family: Georgia, serif; font-size: 24px; font-style: italic; text-transform: none; letter-spacing: 0; margin-bottom: 5px; }
-    .seal { justify-self: center; width: 28mm; height: 28mm; border-radius: 50%; border: 2px solid #f2b84b; display: grid; place-items: center; color: #07111f; font-size: 10px; font-weight: 900; text-align: center; background: #fff7df; }
-  </style>
-</head>
-<body>
-  <main class="page">
-    <section class="certificate">
-      <img class="mark" src="${skillVaneLogo}" alt="">
-      <div class="top">
-        <div class="brand">
-          <img src="${skillVaneLogo}" alt="SkillVane logo">
-          <div>
-            <h1>SkillVane IT Academy</h1>
-            <p>Industry focused cloud training</p>
-          </div>
-        </div>
-        <div class="id">Certificate ID<br>${escapeHtml(certificateId)}</div>
-      </div>
-      <div class="content">
-        <div class="eyebrow">Certificate of Completion</div>
-        <div class="title">GCP Data Engineering</div>
-        <div class="line"></div>
-        <p class="copy">This certifies that</p>
-        <div class="name">${escapeHtml(certificateName)}</div>
-        <p class="course">has successfully completed the <strong>GCP Data Engineering</strong> training program covering BigQuery, Dataflow, Dataproc, Cloud Composer, production pipelines, and real-world data engineering projects.</p>
-      </div>
-      <div class="footer">
-        <div class="field">Completion Date<br>${escapeHtml(certificateDate)}</div>
-        <div class="seal">SkillVane<br>Verified<br>Certificate</div>
-        <div class="field signature"><div class="sign">Shaik Saidhul</div>Lead Instructor</div>
-      </div>
-    </section>
-  </main>
-  <script>window.onload = () => { window.focus(); window.print(); };</script>
-</body>
-</html>`;
+    const email = certificate.studentEmail.trim().toLowerCase();
+    if (email) {
+      issueCertificate(email, {
+        studentName,
+        completionDate: certificate.completionDate,
+        studentEmail: email,
+      });
+    }
 
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
+    const opened = printCertificate(
+      {
+        studentName,
+        completionDate: certificate.completionDate,
+        studentEmail: email || undefined,
+      },
+      skillVaneLogo,
+    );
+
+    if (!opened) {
       setMessage("Allow popups to print or save the certificate.");
       return;
     }
-    printWindow.document.write(html);
-    printWindow.document.close();
-    setMessage("Certificate generated. Use Save as PDF from the print window.");
+
+    setMessage(
+      email
+        ? "Certificate issued to student dashboard and opened for PDF export."
+        : "Certificate opened for PDF export.",
+    );
+  };
+
+  const fillCertificateFromStudent = (student: StoredStudent) => {
+    setCertificate({
+      studentName: student.name,
+      studentEmail: student.email,
+      completionDate: new Date().toISOString().slice(0, 10),
+    });
+    setActiveTab("certificates");
+    setMessage(`Certificate form filled for ${student.name}.`);
   };
 
   return (
     <div className="fixed inset-0 z-[130] flex items-end justify-center p-0 sm:items-center sm:p-4">
       <div
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#020817]/88 backdrop-blur-xl"
         onClick={onClose}
       />
-      <div className="relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-white/10 bg-[#07111f] shadow-2xl sm:max-w-5xl sm:rounded-2xl">
-        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
-              Admin Console
-            </p>
-            <h2 className="text-xl font-black text-white">
-              Student Login Manager
-            </h2>
+      <div className="premium-ring relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/12 bg-[#07111f]/96 shadow-2xl sm:max-w-6xl sm:rounded-3xl">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_12%_0%,rgba(242,184,75,0.16),transparent_32%),radial-gradient(ellipse_at_88%_12%,rgba(24,194,156,0.14),transparent_30%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f2b84b]/70 to-transparent" />
+
+        <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
+              <Shield className="h-5 w-5 text-[#1b1202]" />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2b84b]">
+                SkillVane Admin
+              </p>
+              <h2
+                className="text-lg font-black text-white sm:text-xl"
+                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+              >
+                Academy Control Center
+              </h2>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-xl border border-white/10 bg-white/[0.04] p-2 text-slate-400 hover:text-white"
+            className="rounded-xl border border-white/10 bg-white/[0.04] p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {!unlocked ? (
-          <div className="space-y-4 px-5 py-5">
+          <div className="relative space-y-4 px-5 py-6 sm:px-6">
+            <div className="premium-surface rounded-2xl p-5">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10">
+                  <Lock className="h-4 w-4 text-[#ffe4a3]" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-white">Secure admin access</p>
+                  <p className="text-xs text-slate-400">
+                    Manage students, issue certificates, and reset credentials.
+                  </p>
+                </div>
+              </div>
             {adminMode === "login" ? (
               <>
-                <p className="text-sm text-slate-300">
-                  Login with admin Gmail and password to manage student
-                  accounts.
-                </p>
                 <input
                   type="email"
                   value={adminLogin.email}
@@ -438,249 +443,284 @@ export function AdminStudentsModal({
                 </button>
               </>
             )}
+            </div>
           </div>
         ) : (
-          <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
-            <div className="rounded-2xl border border-[#f2b84b]/25 bg-[#f2b84b]/[0.06] p-4">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
-                    Certificate Generator
-                  </p>
-                  <h3 className="mt-1 text-lg font-black text-white">
-                    GCP Data Engineering Completion Certificate
-                  </h3>
-                </div>
+          <div className="relative flex flex-1 flex-col overflow-hidden">
+            <div className="grid grid-cols-3 gap-2 border-b border-white/10 px-4 py-3 sm:px-6">
+              {(
+                [
+                  { id: "students" as const, label: "Students", icon: Users },
+                  { id: "certificates" as const, label: "Certificates", icon: BadgeCheck },
+                  { id: "security" as const, label: "Security", icon: Lock },
+                ] as const
+              ).map(({ id, label, icon: Icon }) => (
                 <button
-                  onClick={openCertificatePrint}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-black transition-all sm:text-sm ${
+                    activeTab === id
+                      ? "bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white shadow-lg shadow-[#18c29c]/20"
+                      : "border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white"
+                  }`}
                 >
-                  <Download className="h-4 w-4" />
-                  Generate PDF
+                  <Icon className="h-4 w-4" />
+                  {label}
                 </button>
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
-                <div className="space-y-3">
-                  <input
-                    value={certificate.studentName}
-                    onChange={(e) =>
-                      setCertificate({
-                        ...certificate,
-                        studentName: e.target.value,
-                      })
-                    }
-                    placeholder="Student full name"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
-                  />
-                  <input
-                    type="date"
-                    value={certificate.completionDate}
-                    onChange={(e) =>
-                      setCertificate({
-                        ...certificate,
-                        completionDate: e.target.value,
-                      })
-                    }
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
-                  />
-                  <p className="text-xs leading-5 text-slate-400">
-                    Enter the name exactly as it should appear on the
-                    certificate. The print window can be saved as PDF.
-                  </p>
-                </div>
-
-                <div className="relative overflow-hidden rounded-2xl border border-[#f2b84b]/30 bg-white p-5 text-[#07111f] shadow-2xl shadow-black/20">
-                  <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-[#f2b84b]/15" />
-                  <div className="relative flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={skillVaneLogo}
-                        alt="SkillVane logo"
-                        className="h-12 w-12 rounded-xl border border-slate-200 bg-white object-contain p-1"
-                      />
-                      <div>
-                        <p className="text-sm font-black text-[#07111f]">
-                          SkillVane IT Academy
-                        </p>
-                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
-                          Verified Certificate
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-right text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
-                      {certificateId}
-                    </p>
-                  </div>
-
-                  <div className="relative py-7 text-center">
-                    <p className="text-xs font-black uppercase tracking-[0.26em] text-[#18a884]">
-                      Certificate of Completion
-                    </p>
-                    <h4 className="mt-2 text-2xl font-black">
-                      GCP Data Engineering
-                    </h4>
-                    <div className="mx-auto my-4 h-1 w-24 rounded-full bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#f2b84b]" />
-                    <p className="text-sm text-slate-500">
-                      This certifies that
-                    </p>
-                    <p className="mx-auto mt-2 max-w-lg border-b border-[#d4af37] pb-2 text-3xl font-black">
-                      {certificateName || "Student Name"}
-                    </p>
-                    <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-600">
-                      has successfully completed the GCP Data Engineering
-                      training program covering cloud data pipelines,
-                      BigQuery, Dataflow, Dataproc, Composer, and projects.
-                    </p>
-                  </div>
-
-                  <div className="relative grid grid-cols-3 items-end gap-4 text-center text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
-                    <div className="border-t border-slate-300 pt-2">
-                      {certificateDate || "Completion Date"}
-                    </div>
-                    <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-[#f2b84b] bg-[#fff7df] text-[9px] text-[#07111f]">
-                      SkillVane<br />Verified
-                    </div>
-                    <div className="border-t border-slate-300 pt-2">
-                      <span className="block font-serif text-base normal-case tracking-normal text-[#07111f]">
-                        Shaik Saidhul
-                      </span>
-                      Lead Instructor
-                    </div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-              <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
-                Create / Update Student
-              </h3>
-              <div className="space-y-3">
-                <input
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Student name"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
-                />
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) =>
-                    setForm({ ...form, email: e.target.value })
-                  }
-                  placeholder="student@email.com"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
-                />
-                <input
-                  value={form.phone || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, phone: e.target.value })
-                  }
-                  placeholder="Phone number"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
-                />
-                <input
-                  value={form.password}
-                  onChange={(e) =>
-                    setForm({ ...form, password: e.target.value })
-                  }
-                  placeholder="Login password"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
-                />
-                <div className="rounded-xl border border-white/10 bg-[#07111f]/70 p-3">
-                  <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[#f2b84b]">
-                    Enrolled Courses
-                  </p>
-                  <div className="grid gap-2">
-                    {courses.map((course) => (
-                      <label
-                        key={course.id}
-                        className="flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2 text-sm text-slate-200"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={form.enrolledCourses.includes(course.id)}
-                          onChange={() => toggleCourse(course.id)}
-                        />
-                        {course.title}
-                      </label>
-                    ))}
+            <div className="lms-dashboard-scroll flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Students", value: studentList.length, icon: Users },
+                  { label: "Enrollments", value: totalEnrollments, icon: Award },
+                  { label: "Courses", value: courses.length, icon: GraduationCap },
+                ].map(({ label, value, icon: Icon }) => (
+                  <div key={label} className="premium-surface rounded-2xl p-3 sm:p-4">
+                    <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
+                    <div className="text-2xl font-black text-white">{value}</div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                      {label}
+                    </div>
                   </div>
-                </div>
-                {message && (
-                  <p className="rounded-lg border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-3 py-2 text-sm text-[#ffe4a3]">
-                    {message}
-                  </p>
-                )}
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={saveStudent}
-                    className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
-                  >
-                    Save Student
-                  </button>
-                  <button
-                    onClick={resetForm}
-                    className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-slate-300 hover:text-white"
-                  >
-                    Clear
-                  </button>
-                </div>
+                ))}
               </div>
-            </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-              <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
-                Existing Students
-              </h3>
-              <div className="space-y-3">
-                {studentList.length === 0 ? (
-                  <p className="text-sm text-slate-400">
-                    No student logins created yet.
-                  </p>
-                ) : (
-                  studentList.map((student) => (
-                    <div
-                      key={student.email}
-                      className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3"
+              {message && (
+                <p className="rounded-xl border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-3 text-sm text-[#ffe4a3]">
+                  {message}
+                </p>
+              )}
+
+              {activeTab === "certificates" && (
+                <div className="premium-surface rounded-2xl p-4 sm:p-5">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                        Certificate Studio
+                      </p>
+                      <h3 className="mt-1 text-lg font-black text-white">
+                        GCP Data Engineering Completion Certificate
+                      </h3>
+                    </div>
+                    <button
+                      onClick={openCertificatePrint}
+                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#fff0a8] px-4 py-3 text-sm font-black text-[#1d1602] shadow-lg shadow-[#f2b84b]/15"
                     >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="min-w-0">
-                          <p className="font-black text-white">
-                            {student.name}
-                          </p>
-                          <p className="truncate text-xs text-slate-400">
-                            {student.email}
-                          </p>
-                          <p className="mt-1 text-xs text-slate-500">
-                            Password: {student.password}
-                          </p>
-                          <p className="mt-1 text-xs text-[#9cf8dd]">
-                            {(student.enrolledCourses || []).length} enrolled
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => editStudent(student)}
-                            className="rounded-lg border border-[#18c29c]/25 px-3 py-2 text-xs font-black text-[#9cf8dd]"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => deleteStudent(student.email)}
-                            className="rounded-lg border border-red-400/25 px-3 py-2 text-xs font-black text-red-200"
-                          >
-                            Delete
-                          </button>
+                      <Download className="h-4 w-4" />
+                      Issue & Export PDF
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4 xl:grid-cols-[0.8fr_1.2fr]">
+                    <div className="space-y-3">
+                      <select
+                        value={certificate.studentEmail}
+                        onChange={(e) => {
+                          const email = e.target.value;
+                          const student = students[email];
+                          if (student) fillCertificateFromStudent(student);
+                          else
+                            setCertificate({ ...certificate, studentEmail: email });
+                        }}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
+                      >
+                        <option value="" className="bg-[#07111f]">
+                          Select student to auto-fill
+                        </option>
+                        {studentList.map((s) => (
+                          <option key={s.email} value={s.email} className="bg-[#07111f]">
+                            {s.name} — {s.email}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        value={certificate.studentName}
+                        onChange={(e) =>
+                          setCertificate({ ...certificate, studentName: e.target.value })
+                        }
+                        placeholder="Student full name"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
+                      />
+                      <input
+                        type="email"
+                        value={certificate.studentEmail}
+                        onChange={(e) =>
+                          setCertificate({ ...certificate, studentEmail: e.target.value })
+                        }
+                        placeholder="Student email (publishes to dashboard)"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f2b84b]/60 focus:outline-none"
+                      />
+                      <input
+                        type="date"
+                        value={certificate.completionDate}
+                        onChange={(e) =>
+                          setCertificate({ ...certificate, completionDate: e.target.value })
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white focus:border-[#f2b84b]/60 focus:outline-none"
+                      />
+                      <p className="text-xs leading-5 text-slate-400">
+                        Add the student email to publish the certificate to their dashboard.
+                        Export uses a premium A4 landscape layout ready for PDF.
+                      </p>
+                    </div>
+                    <CertificatePreview data={certificate} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "students" && (
+                <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+                  <div className="premium-surface rounded-2xl p-4">
+                    <h3 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+                      Create / Update Student
+                    </h3>
+                    <div className="space-y-3">
+                      <input
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder="Student name"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                      />
+                      <input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder="student@email.com"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                      />
+                      <input
+                        value={form.phone || ""}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="Phone number"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                      />
+                      <input
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        placeholder="Login password"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                      />
+                      <div className="rounded-xl border border-white/10 bg-[#07111f]/70 p-3">
+                        <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[#f2b84b]">
+                          Enrolled Courses
+                        </p>
+                        <div className="grid max-h-40 gap-2 overflow-y-auto">
+                          {courses.map((course) => (
+                            <label
+                              key={course.id}
+                              className="flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2 text-sm text-slate-200"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={form.enrolledCourses.includes(course.id)}
+                                onChange={() => toggleCourse(course.id)}
+                              />
+                              {course.title}
+                            </label>
+                          ))}
                         </div>
                       </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={saveStudent}
+                          className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+                        >
+                          Save Student
+                        </button>
+                        <button
+                          onClick={resetForm}
+                          className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-slate-300 hover:text-white"
+                        >
+                          Clear
+                        </button>
+                      </div>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
+                  </div>
+
+                  <div className="premium-surface rounded-2xl p-4">
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <h3 className="text-sm font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+                        Student Directory
+                      </h3>
+                      <div className="relative w-full sm:w-56">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                        <input
+                          value={studentSearch}
+                          onChange={(e) => setStudentSearch(e.target.value)}
+                          placeholder="Search students..."
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/60 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      {filteredStudents.length === 0 ? (
+                        <p className="text-sm text-slate-400">No students found.</p>
+                      ) : (
+                        filteredStudents.map((student) => (
+                          <div
+                            key={student.email}
+                            className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3 transition-colors hover:border-[#18c29c]/30"
+                          >
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="min-w-0">
+                                <p className="font-black text-white">{student.name}</p>
+                                <p className="truncate text-xs text-slate-400">{student.email}</p>
+                                <p className="mt-1 text-xs text-[#9cf8dd]">
+                                  {(student.enrolledCourses || []).length} enrolled course(s)
+                                </p>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  onClick={() => fillCertificateFromStudent(student)}
+                                  className="rounded-lg border border-[#f2b84b]/25 px-3 py-2 text-xs font-black text-[#ffe4a3]"
+                                >
+                                  Certificate
+                                </button>
+                                <button
+                                  onClick={() => editStudent(student)}
+                                  className="rounded-lg border border-[#18c29c]/25 px-3 py-2 text-xs font-black text-[#9cf8dd]"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => deleteStudent(student.email)}
+                                  className="rounded-lg border border-red-400/25 px-3 py-2 text-xs font-black text-red-200"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "security" && (
+                <div className="premium-surface max-w-xl rounded-2xl p-5">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
+                    Admin Security
+                  </p>
+                  <h3 className="mt-2 text-lg font-black text-white">Password reset</h3>
+                  <p className="mt-2 text-sm text-slate-400">
+                    Use the forgot-password flow on the login screen to receive an OTP at{" "}
+                    <span className="text-white">{ADMIN_EMAIL}</span>.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setUnlocked(false);
+                      setAdminMode("forgot");
+                    }}
+                    className="mt-4 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3]"
+                  >
+                    Open password reset
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
