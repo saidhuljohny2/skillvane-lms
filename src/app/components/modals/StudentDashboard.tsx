@@ -101,16 +101,10 @@ export function StudentDashboard({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div
-        className="absolute inset-0 bg-[#020817]/86 backdrop-blur-xl"
-        onClick={onClose}
-      />
-      <div className="premium-ring relative w-full sm:max-w-6xl h-[96dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-[#07111f]/95 rounded-t-2xl sm:rounded-3xl border border-white/12 shadow-2xl overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(24,194,156,0.22),transparent_34%),radial-gradient(ellipse_at_92%_20%,rgba(242,184,75,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_26%)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f2b84b]/70 to-transparent" />
-
-        <div className="sticky top-0 z-20 px-4 py-4 sm:px-6 flex items-center justify-between border-b border-white/10 bg-[#07111f]/92 backdrop-blur-xl">
+    <div className="sv-modal-root">
+      <div className="sv-modal-backdrop" onClick={onClose} />
+      <div className="premium-ring sv-modal sv-modal-xl flex h-[96dvh] max-h-[90vh] sm:h-auto">
+        <div className="sv-modal-header">
           <div className="min-w-0 flex items-center gap-3">
             <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] flex items-center justify-center shadow-lg shadow-[#18c29c]/25 ring-1 ring-white/20 flex-shrink-0">
               <GraduationCap className="w-6 h-6 text-white" />
@@ -138,16 +132,13 @@ export function StudentDashboard({
               <LogOut className="w-4 h-4" />
               Logout
             </button>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-            >
+            <button type="button" onClick={onClose} className="sv-close-btn">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="relative border-b border-white/10 px-4 py-3 sm:px-6">
+        <div className="border-b border-white/[0.06] px-4 py-3 sm:px-6">
           <div className="grid grid-cols-3 gap-2">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button
@@ -169,7 +160,7 @@ export function StudentDashboard({
           </div>
         </div>
 
-        <div className="relative overflow-y-auto flex-1 px-4 py-4 sm:px-5 space-y-5 lms-dashboard-scroll">
+        <div className="sv-modal-body lms-dashboard-scroll flex-1 overflow-y-auto space-y-5">
           {activeTab === "overview" && (
           <>
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-4">

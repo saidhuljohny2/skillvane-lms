@@ -281,16 +281,10 @@ export function AdminStudentsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[130] flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div
-        className="absolute inset-0 bg-[#020817]/88 backdrop-blur-xl"
-        onClick={onClose}
-      />
-      <div className="premium-ring relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/12 bg-[#07111f]/96 shadow-2xl sm:max-w-6xl sm:rounded-3xl">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_12%_0%,rgba(242,184,75,0.16),transparent_32%),radial-gradient(ellipse_at_88%_12%,rgba(24,194,156,0.14),transparent_30%)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f2b84b]/70 to-transparent" />
-
-        <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6">
+    <div className="sv-modal-root" style={{ zIndex: 130 }}>
+      <div className="sv-modal-backdrop" onClick={onClose} />
+      <div className="sv-modal sv-modal-xl flex max-h-[94dvh]">
+        <div className="sv-modal-header">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
               <Shield className="h-5 w-5 text-[#1b1202]" />
@@ -307,17 +301,14 @@ export function AdminStudentsModal({
               </h2>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-white/10 bg-white/[0.04] p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-          >
+          <button type="button" onClick={onClose} className="sv-close-btn">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {!unlocked ? (
-          <div className="relative space-y-4 px-5 py-6 sm:px-6">
-            <div className="premium-surface rounded-2xl p-5">
+          <div className="sv-modal-body space-y-4">
+            <div className="sv-panel-lg">
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10">
                   <Lock className="h-4 w-4 text-[#ffe4a3]" />

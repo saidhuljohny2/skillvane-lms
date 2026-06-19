@@ -30,21 +30,14 @@ export function CourseModal({
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <div className="sv-modal-root" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="sv-modal-backdrop" onClick={onClose} />
 
-      <div className="relative w-full sm:max-w-2xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-        {/* Header */}
+      <div className="sv-modal sv-modal-lg flex max-h-[92dvh] sm:max-h-[85vh]">
         <div
-          className="px-4 py-4 sm:px-5 flex items-start justify-between gap-4 flex-shrink-0"
+          className="sv-modal-header items-start"
           style={{
-            background: `linear-gradient(135deg, ${course.accentFrom}22 0%, ${course.accentTo}11 100%)`,
+            background: `linear-gradient(135deg, ${course.accentFrom}18, transparent)`,
             borderBottom: `1px solid ${course.accentFrom}30`,
           }}
         >
@@ -77,16 +70,12 @@ export function CourseModal({
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/60 hover:text-white flex-shrink-0"
-          >
+          <button type="button" onClick={onClose} className="sv-close-btn flex-shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-4 py-4 sm:px-5 space-y-5">
+        <div className="sv-modal-body lms-dashboard-scroll flex-1 overflow-y-auto space-y-6 !py-5">
           {/* Price + meta */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -205,7 +194,7 @@ export function CourseModal({
         </div>
 
         {/* Footer CTA */}
-        <div className="flex-shrink-0 px-4 py-4 sm:px-5 border-t border-white/8 bg-[#080d1a] space-y-3">
+        <div className="sv-modal-footer space-y-3">
           {course.curriculumDownload && (
             <a
               href={course.curriculumDownload}

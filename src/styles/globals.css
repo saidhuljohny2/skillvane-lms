@@ -138,14 +138,13 @@ body {
 .premium-surface {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
-    var(--surface-elevated);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 24px 70px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(22px);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+    var(--surface-elevated, #0a1018);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
 }
 
 :root:not(.dark) .premium-surface {
@@ -333,6 +332,212 @@ body {
 
 .landing-section-base {
   background: #050b14;
+}
+
+/* ── SkillVane design system (shared padding, borders, surfaces) ── */
+.sv-page {
+  position: relative;
+  width: 100%;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .sv-page {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.sv-panel {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .sv-panel {
+    padding: 1.5rem;
+  }
+}
+
+.sv-panel-lg {
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .sv-panel-lg {
+    padding: 2rem;
+  }
+}
+
+.sv-strip {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: #050b14;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.sv-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .sv-modal-root {
+    align-items: center;
+    padding: 1rem;
+  }
+}
+
+.sv-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 8, 23, 0.88);
+  backdrop-filter: blur(16px);
+}
+
+.sv-modal {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem 1rem 0 0;
+  background: #050b14;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
+}
+
+@media (min-width: 640px) {
+  .sv-modal {
+    border-radius: 1.25rem;
+  }
+}
+
+.sv-modal-sm { max-width: 28rem; }
+.sv-modal-md { max-width: 32rem; }
+.sv-modal-lg { max-width: 42rem; }
+.sv-modal-xl { max-width: 72rem; }
+
+.sv-modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 11, 20, 0.95);
+  padding: 1rem 1.25rem;
+  backdrop-filter: blur(12px);
+}
+
+@media (min-width: 640px) {
+  .sv-modal-header {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.sv-modal-body {
+  position: relative;
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .sv-modal-body {
+    padding: 1.5rem;
+  }
+}
+
+.sv-modal-footer {
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 11, 20, 0.98);
+  padding: 1rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .sv-modal-footer {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.sv-close-btn {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.5rem;
+  color: #94a3b8;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.sv-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.sv-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem 1rem;
+  color: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.sv-input:focus {
+  outline: none;
+  border-color: rgba(24, 194, 156, 0.45);
+}
+
+.sv-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #050b14;
+  transition: transform 0.15s ease;
+}
+
+.sv-btn-primary:hover {
+  transform: scale(1.02);
+}
+
+.sv-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.sv-btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Hero aurora background ── */

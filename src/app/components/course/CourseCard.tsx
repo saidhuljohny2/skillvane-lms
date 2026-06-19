@@ -67,7 +67,7 @@ export function CourseCard({
         <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-[#f2b84b]/20 blur-2xl" />
       )}
 
-      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0b1423]/95 shadow-xl shadow-black/25 backdrop-blur-sm">
+      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a1018]/95 backdrop-blur-sm">
         <div
           className="h-1.5 w-full"
           style={{

@@ -229,15 +229,10 @@ export function LoginModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div className="relative w-full sm:max-w-md bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(242,184,75,0.12),transparent_36%)]" />
-        {/* Header */}
-        <div className="relative px-5 py-4 flex items-center justify-between border-b border-white/10">
+    <div className="sv-modal-root">
+      <div className="sv-modal-backdrop" onClick={onClose} />
+      <div className="sv-modal sv-modal-md max-h-[92dvh] overflow-hidden">
+        <div className="sv-modal-header">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
               <Lock className="w-5 h-5 text-white" />
@@ -265,18 +260,12 @@ export function LoginModal({
             </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-          >
+          <button type="button" onClick={onClose} className="sv-close-btn">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="relative px-5 py-5 space-y-4"
-        >
+        <form onSubmit={handleSubmit} className="sv-modal-body space-y-4 overflow-y-auto">
           {errors.general && (
             <div
               className={`p-3 rounded-lg border text-sm ${

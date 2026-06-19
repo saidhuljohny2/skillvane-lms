@@ -21,7 +21,7 @@ export function GcpTechMarquee() {
   const items = [...GCP_TECH, ...GCP_TECH];
 
   return (
-    <section className="relative overflow-hidden border-y border-white/8 bg-[#050b14]/90 py-4">
+    <section className="sv-strip overflow-hidden !py-4">
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#050b14] to-transparent sm:w-24" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#050b14] to-transparent sm:w-24" />
 

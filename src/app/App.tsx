@@ -685,7 +685,7 @@ export default function App() {
       <GcpTechMarquee />
 
       <section id="courses" className="landing-section landing-section-alt">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="sv-page">
           <Reveal>
             <SectionHeading
               eyebrow="Courses"
@@ -702,7 +702,7 @@ export default function App() {
           </Reveal>
 
           {/* Category tabs */}
-          <div className="mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] p-1">
+          <div className="sv-panel mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-1 p-1">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
@@ -763,11 +763,8 @@ export default function App() {
         </div>
       </section>
 
-      <section
-        id="free-learning"
-        className="border-y border-white/[0.06] bg-[#050b14] py-5"
-      >
-        <Reveal className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
+      <section id="free-learning" className="sv-strip">
+        <Reveal className="sv-page flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-center text-sm text-slate-400 sm:text-left">
             <span className="font-semibold text-white">Free on YouTube</span>
             {" — "}start with the GCP Data Engineering playlist before you enroll
@@ -785,7 +782,7 @@ export default function App() {
       </section>
 
       <section id="instructor" className="landing-section landing-section-base">
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="sv-page">
           <Reveal>
             <SectionHeading
               eyebrow="Instructor"
@@ -795,7 +792,7 @@ export default function App() {
           </Reveal>
 
           <Reveal delay={100}>
-          <div className="flex flex-col items-center gap-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:flex-row sm:items-start sm:p-8">
+          <div className="sv-panel-lg flex flex-col items-center gap-8 sm:flex-row sm:items-start">
             <div className="flex flex-shrink-0 flex-col items-center gap-3">
               <div className="relative h-48 w-40 overflow-hidden rounded-2xl ring-1 ring-white/10 sm:h-56 sm:w-44">
                 <ImageWithFallback
@@ -837,10 +834,7 @@ export default function App() {
                   { value: "5", label: "GCP Certifications" },
                   { value: "30+", label: "Live Projects" },
                 ].map(({ value, label }) => (
-                  <div
-                    key={label}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center"
-                  >
+                  <div key={label} className="sv-panel !py-3 text-center">
                     <div
                       className="text-lg font-bold text-white"
                       style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
@@ -858,7 +852,7 @@ export default function App() {
       </section>
 
       <section id="testimonials" className="landing-section landing-section-alt">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="sv-page">
           <Reveal>
             <SectionHeading
               eyebrow="Reviews"
@@ -872,7 +866,7 @@ export default function App() {
       </section>
 
       <section id="faq" className="landing-section landing-section-base">
-        <div className="relative mx-auto max-w-2xl px-4 sm:px-6">
+        <div className="sv-page max-w-3xl">
           <Reveal>
             <SectionHeading eyebrow="FAQ" title="Common questions" align="center" />
           </Reveal>
@@ -880,9 +874,9 @@ export default function App() {
           <div className="space-y-2">
             {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 60}>
-              <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.02]">
+              <div className="sv-panel overflow-hidden !p-0">
                 <button
-                  className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/[0.03]"
+                  className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/[0.03] sm:px-5 sm:py-4"
                   onClick={() =>
                     setOpenFaq(openFaq === i ? null : i)
                   }
@@ -911,8 +905,8 @@ export default function App() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-white/[0.06] bg-[#050b14] py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 sm:flex-row sm:px-6">
+      <footer className="border-t border-white/[0.06] bg-[#050b14] py-10">
+        <div className="sv-page flex flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white">
               <img src={skillVaneLogo} alt="SkillVane logo" className="h-7 w-7 object-contain" />

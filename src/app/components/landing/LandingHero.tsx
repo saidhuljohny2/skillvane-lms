@@ -25,7 +25,7 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
       <HeroBackground />
       <div className="landing-hero-fade pointer-events-none absolute inset-x-0 bottom-0 h-40" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="sv-page relative">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <Reveal delay={0}>
@@ -42,12 +42,21 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
                   GCP Data Engineer
                 </span>
               </h1>
+              <p
+                className="mt-3 text-xl font-semibold text-white sm:text-2xl"
+                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+              >
+                with{" "}
+                <span className="bg-gradient-to-r from-cyan-400 via-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent">
+                  Shaik Saidhul
+                </span>
+              </p>
             </Reveal>
 
             <Reveal delay={100}>
-              <p className="mt-4 text-lg text-slate-400">
-                Master <CyclingTechWords /> with live training built for working
-                professionals.
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-slate-400 sm:text-lg">
+                Master <CyclingTechWords /> through live morning batches, hands-on
+                pipelines, and career support for working professionals.
               </p>
             </Reveal>
 
@@ -56,7 +65,7 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
                 <button
                   type="button"
                   onClick={onExploreCourses}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-[#050b14] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                  className="sv-btn-primary"
                 >
                   Explore Courses
                   <ArrowRight className="h-4 w-4" />
@@ -65,7 +74,7 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
                   href={FREE_LEARNING_PLAYLIST_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-white/[0.08]"
+                  className="sv-btn-ghost"
                 >
                   <Play className="h-4 w-4 text-red-400" />
                   Free Lessons
@@ -74,7 +83,7 @@ export function LandingHero({ onExploreCourses }: LandingHeroProps) {
             </Reveal>
 
             <Reveal delay={200}>
-              <div className="stats-bar mt-10 flex flex-wrap gap-6 sm:gap-8">
+              <div className="sv-panel mt-10 flex flex-wrap gap-6 sm:gap-8">
                 {STATS.map(({ icon: Icon, val, label }) => (
                   <div key={label}>
                     <div className="flex items-center gap-1.5">
