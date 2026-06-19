@@ -419,6 +419,38 @@ button, a, input, select, textarea {
   perspective: 1000px;
 }
 
+.hero-signature {
+  isolation: isolate;
+}
+
+.hero-photo-frame {
+  transform: perspective(1000px) rotateY(-4deg) rotateX(2deg);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-photo-frame:hover {
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+}
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+  pointer-events: none;
+}
+
+.cert-preview {
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 39, 0.15),
+    0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .aurora-mesh,
   .text-shimmer,
@@ -430,6 +462,11 @@ button, a, input, select, textarea {
 
   .bento-card:hover,
   .testimonial-card:hover {
+    transform: none;
+  }
+
+  .hero-photo-frame,
+  .hero-photo-frame:hover {
     transform: none;
   }
 }
