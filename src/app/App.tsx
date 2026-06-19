@@ -4,8 +4,7 @@ import { Reveal } from "@/app/components/effects/Reveal";
 import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
 import { CyclingTechWords } from "@/app/components/effects/CyclingTechWords";
 import { DataPipelineVisual } from "@/app/components/effects/DataPipelineVisual";
-import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
-import { FloatingOrbs } from "@/app/components/effects/FloatingOrbs";
+import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
 import { ThemeToggle } from "@/app/components/theme/ThemeToggle";
@@ -21,7 +20,6 @@ import { COURSES } from "@/app/data/courses";
 import {
   FREE_LEARNING_PLAYLIST_URL,
   TESTIMONIALS,
-  TICKER,
 } from "@/app/data/marketing";
 import { celebrateEnrollment } from "@/app/lib/confetti";
 import { generateInvoiceNo } from "@/app/lib/format";
@@ -33,9 +31,7 @@ import {
   ChevronDown,
   Star,
   Users,
-  Clock,
   Award,
-  Check,
   Menu,
   X,
   Play,
@@ -45,19 +41,16 @@ import {
   ArrowRight,
   MonitorPlay,
   MessageCircle,
-  Phone,
-  CheckCircle2,
+  Send,
   LogIn,
   LogOut,
   GraduationCap,
   Lock,
   Youtube,
-  Send,
   Linkedin,
 } from "lucide-react";
 
 export default function App() {
-  const [ticker, setTicker] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] =
@@ -95,14 +88,6 @@ export default function App() {
         localStorage.removeItem("skillvane_current_student");
       }
     }
-  }, []);
-
-  useEffect(() => {
-    const t = setInterval(
-      () => setTicker((i) => (i + 1) % TICKER.length),
-      2800,
-    );
-    return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
@@ -673,256 +658,111 @@ export default function App() {
         )}
       </nav>
 
-      <EnrollmentTicker messages={TICKER} activeIndex={ticker} />
-
       {!showDashboard && (
-        <div className="trainer-support-card fixed bottom-5 right-5 z-50 w-[min(calc(100vw-1.5rem),320px)] rounded-2xl border border-[#f2b84b]/30 bg-[#07111f]/92 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
-          <div className="space-y-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
-                <MessageCircle className="h-4 w-4 text-[#1b1202]" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f2b84b]">
-                  Trainer Support
-                </p>
-                <p className="mt-1 text-sm font-bold leading-5 text-white">
-                  Questions about courses, access, or enrollment?
-                </p>
-              </div>
-            </div>
-
-            <a
-              href={TRAINER_WHATSAPP_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-[#25D366]/20"
-              aria-label="Message the trainer on WhatsApp"
-            >
-              WhatsApp Trainer
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
+        <a
+          href={TRAINER_WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="whatsapp-fab fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white transition-transform hover:scale-105"
+          aria-label="WhatsApp trainer support"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </a>
       )}
 
       {/* ── Hero ── */}
-      <section
-        className="relative min-h-[88svh] overflow-hidden bg-[#07111f] pt-[4.5rem] sm:pt-[5.5rem]"
-      >
-        <div
-          className="pointer-events-none absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.97) 0%, rgba(7,17,31,0.88) 42%, rgba(7,17,31,0.72) 100%), url(${instructorPhoto})`,
-            backgroundPosition: "center, right 12% top",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover, min(46rem, 52vw) auto",
-          }}
-        />
-        <FloatingOrbs />
-        <div className="pointer-events-none absolute inset-0">
-          <div
-            className="absolute inset-0 opacity-[0.07]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(66,133,244,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(66,133,244,0.9) 1px, transparent 1px)",
-              backgroundSize: "64px 64px",
-              maskImage:
-                "linear-gradient(to bottom, black 0%, transparent 88%)",
-            }}
-          />
-          <div className="hero-scan-line absolute left-0 right-0 top-0 h-32 bg-gradient-to-b from-[#4285f4]/20 via-[#18c29c]/10 to-transparent" />
-          <div className="absolute left-0 top-0 h-full w-full bg-[radial-gradient(ellipse_at_18%_14%,rgba(66,133,244,0.18),transparent_40%),radial-gradient(ellipse_at_84%_76%,rgba(242,184,75,0.14),transparent_36%)]" />
-          <div className="absolute bottom-0 left-0 h-40 w-full bg-gradient-to-t from-background to-transparent" />
-        </div>
+      <section className="relative min-h-[92svh] overflow-hidden bg-[#050b14] pt-[4.5rem] sm:pt-[5.5rem]">
+        <HeroBackground />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050b14] to-transparent" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[calc(88svh-5rem)] flex flex-col justify-center py-8 sm:py-10">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-            <div className="max-w-3xl">
+        <div className="relative mx-auto flex min-h-[calc(92svh-5rem)] max-w-7xl flex-col justify-center px-4 py-10 sm:px-6 sm:py-14">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
+            <div>
               <Reveal delay={0}>
-                <button
-                  onClick={() => scrollTo("courses")}
-                  className="attention-vibrate group mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#f2b84b]/45 bg-[#f2b84b]/12 px-4 py-2 text-left text-xs font-black uppercase tracking-[0.18em] shadow-lg shadow-[#f2b84b]/20 backdrop-blur-md hover:border-[#f2b84b]/70"
-                >
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#18c29c]" />
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#18c29c]" />
                   </span>
-                  <span className="bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-black text-gradient-animate">
-                    New live batch starts 1st July at 7.00 AM IST
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
-                </button>
+                  Live batch · 7:00 AM IST
+                </div>
               </Reveal>
 
-              <Reveal delay={80}>
+              <Reveal delay={60}>
                 <h1
-                  className="max-w-4xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-[4.25rem]"
-                  style={{
-                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                  }}
+                  className="max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-[4.5rem]"
+                  style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
                 >
-                  <span className="block">Master</span>
-                  <span className="block">
-                    <CyclingTechWords />
-                  </span>
-                  <span className="block mt-1">
-                    with{" "}
-                    <span className="bg-gradient-to-r from-cyan-400 via-[#4285f4] to-[#34a853] bg-clip-text text-transparent text-gradient-animate">
-                      Shaik Saidhul
-                    </span>
+                  Become a{" "}
+                  <span className="bg-gradient-to-r from-[#7cc7ff] via-[#4285f4] to-[#34a853] bg-clip-text text-transparent text-gradient-animate">
+                    GCP Data Engineer
                   </span>
                 </h1>
               </Reveal>
 
-              <Reveal delay={160}>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                  Industry-focused Google Cloud Data Engineering — live classes,
-                  hands-on pipelines, real case studies, and career support to
-                  make you job-ready.
+              <Reveal delay={120}>
+                <p className="mt-2 text-lg font-semibold text-slate-300 sm:text-xl">
+                  Master <CyclingTechWords /> with SkillVane
                 </p>
               </Reveal>
 
-              <Reveal delay={220}>
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Reveal delay={180}>
+                <p className="mt-4 max-w-xl text-base leading-7 text-slate-400 sm:text-lg">
+                  Live training, hands-on pipelines, and career support — built for working professionals in India.
+                </p>
+              </Reveal>
+
+              <Reveal delay={240}>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <button
                     onClick={() => scrollTo("courses")}
-                    className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-7 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25 active:scale-[0.98]"
+                    className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-8 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25"
                   >
-                    Explore Courses
+                    View Courses
                     <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </button>
-                  <button
-                    onClick={() => scrollTo("instructor")}
-                    className="magnetic-button inline-flex items-center justify-center gap-3 rounded-xl border border-white/18 bg-white/8 px-7 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/50 hover:bg-white/12"
+                  <a
+                    href={FREE_LEARNING_PLAYLIST_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/[0.05] px-8 py-4 text-base font-bold text-white backdrop-blur-md hover:border-red-400/40"
                   >
-                    <Play className="h-5 w-5 text-[#f2b84b]" />
-                    Meet Instructor
-                  </button>
+                    <Play className="h-5 w-5 fill-red-300 text-red-300" />
+                    Free Lessons
+                  </a>
                 </div>
               </Reveal>
 
-              <Reveal delay={280}>
-                <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300 stagger-children">
+              <Reveal delay={300}>
+                <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {[
-                    "Daily live sessions",
-                    "Recordings shared",
-                    "Portfolio projects",
-                    "Resume guidance",
-                  ].map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-2 shadow-lg shadow-black/10 backdrop-blur-md hover:border-[#18c29c]/35"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-[#18c29c]" />
-                      {item}
-                    </span>
+                    { icon: Users, val: "2500+", label: "Learners" },
+                    { icon: Star, val: "4.9/5", label: "Rating" },
+                    { icon: Award, val: "9+", label: "Years" },
+                    { icon: BookOpen, val: "5", label: "Programs" },
+                  ].map(({ icon: Icon, val, label }) => (
+                    <div key={label} className="hero-stat-chip rounded-xl p-3 sm:p-4">
+                      <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
+                      <div
+                        className="text-xl font-black text-white sm:text-2xl"
+                        style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                      >
+                        <AnimatedCounter value={val} />
+                      </div>
+                      <div className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                        {label}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </Reveal>
             </div>
 
-            <Reveal direction="right" delay={120} className="hidden lg:block">
-              <DataPipelineVisual />
+            <Reveal direction="right" delay={100}>
+              <div className="pipeline-hero-glow pipeline-hero-float mx-auto w-full max-w-xl lg:max-w-none">
+                <DataPipelineVisual />
+              </div>
             </Reveal>
-          </div>
-
-          <Reveal delay={340}>
-            <div className="mt-8 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  { icon: Users, val: "2500+", sub: "Learners" },
-                  { icon: Star, val: "4.9/5", sub: "Rating" },
-                  { icon: Award, val: "9+", sub: "Years Exp" },
-                  { icon: BookOpen, val: "5", sub: "Programs" },
-                ].map(({ icon: Ic, val, sub }) => (
-                  <div
-                    key={sub}
-                    className="premium-surface rounded-xl p-4 transition-transform duration-300 hover:-translate-y-1 hover:border-[#4285f4]/25"
-                  >
-                    <Ic className="mb-3 h-5 w-5 text-[#f2b84b]" />
-                    <div
-                      className="text-2xl font-black text-white"
-                      style={{
-                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                      }}
-                    >
-                      <AnimatedCounter value={val} />
-                    </div>
-                    <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-                      {sub}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="premium-surface rounded-xl p-3 sm:p-4">
-                <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f2b84b]">
-                      Connect With SkillVane
-                    </p>
-                    <h2
-                      className="mt-1 text-base font-black text-white sm:text-lg"
-                      style={{
-                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                      }}
-                    >
-                      Join the community or speak with us.
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  <a
-                    href="https://chat.whatsapp.com/J7vV8uKF8hSE5Zsx6ltoD1"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-center gap-2 rounded-lg border border-[#25D366]/25 bg-[#25D366]/12 px-3 py-2.5 text-xs font-black text-[#b8ffd0] shadow-lg shadow-[#25D366]/10 hover:border-[#25D366]/45 hover:bg-[#25D366]/18"
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#25D366]/18">
-                      <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
-                    </span>
-                    WhatsApp
-                  </a>
-                  <a
-                    href="https://t.me/gcpdataengineering"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-center gap-2 rounded-lg border border-[#2f80ed]/25 bg-[#2f80ed]/12 px-3 py-2.5 text-xs font-black text-[#bfe3ff] shadow-lg shadow-[#2f80ed]/10 hover:border-[#7cc7ff]/45 hover:bg-[#2f80ed]/18"
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2f80ed]/18">
-                      <Send className="h-4 w-4 transition-transform group-hover:scale-110" />
-                    </span>
-                    Telegram
-                  </a>
-                  <a
-                    href="https://www.youtube.com/@SkillVane1711"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-center gap-2 rounded-lg border border-red-400/25 bg-red-500/12 px-3 py-2.5 text-xs font-black text-red-200 shadow-lg shadow-red-500/10 hover:border-red-400/45 hover:bg-red-500/18"
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/18">
-                      <Youtube className="h-4 w-4 transition-transform group-hover:scale-110" />
-                    </span>
-                    YouTube
-                  </a>
-                  <a
-                    href="tel:+917305101711"
-                    className="group flex items-center justify-center gap-2 rounded-lg border border-[#18c29c]/25 bg-[#18c29c]/12 px-3 py-2.5 text-xs font-black text-[#9cf8dd] shadow-lg shadow-[#18c29c]/10 hover:border-[#18c29c]/45 hover:bg-[#18c29c]/18"
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#18c29c]/18">
-                      <Phone className="h-4 w-4 transition-transform group-hover:scale-110" />
-                    </span>
-                    Call
-                  </a>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
-          <div className="mt-6 lg:hidden">
-            <DataPipelineVisual />
           </div>
         </div>
       </section>
@@ -1023,73 +863,37 @@ export default function App() {
         </div>
       </section>
 
-      {/* â”€â”€ Instructor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="free-learning"
-        className="relative overflow-hidden border-y border-white/10 bg-[#08111f] py-10 sm:py-14"
+        className="relative border-y border-white/10 bg-[#07111f] py-6 sm:py-8"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_10%,rgba(239,68,68,0.14),transparent_30%),radial-gradient(ellipse_at_82%_70%,rgba(24,194,156,0.12),transparent_34%)]" />
-        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-red-400/25 bg-red-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-red-200">
-              <Youtube className="h-4 w-4" />
-              Free Learning
-            </span>
-            <h2
-              className="mt-4 max-w-2xl text-3xl font-black leading-tight text-white sm:text-4xl"
-              style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-            >
-              Start learning GCP Data Engineering for free.
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-              Watch the SkillVane free playlist first, then choose a live or self-paced path when you are ready.
-            </p>
-          </Reveal>
-
-          <Reveal direction="right" delay={100}>
-          <div className="premium-surface rounded-2xl p-4">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center gap-4">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-red-400/25 bg-red-500/15 shadow-xl shadow-red-500/10">
-                  <Play className="h-7 w-7 fill-red-200 text-red-200" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f2b84b]">
-                    YouTube Playlist
-                  </p>
-                  <h3 className="mt-1 text-xl font-black text-white">
-                    Free GCP Data Engineering Lessons
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-400">
-                    Beginner-friendly lessons from SkillVane.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 sm:w-52">
-                <a
-                  href={FREE_LEARNING_PLAYLIST_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-black text-white shadow-xl shadow-red-500/20 transition-all hover:bg-red-400"
-                >
-                  <Youtube className="h-4 w-4" />
-                  Play Playlist
-                </a>
-                <a
-                  href="https://www.youtube.com/@SkillVane1711"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm font-bold text-slate-200 transition-all hover:border-red-400/35 hover:text-white"
-                >
-                  Visit Channel
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
+        <Reveal className="relative mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 sm:flex-row sm:justify-between sm:px-6">
+          <div className="flex items-center gap-4 text-center sm:text-left">
+            <div className="hidden sm:flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/15">
+              <Play className="h-5 w-5 fill-red-200 text-red-200" />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-red-300">
+                Free on YouTube
+              </p>
+              <p
+                className="text-lg font-black text-white sm:text-xl"
+                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+              >
+                GCP Data Engineering playlist — start before you enroll
+              </p>
             </div>
           </div>
-          </Reveal>
-        </div>
+          <a
+            href={FREE_LEARNING_PLAYLIST_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="magnetic-button inline-flex shrink-0 items-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-sm font-black text-white shadow-lg shadow-red-500/20 hover:bg-red-400"
+          >
+            <Youtube className="h-4 w-4" />
+            Watch Free
+          </a>
+        </Reveal>
       </section>
 
       <section
@@ -1278,33 +1082,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* â”€â”€ Footer CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="relative py-12 sm:py-14 border-t border-white/10 bg-[#07111f] overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_80%_30%,rgba(242,184,75,0.12),transparent_32%)]" />
-        <Reveal className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
-          <h2
-            className="text-3xl sm:text-5xl font-black mb-4 text-white"
-            style={{
-              fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            }}
-          >
-            Start your GCP journey today
-          </h2>
-          <p className="text-slate-300 text-sm sm:text-base mb-8">
-            5 courses. Live batch, recordings, foundation &
-            projects. One academy, trusted by 500+
-            professionals.
-          </p>
-          <button
-            onClick={() => scrollTo("courses")}
-            className="magnetic-button px-10 py-4 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white font-black text-base active:scale-[0.98] transition-all shadow-xl shadow-[#18c29c]/25"
-          >
-            Browse All Courses
-          </button>
-        </Reveal>
-      </section>
-
-      {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Footer ── */}
       <footer className="py-6 border-t border-white/10 bg-[#050b14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
