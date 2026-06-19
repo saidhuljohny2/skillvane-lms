@@ -2,16 +2,11 @@
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Reveal } from "@/app/components/effects/Reveal";
 import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
-import { CyclingTechWords } from "@/app/components/effects/CyclingTechWords";
-import { DataPipelineVisual } from "@/app/components/effects/DataPipelineVisual";
 import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
-import { FloatingOrbs } from "@/app/components/effects/FloatingOrbs";
-import { FloatingBadges } from "@/app/components/effects/FloatingBadges";
-import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
-import { LiveBatchBanner } from "@/app/components/landing/LiveBatchBanner";
-import { SocialConnect } from "@/app/components/landing/SocialConnect";
+import { LandingHero } from "@/app/components/landing/LandingHero";
+import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { ThemeToggle } from "@/app/components/theme/ThemeToggle";
 import { CourseCard } from "@/app/components/course/CourseCard";
 import { CourseModal } from "@/app/components/course/CourseModal";
@@ -37,16 +32,10 @@ import skillVaneLogo from "@/imports/logo1.png";
 import {
   ChevronDown,
   Star,
-  Users,
-  Award,
-  CheckCircle2,
   Menu,
   X,
-  Play,
   Layers,
   Video,
-  BookOpen,
-  ArrowRight,
   MonitorPlay,
   MessageCircle,
   LogIn,
@@ -478,7 +467,7 @@ export default function App() {
         />
       </div>
 
-      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-white/10 bg-[#07111f]/88 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-white/[0.06] bg-[#050b14]/85 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
             <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
@@ -691,187 +680,44 @@ export default function App() {
         </a>
       )}
 
-      {/* ── Hero ── */}
-      <section className="relative min-h-[92svh] overflow-hidden bg-[#050b14] pt-[4.5rem] sm:pt-[5.5rem]">
-        <HeroBackground />
-        <FloatingOrbs />
-        <FloatingBadges variant="hero" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050b14] to-transparent" />
-
-        <div className="relative mx-auto flex min-h-[calc(92svh-5rem)] max-w-7xl flex-col justify-center px-4 py-10 sm:px-6 sm:py-14">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
-            <div>
-              <Reveal delay={0}>
-                <LiveBatchBanner onClick={() => scrollTo("courses")} />
-              </Reveal>
-
-              <Reveal delay={60}>
-                <h1
-                  className="max-w-3xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-[4.25rem]"
-                  style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-                >
-                  <span className="block">Master</span>
-                  <span className="block">
-                    <CyclingTechWords />
-                  </span>
-                  <span className="mt-1 block">
-                    with{" "}
-                    <span className="bg-gradient-to-r from-cyan-400 via-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent text-gradient-animate">
-                      Shaik Saidhul
-                    </span>
-                  </span>
-                </h1>
-              </Reveal>
-
-              <Reveal delay={120}>
-                <p className="mt-4 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
-                  Industry-focused Google Cloud Data Engineering — live classes,
-                  hands-on pipelines, real case studies, and career support.
-                </p>
-              </Reveal>
-
-              <Reveal delay={180}>
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <button
-                    onClick={() => scrollTo("courses")}
-                    className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-8 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25"
-                  >
-                    Explore Courses
-                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </button>
-                  <button
-                    onClick={() => scrollTo("instructor")}
-                    className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/[0.05] px-8 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/45"
-                  >
-                    <Play className="h-5 w-5 text-[#f2b84b]" />
-                    Meet Instructor
-                  </button>
-                </div>
-              </Reveal>
-
-              <Reveal delay={240}>
-                <div className="mt-6 flex flex-wrap gap-2 stagger-children">
-                  {[
-                    "Daily live sessions",
-                    "Recordings shared",
-                    "Portfolio projects",
-                    "Resume guidance",
-                  ].map((item) => (
-                    <span
-                      key={item}
-                      className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-slate-300 backdrop-blur-md transition-colors hover:border-[#18c29c]/35 float-gentle ${
-                        item === "Recordings shared"
-                          ? "float-gentle-delay-1"
-                          : item === "Portfolio projects"
-                            ? "float-gentle-delay-2"
-                            : item === "Resume guidance"
-                              ? "float-gentle-delay-3"
-                              : ""
-                      }`}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5 text-[#18c29c]" />
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </Reveal>
-            </div>
-
-            <Reveal direction="right" delay={100}>
-              <div className="pipeline-hero-glow pipeline-hero-float mx-auto w-full max-w-xl lg:max-w-none">
-                <DataPipelineVisual />
-              </div>
-            </Reveal>
-          </div>
-
-          <div className="mt-10 grid gap-4 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-            <Reveal delay={300}>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  { icon: Users, val: "2500+", label: "Learners" },
-                  { icon: Star, val: "4.9/5", label: "Rating" },
-                  { icon: Award, val: "9+", label: "Years" },
-                  { icon: BookOpen, val: "5", label: "Programs" },
-                ].map(({ icon: Icon, val, label }, i) => (
-                  <div
-                    key={label}
-                    className={`hero-stat-chip float-gentle rounded-xl p-3 sm:p-4 ${
-                      i === 1 ? "float-gentle-delay-1" : i === 2 ? "float-gentle-delay-2" : i === 3 ? "float-gentle-delay-3" : ""
-                    }`}
-                  >
-                    <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
-                    <div
-                      className="text-xl font-black text-white sm:text-2xl"
-                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-                    >
-                      <AnimatedCounter value={val} />
-                    </div>
-                    <div className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-
-            <SocialConnect />
-          </div>
-        </div>
-      </section>
+      <LandingHero onExploreCourses={() => scrollTo("courses")} />
 
       <GcpTechMarquee />
 
-      {/* â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section
-        id="courses"
-        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
-      >
-        <FloatingBadges variant="section" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(66,133,244,0.12),transparent_40%),radial-gradient(ellipse_at_70%_100%,rgba(24,194,156,0.1),transparent_38%)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <Reveal className="mx-auto mb-7 max-w-3xl text-center sm:mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#18c29c]/10 border border-[#18c29c]/25 text-xs font-mono text-[#8df5d7] tracking-widest uppercase mb-4 shadow-lg shadow-[#18c29c]/10">
-              <span className="w-2 h-2 rounded-full bg-[#18c29c] animate-pulse" />
-              Premium Programs
-            </div>
-            <h2
-              className="text-3xl sm:text-5xl font-black mb-4 text-white"
-              style={{
-                fontFamily:
-                  "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              Pick your{" "}
-              <span className="bg-gradient-to-r from-[#4285f4] via-[#18c29c] to-[#fbbc04] bg-clip-text text-transparent">
-                GCP learning path
-              </span>
-            </h2>
-            <p className="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Choose the format that fits your schedule and career goals.
-            </p>
+      <section id="courses" className="landing-section landing-section-alt">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeading
+              eyebrow="Courses"
+              title={
+                <>
+                  Your{" "}
+                  <span className="bg-gradient-to-r from-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent">
+                    GCP learning path
+                  </span>
+                </>
+              }
+              description="Live morning batch or self-paced recordings — pick what fits your schedule."
+            />
           </Reveal>
 
           {/* Category tabs */}
-          <div className="premium-surface mx-auto mb-7 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
+          <div className="mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] p-1">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
                 onClick={() => setActiveCategory(value)}
-                className={`relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-black transition-all ${
+                className={`relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                   activeCategory === value
-                    ? "bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white shadow-lg shadow-[#18c29c]/20"
-                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#f2b84b]/35 hover:text-white"
+                    ? "bg-white text-[#050b14]"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
-                {activeCategory === value && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/12 to-white/0" />
-                )}
                 <CategoryIcon className="relative z-10 h-4 w-4" />
                 <span className="relative z-10">{label}</span>
-                <span className="relative z-10 rounded-full bg-black/18 px-2 py-0.5 text-[10px] font-black">
+                <span className={`relative z-10 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                  activeCategory === value ? "bg-black/10 text-[#050b14]" : "bg-white/10 text-slate-500"
+                }`}>
                   {
                     value === "all"
                       ? COURSES.length
@@ -919,61 +765,39 @@ export default function App() {
 
       <section
         id="free-learning"
-        className="relative border-y border-white/10 bg-[#07111f] py-6 sm:py-8"
+        className="border-y border-white/[0.06] bg-[#050b14] py-5"
       >
-        <Reveal className="relative mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 sm:flex-row sm:justify-between sm:px-6">
-          <div className="flex items-center gap-4 text-center sm:text-left">
-            <div className="hidden sm:flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/15">
-              <Play className="h-5 w-5 fill-red-200 text-red-200" />
-            </div>
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-red-300">
-                Free on YouTube
-              </p>
-              <p
-                className="text-lg font-black text-white sm:text-xl"
-                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-              >
-                GCP Data Engineering playlist — start before you enroll
-              </p>
-            </div>
-          </div>
+        <Reveal className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
+          <p className="text-center text-sm text-slate-400 sm:text-left">
+            <span className="font-semibold text-white">Free on YouTube</span>
+            {" — "}start with the GCP Data Engineering playlist before you enroll
+          </p>
           <a
             href={FREE_LEARNING_PLAYLIST_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="magnetic-button inline-flex shrink-0 items-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-sm font-black text-white shadow-lg shadow-red-500/20 hover:bg-red-400"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/12 px-5 py-2 text-sm font-semibold text-white transition-colors hover:border-white/25 hover:bg-white/[0.04]"
           >
-            <Youtube className="h-4 w-4" />
+            <Youtube className="h-4 w-4 text-red-400" />
             Watch Free
           </a>
         </Reveal>
       </section>
 
-      <section
-        id="instructor"
-        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
-          <Reveal className="text-center mb-7">
-            <span className="inline-flex rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-4 py-2 text-xs font-mono text-[#8df5d7] tracking-widest uppercase">
-              Your Instructor
-            </span>
-            <h2
-              className="text-3xl sm:text-4xl font-black mt-3 text-white"
-              style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              Learn From a Working Professional
-            </h2>
+      <section id="instructor" className="landing-section landing-section-base">
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeading
+              eyebrow="Instructor"
+              title="Learn from a working GCP professional"
+              align="center"
+            />
           </Reveal>
 
           <Reveal delay={100}>
-          <div className="premium-surface rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 md:gap-8 items-center md:items-start">
-            <div className="flex-shrink-0 flex flex-col items-center gap-3">
-              <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12 instructor-photo-glow">
+          <div className="flex flex-col items-center gap-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:flex-row sm:items-start sm:p-8">
+            <div className="flex flex-shrink-0 flex-col items-center gap-3">
+              <div className="relative h-48 w-40 overflow-hidden rounded-2xl ring-1 ring-white/10 sm:h-56 sm:w-44">
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy - GCP Data Engineering Instructor"
@@ -990,32 +814,23 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex-1 text-center md:text-left">
+            <div className="flex-1 text-center sm:text-left">
               <h3
-                className="text-2xl sm:text-3xl font-black mb-1 text-white"
-                style={{
-                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                }}
+                className="text-2xl font-bold text-white"
+                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
               >
                 Shaik Saidhul
               </h3>
-              <p className="text-[#8df5d7] font-semibold text-sm mb-4">
-                Solution Architect - SkillVane IT Academy
+              <p className="mt-1 text-sm font-medium text-[#18c29c]">
+                Solution Architect · SkillVane IT Academy
               </p>
-              <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xl">
-                With over 9+ years of hands-on experience
-                designing large-scale data pipelines on Google
-                Cloud Platform, your instructor has architected
-                solutions for Fortune 500 enterprises across
-                BFSI, e-commerce, and logistics. As a Google
-                Certified Professional Data Engineer and Cloud
-                Architect, they bring real-world war stories,
-                battle-tested patterns, and current industry
-                practices into every lesson - no filler, no
-                theory-only slides.
+              <p className="mt-4 text-sm leading-relaxed text-slate-400">
+                9+ years building data pipelines on GCP for enterprises across
+                BFSI, e-commerce, and logistics. Google Certified Professional
+                Data Engineer bringing real-world patterns into every session.
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
                   { value: "9+", label: "Years on GCP" },
                   { value: "2500+", label: "Students Trained" },
@@ -1024,20 +839,15 @@ export default function App() {
                 ].map(({ value, label }) => (
                   <div
                     key={label}
-                      className="rounded-xl border border-white/10 bg-[#07111f]/72 p-3 text-center shadow-lg shadow-black/10 sm:p-4"
+                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center"
                   >
                     <div
-                      className="text-xl sm:text-2xl font-black text-[#f2b84b]"
-                      style={{
-                        fontFamily:
-                          "'Outfit', system-ui, sans-serif",
-                      }}
+                      className="text-lg font-bold text-white"
+                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
                     >
                       <AnimatedCounter value={value} />
                     </div>
-                    <div className="text-xs text-slate-400 mt-1">
-                      {label}
-                    </div>
+                    <div className="mt-1 text-xs text-slate-500">{label}</div>
                   </div>
                 ))}
               </div>
@@ -1047,73 +857,37 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section
-        id="testimonials"
-        className="relative py-12 sm:py-16 bg-[#07111f] border-y border-white/10 overflow-hidden"
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <Reveal className="text-center mb-8">
-            <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#ffe4a3] tracking-widest uppercase">
-              Reviews
-            </span>
-            <h2
-              className="text-3xl sm:text-4xl font-black mt-2 mb-3 text-white"
-              style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              Trusted by Professionals Across India
-            </h2>
-            <div className="flex items-center justify-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className="w-5 h-5 text-yellow-400 fill-yellow-400"
-                />
-              ))}
-              <span className="ml-2 text-slate-400 text-sm">
-                4.9 / 5 - 500+ ratings
-              </span>
-            </div>
+      <section id="testimonials" className="landing-section landing-section-alt">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeading
+              eyebrow="Reviews"
+              title="Trusted by professionals across India"
+              description="4.9 / 5 average rating from 500+ learners"
+            />
           </Reveal>
 
           <TestimonialMarquee testimonials={TESTIMONIALS} />
         </div>
       </section>
 
-      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section id="faq" className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
-          <Reveal className="text-center mb-7">
-            <span className="inline-flex rounded-full border border-[#f2b84b]/25 bg-[#f2b84b]/10 px-4 py-2 text-xs font-mono text-[#f2b84b] tracking-widest uppercase">
-              FAQ
-            </span>
-            <h2
-              className="text-3xl sm:text-4xl font-black mt-2 text-white"
-              style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              Common Questions
-            </h2>
+      <section id="faq" className="landing-section landing-section-base">
+        <div className="relative mx-auto max-w-2xl px-4 sm:px-6">
+          <Reveal>
+            <SectionHeading eyebrow="FAQ" title="Common questions" align="center" />
           </Reveal>
 
           <div className="space-y-2">
             {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 60}>
-              <div
-                className="premium-surface rounded-xl overflow-hidden"
-              >
+              <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.02]">
                 <button
-                  className="w-full flex items-center justify-between p-4 text-left hover:bg-white/[0.06] transition-colors"
+                  className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/[0.03]"
                   onClick={() =>
                     setOpenFaq(openFaq === i ? null : i)
                   }
                 >
-                  <span className="font-semibold text-sm pr-4 text-slate-100">
+                  <span className="pr-4 text-sm font-medium text-slate-200">
                     {faq.q}
                   </span>
                   <ChevronDown
@@ -1123,8 +897,8 @@ export default function App() {
                   />
                 </button>
                 {openFaq === i && (
-                  <div className="px-4 pb-4 border-t border-white/10 bg-[#07111f]/70">
-                    <p className="text-sm text-slate-300 pt-4 leading-relaxed">
+                  <div className="border-t border-white/[0.06] px-4 pb-4">
+                    <p className="pt-4 text-sm leading-relaxed text-slate-400">
                       {faq.a}
                     </p>
                   </div>
@@ -1137,29 +911,17 @@ export default function App() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="py-6 border-t border-white/10 bg-[#050b14]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center overflow-hidden">
-              <img
-                src={skillVaneLogo}
-                alt="SkillVane logo"
-                className="h-7 w-7 object-contain"
-              />
+      <footer className="border-t border-white/[0.06] bg-[#050b14] py-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 sm:flex-row sm:px-6">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white">
+              <img src={skillVaneLogo} alt="SkillVane logo" className="h-7 w-7 object-contain" />
             </div>
-            <span
-              className="font-bold text-white"
-              style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
-              }}
-            >
-              SkillVane IT Academy
-            </span>
+            <span className="text-sm font-semibold text-white">SkillVane IT Academy</span>
           </div>
-          <span>
-            (c) {new Date().getFullYear()} SkillVane IT Academy.
-            All rights reserved.
-          </span>
+          <p className="text-xs text-slate-600">
+            © {new Date().getFullYear()} SkillVane IT Academy
+          </p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             {SOCIAL_LINKS.map((link) => {
               const Icon = link.icon;

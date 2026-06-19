@@ -302,6 +302,39 @@ body {
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
+/* ── Landing page ── */
+.landing-hero {
+  background: #050b14;
+}
+
+.landing-hero-fade {
+  background: linear-gradient(to top, #050b14, transparent);
+}
+
+.landing-section {
+  position: relative;
+  overflow: hidden;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 640px) {
+  .landing-section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+}
+
+.landing-section-alt {
+  background: #0a1018;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.landing-section-base {
+  background: #050b14;
+}
+
 /* ── Hero aurora background ── */
 .hero-grid {
   background-image:
