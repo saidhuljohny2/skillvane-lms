@@ -4,9 +4,13 @@ import { Reveal } from "@/app/components/effects/Reveal";
 import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
 import { CyclingTechWords } from "@/app/components/effects/CyclingTechWords";
 import { DataPipelineVisual } from "@/app/components/effects/DataPipelineVisual";
+import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
+import { FloatingOrbs } from "@/app/components/effects/FloatingOrbs";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
+import { LiveBatchBanner } from "@/app/components/landing/LiveBatchBanner";
+import { SocialConnect } from "@/app/components/landing/SocialConnect";
 import { ThemeToggle } from "@/app/components/theme/ThemeToggle";
 import { CourseCard } from "@/app/components/course/CourseCard";
 import { CourseModal } from "@/app/components/course/CourseModal";
@@ -20,7 +24,9 @@ import { COURSES } from "@/app/data/courses";
 import {
   FREE_LEARNING_PLAYLIST_URL,
   TESTIMONIALS,
+  TICKER,
 } from "@/app/data/marketing";
+import { SOCIAL_LINKS } from "@/app/data/social";
 import { celebrateEnrollment } from "@/app/lib/confetti";
 import { generateInvoiceNo } from "@/app/lib/format";
 import { loadRazorpay } from "@/app/lib/services";
@@ -32,6 +38,7 @@ import {
   Star,
   Users,
   Award,
+  CheckCircle2,
   Menu,
   X,
   Play,
@@ -41,13 +48,11 @@ import {
   ArrowRight,
   MonitorPlay,
   MessageCircle,
-  Send,
   LogIn,
   LogOut,
   GraduationCap,
   Lock,
   Youtube,
-  Linkedin,
 } from "lucide-react";
 
 export default function App() {
@@ -75,6 +80,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [ticker, setTicker] = useState(0);
 
   // Check if user is logged in on mount
   useEffect(() => {
@@ -88,6 +94,14 @@ export default function App() {
         localStorage.removeItem("skillvane_current_student");
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const t = setInterval(
+      () => setTicker((i) => (i + 1) % TICKER.length),
+      2800,
+    );
+    return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
@@ -658,6 +672,12 @@ export default function App() {
         )}
       </nav>
 
+      <EnrollmentTicker
+        messages={TICKER}
+        activeIndex={ticker}
+        onEnrollClick={() => scrollTo("courses")}
+      />
+
       {!showDashboard && (
         <a
           href={TRAINER_WHATSAPP_LINK}
@@ -673,86 +693,75 @@ export default function App() {
       {/* ── Hero ── */}
       <section className="relative min-h-[92svh] overflow-hidden bg-[#050b14] pt-[4.5rem] sm:pt-[5.5rem]">
         <HeroBackground />
+        <FloatingOrbs />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050b14] to-transparent" />
 
         <div className="relative mx-auto flex min-h-[calc(92svh-5rem)] max-w-7xl flex-col justify-center px-4 py-10 sm:px-6 sm:py-14">
           <div className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
             <div>
               <Reveal delay={0}>
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-70" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#18c29c]" />
-                  </span>
-                  Live batch · 7:00 AM IST
-                </div>
+                <LiveBatchBanner onClick={() => scrollTo("courses")} />
               </Reveal>
 
               <Reveal delay={60}>
                 <h1
-                  className="max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-[4.5rem]"
+                  className="max-w-3xl text-4xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-[4.25rem]"
                   style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
                 >
-                  Become a{" "}
-                  <span className="bg-gradient-to-r from-[#7cc7ff] via-[#4285f4] to-[#34a853] bg-clip-text text-transparent text-gradient-animate">
-                    GCP Data Engineer
+                  <span className="block">Master</span>
+                  <span className="block">
+                    <CyclingTechWords />
+                  </span>
+                  <span className="mt-1 block">
+                    with{" "}
+                    <span className="bg-gradient-to-r from-cyan-400 via-[#7cc7ff] to-[#18c29c] bg-clip-text text-transparent text-gradient-animate">
+                      Shaik Saidhul
+                    </span>
                   </span>
                 </h1>
               </Reveal>
 
               <Reveal delay={120}>
-                <p className="mt-2 text-lg font-semibold text-slate-300 sm:text-xl">
-                  Master <CyclingTechWords /> with SkillVane
+                <p className="mt-4 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
+                  Industry-focused Google Cloud Data Engineering — live classes,
+                  hands-on pipelines, real case studies, and career support.
                 </p>
               </Reveal>
 
               <Reveal delay={180}>
-                <p className="mt-4 max-w-xl text-base leading-7 text-slate-400 sm:text-lg">
-                  Live training, hands-on pipelines, and career support — built for working professionals in India.
-                </p>
-              </Reveal>
-
-              <Reveal delay={240}>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                   <button
                     onClick={() => scrollTo("courses")}
                     className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] px-8 py-4 text-base font-extrabold text-white shadow-2xl shadow-[#18c29c]/25"
                   >
-                    View Courses
+                    Explore Courses
                     <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </button>
-                  <a
-                    href={FREE_LEARNING_PLAYLIST_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/[0.05] px-8 py-4 text-base font-bold text-white backdrop-blur-md hover:border-red-400/40"
+                  <button
+                    onClick={() => scrollTo("instructor")}
+                    className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/[0.05] px-8 py-4 text-base font-bold text-white backdrop-blur-md hover:border-[#f2b84b]/45"
                   >
-                    <Play className="h-5 w-5 fill-red-300 text-red-300" />
-                    Free Lessons
-                  </a>
+                    <Play className="h-5 w-5 text-[#f2b84b]" />
+                    Meet Instructor
+                  </button>
                 </div>
               </Reveal>
 
-              <Reveal delay={300}>
-                <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Reveal delay={240}>
+                <div className="mt-6 flex flex-wrap gap-2 stagger-children">
                   {[
-                    { icon: Users, val: "2500+", label: "Learners" },
-                    { icon: Star, val: "4.9/5", label: "Rating" },
-                    { icon: Award, val: "9+", label: "Years" },
-                    { icon: BookOpen, val: "5", label: "Programs" },
-                  ].map(({ icon: Icon, val, label }) => (
-                    <div key={label} className="hero-stat-chip rounded-xl p-3 sm:p-4">
-                      <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
-                      <div
-                        className="text-xl font-black text-white sm:text-2xl"
-                        style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-                      >
-                        <AnimatedCounter value={val} />
-                      </div>
-                      <div className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                        {label}
-                      </div>
-                    </div>
+                    "Daily live sessions",
+                    "Recordings shared",
+                    "Portfolio projects",
+                    "Resume guidance",
+                  ].map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-slate-300 backdrop-blur-md transition-colors hover:border-[#18c29c]/35"
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#18c29c]" />
+                      {item}
+                    </span>
                   ))}
                 </div>
               </Reveal>
@@ -763,6 +772,34 @@ export default function App() {
                 <DataPipelineVisual />
               </div>
             </Reveal>
+          </div>
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+            <Reveal delay={300}>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  { icon: Users, val: "2500+", label: "Learners" },
+                  { icon: Star, val: "4.9/5", label: "Rating" },
+                  { icon: Award, val: "9+", label: "Years" },
+                  { icon: BookOpen, val: "5", label: "Programs" },
+                ].map(({ icon: Icon, val, label }) => (
+                  <div key={label} className="hero-stat-chip rounded-xl p-3 sm:p-4">
+                    <Icon className="mb-2 h-4 w-4 text-[#f2b84b]" />
+                    <div
+                      className="text-xl font-black text-white sm:text-2xl"
+                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                    >
+                      <AnimatedCounter value={val} />
+                    </div>
+                    <div className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                      {label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
+            <SocialConnect />
           </div>
         </div>
       </section>
@@ -1106,34 +1143,22 @@ export default function App() {
             (c) {new Date().getFullYear()} SkillVane IT Academy.
             All rights reserved.
           </span>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="https://www.linkedin.com/in/shaik-saidhul-1286ab146"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#2f80ed]/25 bg-[#2f80ed]/10 px-3 py-1.5 text-[#bfe3ff] hover:border-[#7cc7ff]/45 hover:text-white transition-colors"
-            >
-              <Linkedin className="h-3.5 w-3.5" />
-              LinkedIn
-            </a>
-            <a
-              href="https://www.youtube.com/@SkillVane1711"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-red-200 hover:border-red-400/45 hover:text-white transition-colors"
-            >
-              <Youtube className="h-3.5 w-3.5" />
-              YouTube
-            </a>
-            <a
-              href="https://t.me/gcpdataengineering"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#18c29c]/20 bg-[#18c29c]/10 px-3 py-1.5 text-[#9cf8dd] hover:border-[#18c29c]/45 hover:text-white transition-colors"
-            >
-              <Send className="h-3.5 w-3.5" />
-              Telegram
-            </a>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {SOCIAL_LINKS.map((link) => {
+              const Icon = link.icon;
+              return (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  target={link.href.startsWith("tel:") ? undefined : "_blank"}
+                  rel={link.href.startsWith("tel:") ? undefined : "noopener noreferrer"}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-colors ${link.border} ${link.bg} ${link.text} ${link.hoverBorder} hover:text-white`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {link.label}
+                </a>
+              );
+            })}
           </div>
         </div>
       </footer>

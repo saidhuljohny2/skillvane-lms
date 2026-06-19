@@ -643,6 +643,51 @@ button, a, input, select, textarea {
   z-index: 60;
 }
 
+.ticker-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(24, 194, 156, 0.08) 45%,
+    rgba(124, 199, 255, 0.12) 55%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: tickerShimmer 4s ease-in-out infinite;
+}
+
+@keyframes tickerShimmer {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+}
+
+.social-connect-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(24, 194, 156, 0.35),
+    rgba(66, 133, 244, 0.2),
+    rgba(242, 184, 75, 0.25)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.social-link-tile {
+  animation: fadeIn 0.55s ease-out both;
+}
+
+.social-link-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
 /* ── Stagger children ── */
 .stagger-children > * {
   opacity: 0;
@@ -674,6 +719,7 @@ button, a, input, select, textarea {
   .animate-orb-drift,
   .animate-orb-drift-reverse,
   .hero-scan-line,
+  .ticker-shimmer,
   .text-gradient-animate,
   .stagger-children > * {
     animation: none !important;

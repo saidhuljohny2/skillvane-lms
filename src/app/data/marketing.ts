@@ -10,6 +10,12 @@ export const TICKER = [
   "Vijay from Kolkata just enrolled",
 ];
 
+export const LIVE_BATCH = {
+  headline: "New live batch starts 1st July at 7:00 AM IST",
+  subline: "Free demo classes · July 1, 2 & 3",
+  timing: "Mon–Fri · 7:00–8:00 AM IST",
+};
+
 export const FREE_LEARNING_PLAYLIST_URL =
   "https://www.youtube.com/playlist?list=PLk8wwChOsCPzoZHuQEiJqWVvhHFdFa6sy";
 
