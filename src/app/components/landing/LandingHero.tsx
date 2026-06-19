@@ -28,7 +28,7 @@ export function LandingHero({
   scrollTo: (id: string) => void;
 }) {
   return (
-    <section className="hero-glass relative min-h-[100svh] overflow-hidden bg-[#050c16]">
+    <section className="hero-solid relative min-h-[100svh] overflow-hidden bg-[#050c16]">
       <HeroBackground />
       <FloatingOrbs />
 
@@ -83,7 +83,7 @@ export function LandingHero({
                 <button
                   type="button"
                   onClick={() => scrollTo("courses")}
-                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#34A853] to-[#2f80ed] px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#4285F4]/20 backdrop-blur-sm sm:text-base sm:px-8 sm:py-4"
+                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#34A853] to-[#2f80ed] px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#4285F4]/20 sm:text-base sm:px-8 sm:py-4"
                 >
                   Explore Courses
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
