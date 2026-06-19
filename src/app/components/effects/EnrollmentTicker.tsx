@@ -12,9 +12,9 @@ export function EnrollmentTicker({
   onEnrollClick,
 }: EnrollmentTickerProps) {
   return (
-    <div className="enrollment-ticker sticky top-16 z-[65] border-b border-white/[0.06] bg-[#050b14]/80 backdrop-blur-xl">
-      <div className="relative mx-auto flex max-w-7xl items-center gap-4 overflow-hidden px-4 py-2 sm:px-6">
-        <span className="flex-shrink-0 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#18c29c]">
+    <div className="enrollment-ticker sticky top-14 z-[65] border-b border-border bg-background/95 backdrop-blur-md sm:top-16">
+      <div className="sv-page flex items-center gap-3 py-2 sm:gap-4">
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
           Live
         </span>
 
@@ -22,7 +22,7 @@ export function EnrollmentTicker({
           {messages.map((msg, i) => (
             <p
               key={msg}
-              className={`absolute inset-0 truncate text-sm text-slate-400 transition-all duration-500 ${
+              className={`absolute inset-0 truncate text-sm text-muted-foreground transition-all duration-500 ${
                 i === activeIndex
                   ? "translate-y-0 opacity-100"
                   : i === (activeIndex - 1 + messages.length) % messages.length
@@ -39,7 +39,7 @@ export function EnrollmentTicker({
           <button
             type="button"
             onClick={onEnrollClick}
-            className="flex-shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-[#9cf8dd] transition-colors hover:text-white"
+            className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-foreground"
           >
             Enroll
             <ArrowRight className="h-3 w-3" />

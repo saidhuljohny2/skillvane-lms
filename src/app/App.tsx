@@ -10,7 +10,7 @@ import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { FeaturesBento } from "@/app/components/landing/FeaturesBento";
 import { FinalCTA } from "@/app/components/landing/FinalCTA";
 import { BackToTop } from "@/app/components/landing/BackToTop";
-import { ThemeToggle } from "@/app/components/theme/ThemeToggle";
+import { Navbar } from "@/app/components/landing/Navbar";
 import { useActiveSection } from "@/app/hooks/useActiveSection";
 import { CourseCard } from "@/app/components/course/CourseCard";
 import { CourseModal } from "@/app/components/course/CourseModal";
@@ -38,16 +38,10 @@ import skillVaneLogo from "@/imports/logo1.png";
 import {
   ChevronDown,
   Star,
-  Menu,
-  X,
   Layers,
   Video,
   MonitorPlay,
   MessageCircle,
-  LogIn,
-  LogOut,
-  GraduationCap,
-  Lock,
   Youtube,
 } from "lucide-react";
 
@@ -80,8 +74,6 @@ export default function App() {
 
   const navSections = [
     { id: "courses", label: "Courses" },
-    { id: "free-learning", label: "Free Lessons" },
-    { id: "why-skillvane", label: "Why Us" },
     { id: "instructor", label: "Instructor" },
     { id: "testimonials", label: "Reviews" },
     { id: "faq", label: "FAQ" },
@@ -155,7 +147,7 @@ export default function App() {
   const scrollTo = (id: string) => {
     const section = document.getElementById(id);
     if (section) {
-      const fixedTopOffset = 112;
+      const fixedTopOffset = 100;
       window.scrollTo({
         top:
           section.getBoundingClientRect().top +
@@ -483,173 +475,26 @@ export default function App() {
         />
       </div>
 
-      <nav className="fixed inset-x-0 top-1 z-[70] border-b border-border bg-background/90 backdrop-blur-xl">
-        <div className="sv-page flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 overflow-hidden">
-              <img
-                src={skillVaneLogo}
-                alt="SkillVane logo"
-                className="h-10 w-10 object-contain"
-              />
-            </div>
-            <span
-              className="font-bold text-base tracking-tight"
-              style={{
-                fontFamily:
-                  "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              SkillVane{" "}
-              <span className="bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
-                IT Academy
-              </span>
-            </span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-1 rounded-full border border-border bg-muted/40 p-1 text-sm">
-            {navSections.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className={`rounded-full px-4 py-2 font-semibold transition-colors ${
-                  activeSection === id
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="hidden md:flex items-center gap-3">
-            <ThemeToggle />
-            {currentStudent ? (
-              <>
-                <button
-                  onClick={() => setShowAdmin(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f2b84b]/25 text-[#ffe4a3] hover:text-white hover:border-[#f2b84b]/45 transition-all text-sm font-semibold"
-                >
-                  <Lock className="w-4 h-4" />
-                  Admin
-                </button>
-                <button
-                  onClick={() => setShowDashboard(true)}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
-                >
-                  <GraduationCap className="w-4 h-4" />
-                  My Dashboard
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => setShowAdmin(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f2b84b]/25 text-[#ffe4a3] hover:text-white hover:border-[#f2b84b]/45 transition-all text-sm font-semibold"
-                >
-                  <Lock className="w-4 h-4" />
-                  Admin
-                </button>
-                <button
-                  onClick={() => setShowLogin(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/12 text-muted-foreground hover:text-foreground hover:border-[#18c29c]/40 transition-all text-sm font-semibold"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Login
-                </button>
-                <button
-                  onClick={() => scrollTo("courses")}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold hover:shadow-xl hover:shadow-[#18c29c]/30 hover:scale-105 transition-all shadow-lg shadow-[#18c29c]/20"
-                >
-                  View Courses
-                </button>
-              </>
-            )}
-          </div>
-
-          <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
-          <button
-            className="p-2 text-muted-foreground"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
-          </div>
-        </div>
-
-        {mobileOpen && (
-          <div className="border-t border-border bg-background px-4 py-4 md:hidden">
-            {navSections.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className="block w-full border-b border-border/50 py-2.5 text-left text-sm text-muted-foreground last:border-0 hover:text-foreground"
-              >
-                {label}
-              </button>
-            ))}
-            {currentStudent ? (
-              <>
-                <button
-                  onClick={() => {
-                    setShowAdmin(true);
-                    setMobileOpen(false);
-                  }}
-                  className="mt-3 w-full py-3 rounded-xl border border-[#f2b84b]/25 text-[#ffe4a3] text-sm font-semibold flex items-center justify-center gap-2"
-                >
-                  <Lock className="w-4 h-4" />
-                  Admin
-                </button>
-              <button
-                onClick={() => {
-                  setShowDashboard(true);
-                  setMobileOpen(false);
-                }}
-                className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20 flex items-center justify-center gap-2"
-              >
-                <GraduationCap className="w-4 h-4" />
-                My Dashboard
-              </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    setShowAdmin(true);
-                    setMobileOpen(false);
-                  }}
-                  className="mt-3 w-full py-3 rounded-xl border border-[#f2b84b]/25 text-[#ffe4a3] text-sm font-semibold flex items-center justify-center gap-2"
-                >
-                  <Lock className="w-4 h-4" />
-                  Admin
-                </button>
-                <button
-                  onClick={() => {
-                    setShowLogin(true);
-                    setMobileOpen(false);
-                  }}
-                  className="mt-3 w-full py-3 rounded-xl border border-white/12 text-foreground text-sm font-semibold flex items-center justify-center gap-2"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Login
-                </button>
-                <button
-                  onClick={() => scrollTo("courses")}
-                  className="mt-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white text-sm font-semibold shadow-lg shadow-[#18c29c]/20"
-                >
-                View Courses
-              </button>
-            </>
-          )}
-          </div>
-        )}
-      </nav>
+      <Navbar
+        logoSrc={skillVaneLogo}
+        activeSection={activeSection}
+        mobileOpen={mobileOpen}
+        currentStudent={currentStudent}
+        onToggleMobile={() => setMobileOpen((o) => !o)}
+        onScrollTo={scrollTo}
+        onLogin={() => {
+          setShowLogin(true);
+          setMobileOpen(false);
+        }}
+        onAdmin={() => {
+          setShowAdmin(true);
+          setMobileOpen(false);
+        }}
+        onDashboard={() => {
+          setShowDashboard(true);
+          setMobileOpen(false);
+        }}
+      />
 
       <EnrollmentTicker
         messages={TICKER}
@@ -662,7 +507,7 @@ export default function App() {
           href={TRAINER_WHATSAPP_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="whatsapp-fab fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white transition-transform hover:scale-105"
+          className="whatsapp-fab sv-safe-bottom sv-safe-right fixed z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white transition-transform hover:scale-105"
           aria-label="WhatsApp trainer support"
         >
           <MessageCircle className="h-6 w-6" />
@@ -693,22 +538,27 @@ export default function App() {
           </Reveal>
 
           {/* Category tabs */}
-          <div className="sv-panel mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-1 p-1">
+          <div className="sv-panel mx-auto mb-6 flex w-full max-w-md flex-wrap justify-center gap-1 p-1 sm:mb-8">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
+                type="button"
                 onClick={() => setActiveCategory(value)}
-                className={`relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors sm:flex-none sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm ${
                   activeCategory === value
-                    ? "bg-white text-[#050b14]"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <CategoryIcon className="relative z-10 h-4 w-4" />
-                <span className="relative z-10">{label}</span>
-                <span className={`relative z-10 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                  activeCategory === value ? "bg-black/10 text-[#050b14]" : "bg-white/10 text-slate-500"
-                }`}>
+                <CategoryIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span>{label}</span>
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                    activeCategory === value
+                      ? "bg-background/15 text-background"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
                   {
                     value === "all"
                       ? COURSES.length
@@ -731,13 +581,9 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3 xl:gap-6">
             {visibleCourses.map((course, index) => (
-              <Reveal
-                key={course.id}
-                delay={index * 80}
-                className={course.id === "gcp-live" ? "lg:col-span-2" : ""}
-              >
+              <Reveal key={course.id} delay={index * 60}>
                 <CourseCard
                   course={course}
                   onEnroll={handleEnroll}
@@ -749,7 +595,7 @@ export default function App() {
             ))}
           </div>
 
-          <p className="text-center text-xs text-slate-500 mt-8">
+          <p className="mt-6 text-center text-xs text-muted-foreground sm:mt-8">
             More courses coming soon - All prices in INR
             inclusive of taxes
           </p>
@@ -758,15 +604,15 @@ export default function App() {
 
       <section id="free-learning" className="sv-strip">
         <Reveal className="sv-page flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-center text-sm text-slate-400 sm:text-left">
-            <span className="font-semibold text-white">Free on YouTube</span>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">
+            <span className="font-semibold text-foreground">Free on YouTube</span>
             {" — "}start with the GCP Data Engineering playlist before you enroll
           </p>
           <a
             href={FREE_LEARNING_PLAYLIST_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/12 px-5 py-2 text-sm font-semibold text-white transition-colors hover:border-white/25 hover:bg-white/[0.04]"
+            className="sv-btn-ghost shrink-0 !rounded-full"
           >
             <Youtube className="h-4 w-4 text-red-400" />
             Watch Free
@@ -787,7 +633,7 @@ export default function App() {
           <Reveal delay={100}>
           <div className="sv-panel-lg flex flex-col items-center gap-8 sm:flex-row sm:items-start">
             <div className="flex flex-shrink-0 flex-col items-center gap-3">
-              <div className="relative h-48 w-40 overflow-hidden rounded-2xl ring-1 ring-white/10 sm:h-56 sm:w-44">
+              <div className="relative h-48 w-40 overflow-hidden rounded-2xl border border-border sm:h-56 sm:w-44">
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy - GCP Data Engineering Instructor"
@@ -806,15 +652,15 @@ export default function App() {
 
             <div className="flex-1 text-center sm:text-left">
               <h3
-                className="text-2xl font-bold text-white"
+                className="text-2xl font-bold text-foreground"
                 style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
               >
                 Shaik Saidhul
               </h3>
-              <p className="mt-1 text-sm font-medium text-[#18c29c]">
+              <p className="mt-1 text-sm font-medium text-primary">
                 Solution Architect · SkillVane IT Academy
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-slate-400">
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                 9+ years building data pipelines on GCP for enterprises across
                 BFSI, e-commerce, and logistics. Google Certified Professional
                 Data Engineer bringing real-world patterns into every session.
@@ -829,12 +675,12 @@ export default function App() {
                 ].map(({ value, label }) => (
                   <div key={label} className="sv-panel !py-3 text-center">
                     <div
-                      className="text-lg font-bold text-white"
+                      className="text-lg font-bold text-foreground"
                       style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
                     >
                       <AnimatedCounter value={value} />
                     </div>
-                    <div className="mt-1 text-xs text-slate-500">{label}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{label}</div>
                   </div>
                 ))}
               </div>
@@ -869,23 +715,24 @@ export default function App() {
               <Reveal key={i} delay={i * 60}>
               <div className="sv-panel overflow-hidden !p-0">
                 <button
-                  className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/[0.03] sm:px-5 sm:py-4"
+                  type="button"
+                  className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/40 sm:px-5 sm:py-4"
                   onClick={() =>
                     setOpenFaq(openFaq === i ? null : i)
                   }
                 >
-                  <span className="pr-4 text-sm font-medium text-slate-200">
+                  <span className="pr-4 text-sm font-medium text-foreground">
                     {faq.q}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${
+                    className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200 ${
                       openFaq === i ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {openFaq === i && (
-                  <div className="border-t border-white/[0.06] px-4 pb-4">
-                    <p className="pt-4 text-sm leading-relaxed text-slate-400">
+                  <div className="border-t border-border px-4 pb-4 sm:px-5">
+                    <p className="pt-4 text-sm leading-relaxed text-muted-foreground">
                       {faq.a}
                     </p>
                   </div>
@@ -905,12 +752,12 @@ export default function App() {
       <footer className="border-t border-border bg-background py-10">
         <div className="sv-page flex flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white">
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border border-border bg-card">
               <img src={skillVaneLogo} alt="SkillVane logo" className="h-7 w-7 object-contain" />
             </div>
-            <span className="text-sm font-semibold text-white">SkillVane IT Academy</span>
+            <span className="text-sm font-semibold text-foreground">SkillVane IT Academy</span>
           </div>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} SkillVane IT Academy
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2">

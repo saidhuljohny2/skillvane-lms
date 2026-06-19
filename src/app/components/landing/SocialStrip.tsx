@@ -3,7 +3,7 @@ import { SOCIAL_LINKS } from "@/app/data/social";
 export function SocialStrip() {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="mr-1 text-xs font-medium text-slate-500">Follow</span>
+      <span className="mr-1 text-xs font-medium text-muted-foreground">Follow</span>
       {SOCIAL_LINKS.map((link) => {
         const Icon = link.icon;
         return (

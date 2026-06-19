@@ -9,17 +9,17 @@ export function LiveBatchBanner({ onClick }: LiveBatchBannerProps) {
     <button
       type="button"
       onClick={onClick}
-      className="group inline-flex items-center gap-2.5 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/8 px-4 py-2 text-left transition-colors hover:border-[#18c29c]/45 hover:bg-[#18c29c]/12"
+      className="group inline-flex max-w-full items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-left transition-colors hover:border-primary/50 hover:bg-primary/15 sm:gap-2.5 sm:px-4 sm:py-2"
     >
-      <span className="relative flex h-2 w-2 flex-shrink-0">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-60" />
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-[#18c29c]" />
+      <span className="relative flex h-2 w-2 shrink-0">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
       </span>
-      <span className="text-xs font-semibold text-[#9cf8dd]">
+      <span className="truncate text-xs font-semibold text-primary">
         {LIVE_BATCH.headline}
       </span>
-      <span className="hidden text-xs text-slate-500 sm:inline">·</span>
-      <span className="hidden text-xs text-slate-500 sm:inline">
+      <span className="hidden text-xs text-muted-foreground sm:inline">·</span>
+      <span className="hidden text-xs text-muted-foreground sm:inline">
         {LIVE_BATCH.subline}
       </span>
     </button>

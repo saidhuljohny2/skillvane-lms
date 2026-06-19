@@ -78,15 +78,15 @@ export function FeaturesBento() {
             const Icon = feature.icon;
             return (
               <Reveal key={feature.title} delay={i * 60} className={feature.className}>
-                <div className="sv-panel group h-full transition-colors hover:border-[#18c29c]/25">
+                <div className="sv-panel group h-full transition-colors hover:border-primary/30">
                   <div
-                    className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08]"
+                    className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-border"
                     style={{ backgroundColor: `${feature.accent}18` }}
                   >
                     <Icon className="h-5 w-5" style={{ color: feature.accent }} />
                   </div>
-                  <h3 className="text-base font-bold text-white">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                  <h3 className="text-base font-bold text-foreground">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {feature.desc}
                   </p>
                 </div>
