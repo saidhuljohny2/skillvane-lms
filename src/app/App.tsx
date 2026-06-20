@@ -28,7 +28,6 @@ import {
   ArrowRight,
   MonitorPlay,
   FileText,
-  MessageCircle,
   Mail,
   Phone,
   User,
@@ -54,6 +53,7 @@ import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
 import { FinalCTA } from "@/app/components/landing/FinalCTA";
 import { BackToTop } from "@/app/components/landing/BackToTop";
+import { SimpleChatbot } from "@/app/components/landing/SimpleChatbot";
 import { Reveal } from "@/app/components/effects/Reveal";
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -2772,36 +2772,7 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {!showDashboard && (
-        <div className="trainer-support-card fixed bottom-5 right-5 z-50 w-[min(calc(100vw-1.5rem),320px)] rounded-2xl border border-[#f2b84b]/30 bg-[#07111f]/92 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
-          <div className="space-y-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
-                <MessageCircle className="h-4 w-4 text-[#1b1202]" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f2b84b]">
-                  Trainer Support
-                </p>
-                <p className="mt-1 text-sm font-bold leading-5 text-white">
-                  Questions about courses, access, or enrollment?
-                </p>
-              </div>
-            </div>
-
-            <a
-              href={TRAINER_WHATSAPP_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-[#25D366]/20"
-              aria-label="Message the trainer on WhatsApp"
-            >
-              WhatsApp Trainer
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
-      )}
+      {!showDashboard && <SimpleChatbot whatsappLink={TRAINER_WHATSAPP_LINK} />}
 
       {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <LandingHero scrollTo={scrollTo} />
