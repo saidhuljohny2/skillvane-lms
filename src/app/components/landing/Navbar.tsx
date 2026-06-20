@@ -174,7 +174,10 @@ export function Navbar({
               <button
                 key={id}
                 type="button"
-                onClick={() => scrollTo(id)}
+                onClick={() => {
+                  scrollTo(id);
+                  setMobileOpen(false);
+                }}
                 className="block w-full border-b border-white/5 py-3 text-left text-sm font-semibold text-slate-300 last:border-0"
               >
                 {label}
@@ -192,16 +195,28 @@ export function Navbar({
                 Admin
               </button>
               {currentStudent ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onDashboard();
-                    setMobileOpen(false);
-                  }}
-                  className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-bold text-white"
-                >
-                  My Dashboard
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onDashboard();
+                      setMobileOpen(false);
+                    }}
+                    className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-bold text-white"
+                  >
+                    My Dashboard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onLogout();
+                      setMobileOpen(false);
+                    }}
+                    className="w-full rounded-xl border border-white/12 py-3 text-sm font-semibold text-slate-300"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <>
                   <button
@@ -216,7 +231,10 @@ export function Navbar({
                   </button>
                   <button
                     type="button"
-                    onClick={() => scrollTo("courses")}
+                    onClick={() => {
+                      scrollTo("courses");
+                      setMobileOpen(false);
+                    }}
                     className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-bold text-white"
                   >
                     View Courses

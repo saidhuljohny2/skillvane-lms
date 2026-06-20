@@ -41,7 +41,7 @@ export function GcpCloudVisual() {
   const orbitRadius = 44;
 
   return (
-    <div className="gcp-orbit-stage relative mx-auto aspect-square w-full max-w-[min(100%,480px)]">
+    <div className="gcp-orbit-stage relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[min(100%,480px)]">
       <div className="glass-orbit-ring pointer-events-none absolute inset-[5%] rounded-full" />
 
       <motion.div
@@ -101,7 +101,7 @@ export function GcpCloudVisual() {
         return (
           <motion.div
             key={svc.name}
-            className="glass-chip absolute z-20 -translate-x-1/2 -translate-y-1/2"
+            className="glass-chip absolute z-20 -translate-x-1/2 -translate-y-1/2 scale-[0.78] sm:scale-100"
             style={{ left: pos.left, top: pos.top }}
             initial={{ opacity: 0, scale: 0.75 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -119,16 +119,16 @@ export function GcpCloudVisual() {
             }}
           >
             <span
-              className="mb-1 flex h-8 w-8 items-center justify-center rounded-xl"
+              className="mb-0 flex h-7 w-7 items-center justify-center rounded-lg sm:mb-1 sm:h-8 sm:w-8 sm:rounded-xl"
               style={{
                 background: `linear-gradient(135deg, ${svc.color}28, ${svc.color}10)`,
                 border: `1px solid ${svc.color}50`,
                 boxShadow: `0 4px 20px ${svc.color}25, inset 0 1px 0 rgba(255,255,255,0.15)`,
               }}
             >
-              <Icon className="h-4 w-4" style={{ color: svc.color }} />
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: svc.color }} />
             </span>
-            <span className="whitespace-nowrap text-[9px] font-bold uppercase tracking-wider text-white">
+            <span className="hidden whitespace-nowrap text-[9px] font-bold uppercase tracking-wider text-white sm:block">
               {svc.name}
             </span>
           </motion.div>

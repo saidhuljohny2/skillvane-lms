@@ -28,7 +28,7 @@ export function LandingHero({
   scrollTo: (id: string) => void;
 }) {
   return (
-    <section className="hero-solid relative min-h-[100svh] overflow-hidden bg-[#050c16]">
+    <section className="hero-solid relative overflow-hidden bg-[#050c16] lg:min-h-[100svh]">
       <HeroBackground />
       <FloatingOrbs />
 
@@ -41,27 +41,27 @@ export function LandingHero({
         }}
       />
 
-      <div className="relative mx-auto grid min-h-[100svh] max-w-7xl items-center gap-10 px-4 pb-20 pt-24 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:pb-24 lg:pt-28">
-        <div className="relative z-10 order-2 lg:order-1">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-7 px-4 pb-12 pt-24 sm:px-6 sm:pb-16 lg:min-h-[100svh] lg:grid-cols-2 lg:gap-8 lg:pb-24 lg:pt-28">
+        <div className="relative z-10 order-1 lg:order-1">
           <Reveal>
-            <div className="glass-pill mb-6 inline-flex items-center gap-2 px-4 py-2">
+            <div className="glass-pill mb-4 inline-flex items-center gap-2 px-3 py-2 sm:mb-6 sm:px-4">
               <Sparkles className="h-3.5 w-3.5 text-[#8df5d7]" />
-              <span className="text-xs font-bold uppercase tracking-[0.22em] text-[#9cf8dd]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9cf8dd] sm:text-xs sm:tracking-[0.22em]">
                 SkillVane IT Academy
               </span>
             </div>
           </Reveal>
 
           <Reveal delay={0.06}>
-            <div className="glass-panel rounded-3xl p-6 sm:p-8">
-              <h1 className="text-[2.2rem] font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3rem]">
+            <div className="glass-panel rounded-3xl p-5 sm:p-8">
+              <h1 className="text-[2rem] font-black leading-[1.06] tracking-tight text-white min-[390px]:text-[2.25rem] sm:text-5xl lg:text-[3rem]">
                 Master{" "}
                 <span className="text-shimmer bg-gradient-to-r from-[#4285F4] via-[#34A853] to-[#FBBC04] bg-clip-text text-transparent">
                   GCP Data Engineering
                 </span>
               </h1>
-              <p className="mt-4 text-base leading-7 text-slate-300 sm:text-lg">
-                Learn BigQuery, Dataflow, Composer, Pub/Sub &amp; more — taught
+              <p className="mt-4 text-sm leading-6 text-slate-300 sm:text-lg sm:leading-7">
+                Learn BigQuery, Dataflow, Composer, Pub/Sub &amp; more - taught
                 live by{" "}
                 <span className="font-bold text-white">Shaik Saidhul</span>,
                 with hands-on projects and career support.
@@ -70,7 +70,7 @@ export function LandingHero({
               <button
                 type="button"
                 onClick={() => scrollTo("courses")}
-                className="glass-pill attention-vibrate mt-5 inline-flex items-center gap-2 border-[#f2b84b]/25 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#ffe4a3]"
+                className="glass-pill attention-vibrate mt-5 inline-flex max-w-full items-center gap-2 border-[#f2b84b]/25 px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-[#ffe4a3] sm:px-4 sm:text-xs sm:tracking-[0.14em]"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
@@ -79,11 +79,11 @@ export function LandingHero({
                 Live batch · July 1 · 7 AM IST
               </button>
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => scrollTo("courses")}
-                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#34A853] to-[#2f80ed] px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#4285F4]/20 sm:text-base sm:px-8 sm:py-4"
+                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#34A853] to-[#2f80ed] px-6 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#4285F4]/20 sm:px-8 sm:py-4 sm:text-base"
                 >
                   Explore Courses
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -91,7 +91,7 @@ export function LandingHero({
                 <button
                   type="button"
                   onClick={() => scrollTo("free-learning")}
-                  className="glass-btn magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl px-7 py-3.5 text-sm font-bold text-white sm:text-base sm:px-8 sm:py-4"
+                  className="glass-btn magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-bold text-white sm:px-8 sm:py-4 sm:text-base"
                 >
                   <Play className="h-5 w-5 text-[#f2b84b]" />
                   Free Lessons
@@ -120,27 +120,27 @@ export function LandingHero({
           </RevealStagger>
         </div>
 
-        <Reveal delay={0.1} className="relative order-1 lg:order-2">
-          <div className="glass-panel glass-panel-glow rounded-[2rem] p-4 sm:p-6">
+        <Reveal delay={0.1} className="relative order-2 lg:order-2">
+          <div className="glass-panel glass-panel-glow mx-auto w-full max-w-[420px] rounded-[1.5rem] p-3 sm:max-w-none sm:rounded-[2rem] sm:p-6">
             <p className="mb-4 text-center text-[10px] font-black uppercase tracking-[0.24em] text-[#8df5d7]">
               Google Cloud data platform
             </p>
             <GcpCloudVisual />
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:mt-5 sm:gap-2">
               {["BigQuery", "Dataflow", "Composer", "Pub/Sub", "DataProc"].map(
                 (tag) => (
                   <span
                     key={tag}
-                    className="glass-pill px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300"
+                    className="glass-pill px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-300 sm:px-3 sm:text-[10px]"
                   >
                     {tag}
                   </span>
                 ),
               )}
             </div>
-            <div className="glass-pill mx-auto mt-4 flex max-w-sm items-center justify-center gap-2 px-4 py-2.5">
+            <div className="glass-pill mx-auto mt-3 flex max-w-sm items-center justify-center gap-2 px-3 py-2.5 sm:mt-4 sm:px-4">
               <Cloud className="h-4 w-4 text-[#4285F4]" />
-              <span className="text-xs font-bold text-slate-300">
+              <span className="text-[11px] font-bold text-slate-300 sm:text-xs">
                 Production-grade GCP training
               </span>
             </div>
