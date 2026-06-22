@@ -54,7 +54,8 @@ function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
     "Hi Admin, please provide Google Drive access for my course.",
     `Course: ${course.title}`,
     `Student Name: ${student.name}`,
-    `Access Email: ${student.email}`,
+    `Student Email ID: ${student.email}`,
+    `Please provide access to this email: ${student.email}`,
   ].join("\n");
   return `https://wa.me/917305101711?text=${encodeURIComponent(message)}`;
 }
