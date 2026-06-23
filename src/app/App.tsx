@@ -1301,6 +1301,7 @@ function LoginModal({
     code: string;
     expiresAt: number;
     verified: boolean;
+    purpose: "login" | "reset";
   } | null>(null);
   const [otpInput, setOtpInput] = useState("");
   const [form, setForm] = useState({
@@ -1321,7 +1322,7 @@ function LoginModal({
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
     )
       e.email = "Valid email is required";
-    if (mode !== "reset" || otpState?.verified) {
+    if (mode === "signup" || (mode === "reset" && otpState?.verified)) {
       if (!form.password || form.password.length < 6)
         e.password = "Password must be at least 6 characters";
     }
@@ -1340,6 +1341,84 @@ function LoginModal({
     } catch {
       return {};
     }
+  };
+
+  const completeStudentLogin = (student: StoredStudent) => {
+    const loggedStudent: LoggedInStudent = {
+      email: student.email,
+      name: student.name,
+      enrolledCourses: student.enrolledCourses || [],
+    };
+    localStorage.setItem(
+      "skillvane_current_student",
+      JSON.stringify(loggedStudent),
+    );
+    onLogin(loggedStudent);
+  };
+
+  const sendStudentLoginOtp = async () => {
+    const email = form.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrors({ email: "Valid email is required" });
+      return;
+    }
+
+    const students = loadStudents();
+    const student = students[email];
+    if (!student) {
+      setErrors({ email: "No student found with this email." });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const code = generateOtp();
+      await sendOtpEmail(
+        email,
+        student.name || "Student",
+        code,
+        "student login",
+      );
+      setOtpState({
+        email,
+        code,
+        expiresAt: Date.now() + OTP_VALIDITY_MS,
+        verified: false,
+        purpose: "login",
+      });
+      setOtpInput("");
+      setErrors({
+        general: "Login OTP sent to your registered email.",
+      });
+    } catch (error) {
+      console.error("Student login OTP email failed:", error);
+      setErrors({
+        general: `Unable to send OTP: ${getEmailJsErrorMessage(error)}`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyStudentLoginOtp = () => {
+    if (!otpState || otpState.purpose !== "login") return;
+    if (Date.now() > otpState.expiresAt) {
+      setErrors({ general: "OTP expired. Please send a new OTP." });
+      setOtpState(null);
+      return;
+    }
+    if (otpInput.trim() !== otpState.code) {
+      setErrors({ general: "Invalid OTP. Please check your email." });
+      return;
+    }
+
+    const student = loadStudents()[otpState.email];
+    if (!student) {
+      setErrors({ email: "No student found with this email." });
+      return;
+    }
+    setOtpState({ ...otpState, verified: true });
+    completeStudentLogin(student);
   };
 
   const sendStudentResetOtp = async () => {
@@ -1370,6 +1449,7 @@ function LoginModal({
         code,
         expiresAt: Date.now() + OTP_VALIDITY_MS,
         verified: false,
+        purpose: "reset",
       });
       setOtpInput("");
       setErrors({
@@ -1397,7 +1477,12 @@ function LoginModal({
       return;
     }
     setOtpState({ ...otpState, verified: true });
-    setErrors({ general: "OTP verified. Set your new password." });
+    setErrors({
+      general:
+        otpState.purpose === "reset"
+          ? "OTP verified. Set your new password."
+          : "OTP verified.",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1483,25 +1568,24 @@ function LoginModal({
         );
         onLogin(loggedStudent);
       } else {
-        // Login
+        // Login with OTP
         const email = form.email.trim().toLowerCase();
         const student = students[email];
-        if (!student || student.password !== form.password) {
-          setErrors({ password: "Invalid email or password" });
+        if (!student) {
+          setErrors({ email: "No student found with this email." });
           setLoading(false);
           return;
         }
-
-        const loggedStudent: LoggedInStudent = {
-          email: student.email,
-          name: student.name,
-          enrolledCourses: student.enrolledCourses || [],
-        };
-        localStorage.setItem(
-          "skillvane_current_student",
-          JSON.stringify(loggedStudent),
-        );
-        onLogin(loggedStudent);
+        if (
+          !otpState?.verified ||
+          otpState.purpose !== "login" ||
+          otpState.email !== email
+        ) {
+          setErrors({ general: "Please verify your login OTP first." });
+          setLoading(false);
+          return;
+        }
+        completeStudentLogin(student);
       }
     } catch (error) {
       setErrors({
@@ -1541,7 +1625,7 @@ function LoginModal({
             </h2>
             <p className="text-xs text-slate-400">
               {mode === "login"
-                ? "Login to access your courses"
+                ? "Login with OTP sent to your email"
                 : mode === "signup"
                   ? "Sign up to get started"
                   : "Verify OTP sent to your email"}
@@ -1600,9 +1684,11 @@ function LoginModal({
             <input
               type="email"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value.toLowerCase() })
-              }
+              onChange={(e) => {
+                setForm({ ...form, email: e.target.value.toLowerCase() });
+                setOtpState(null);
+                setOtpInput("");
+              }}
               placeholder="your.email@example.com"
               className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
             />
@@ -1631,6 +1717,45 @@ function LoginModal({
                 <p className="text-xs text-red-300 mt-1">
                   {errors.phone}
                 </p>
+              )}
+            </div>
+          )}
+
+          {mode === "login" && (
+            <div className="grid gap-3">
+              <button
+                type="button"
+                onClick={sendStudentLoginOtp}
+                disabled={loading}
+                className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-colors hover:bg-[#f2b84b]/16 disabled:opacity-50"
+              >
+                {otpState?.purpose === "login"
+                  ? "Resend Login OTP"
+                  : "Send Login OTP"}
+              </button>
+
+              {otpState?.purpose === "login" && (
+                <div className="grid gap-2">
+                  <label className="block text-sm font-semibold text-slate-200">
+                    Email OTP
+                  </label>
+                  <div className="grid grid-cols-[1fr_auto] gap-2">
+                    <input
+                      inputMode="numeric"
+                      value={otpInput}
+                      onChange={(e) => setOtpInput(e.target.value)}
+                      placeholder="6-digit OTP"
+                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyStudentLoginOtp}
+                      className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -1672,7 +1797,7 @@ function LoginModal({
             </div>
           )}
 
-          {(mode !== "reset" || otpState?.verified) && (
+          {((mode === "signup") || (mode === "reset" && otpState?.verified)) && (
           <div>
             <label className="block text-sm font-semibold text-slate-200 mb-1.5">
               {mode === "reset" ? "New Password" : "Password"}
@@ -1698,36 +1823,21 @@ function LoginModal({
           </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading || (mode === "reset" && !otpState?.verified)}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#18c29c]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            {loading
-              ? "Please wait..."
-              : mode === "login"
-                ? "Login"
+          {mode !== "login" && (
+            <button
+              type="submit"
+              disabled={loading || (mode === "reset" && !otpState?.verified)}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#18c29c]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {loading
+                ? "Please wait..."
                 : mode === "signup"
                   ? "Sign Up"
                   : "Save New Password"}
-          </button>
+            </button>
+          )}
 
           <div className="flex flex-col items-center gap-2 text-center">
-            {mode === "login" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("reset");
-                  setErrors({});
-                  setForm({ ...form, password: "" });
-                  setOtpState(null);
-                  setOtpInput("");
-                }}
-                className="text-sm font-bold text-[#8df5d7] hover:text-white transition-colors"
-              >
-                Forgot password? Reset with email OTP
-              </button>
-            )}
             <button
               type="button"
               onClick={() => {

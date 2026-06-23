@@ -19,7 +19,6 @@ import { openCertificatePrintWindow } from "@/app/lib/certificate";
 import skillVaneLogo from "@/imports/logo1.png";
 
 const ADMIN_EMAIL = "saidhuljohny@gmail.com";
-const ADMIN_DEFAULT_PASSWORD = "SkillVane@1711";
 const OTP_VALIDITY_MS = 10 * 60 * 1000;
 
 interface Course {
@@ -38,10 +37,6 @@ interface StoredStudent {
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-function getAdminPassword() {
-  return localStorage.getItem("skillvane_admin_password") || ADMIN_DEFAULT_PASSWORD;
 }
 
 async function loadEmailJs(): Promise<void> {
@@ -81,15 +76,13 @@ export function AdminStudentsModal({
   courses: Course[];
   onClose: () => void;
 }) {
-  const [adminMode, setAdminMode] = useState<"login" | "forgot">("login");
-  const [adminLogin, setAdminLogin] = useState({ email: "", password: "" });
+  const [adminLogin, setAdminLogin] = useState({ email: "" });
   const [adminOtp, setAdminOtp] = useState<{
     code: string;
     expiresAt: number;
     verified: boolean;
   } | null>(null);
   const [adminOtpInput, setAdminOtpInput] = useState("");
-  const [newAdminPassword, setNewAdminPassword] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<AdminTab>("students");
@@ -212,12 +205,43 @@ export function AdminStudentsModal({
     resetForm();
   };
 
-  const openAdminConsole = () => {
+  const sendAdminLoginOtp = async () => {
     const email = adminLogin.email.trim().toLowerCase();
-    if (email !== ADMIN_EMAIL || adminLogin.password !== getAdminPassword()) {
-      setMessage("Invalid admin email or password.");
+    if (email !== ADMIN_EMAIL) {
+      setMessage("Enter the registered admin Gmail.");
       return;
     }
+
+    try {
+      const code = generateOtp();
+      await sendOtpEmail(ADMIN_EMAIL, "SkillVane Admin", code, "admin login");
+      setAdminOtp({
+        code,
+        expiresAt: Date.now() + OTP_VALIDITY_MS,
+        verified: false,
+      });
+      setAdminOtpInput("");
+      setMessage("OTP sent to admin Gmail.");
+    } catch {
+      setMessage("Could not send OTP. Please check EmailJS setup.");
+    }
+  };
+
+  const verifyAdminLoginOtp = () => {
+    if (!adminOtp) {
+      setMessage("Send OTP first.");
+      return;
+    }
+    if (Date.now() > adminOtp.expiresAt) {
+      setAdminOtp(null);
+      setMessage("OTP expired. Please send a new OTP.");
+      return;
+    }
+    if (adminOtpInput.trim() !== adminOtp.code) {
+      setMessage("Invalid OTP.");
+      return;
+    }
+    setAdminOtp({ ...adminOtp, verified: true });
     setUnlocked(true);
     setMessage("");
   };
@@ -282,7 +306,7 @@ export function AdminStudentsModal({
             <div className="mb-2 text-center">
               <Lock className="mx-auto mb-3 h-10 w-10 text-[#18c29c]" />
               <p className="text-sm text-slate-300">
-                Secure access for student management and certificates.
+                Login with OTP sent to the registered admin Gmail.
               </p>
             </div>
             <input
@@ -294,125 +318,38 @@ export function AdminStudentsModal({
               placeholder="Admin Gmail"
               className={inputCls}
             />
-            {adminMode === "login" ? (
-              <>
+            <button
+              type="button"
+              onClick={sendAdminLoginOtp}
+              className="w-full rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-3 text-sm font-black text-[#ffe4a3]"
+            >
+              {adminOtp ? "Resend Login OTP" : "Send Login OTP"}
+            </button>
+            {adminOtp && (
+              <div className="grid grid-cols-[1fr_auto] gap-2">
                 <input
-                  type="password"
-                  value={adminLogin.password}
-                  onChange={(e) =>
-                    setAdminLogin({ ...adminLogin, password: e.target.value })
-                  }
-                  placeholder="Password"
+                  value={adminOtpInput}
+                  onChange={(e) => setAdminOtpInput(e.target.value)}
+                  placeholder="Enter OTP"
                   className={inputCls}
                 />
-                {message && <p className="text-sm text-red-300">{message}</p>}
                 <button
                   type="button"
-                  onClick={openAdminConsole}
-                  className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3.5 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
+                  onClick={verifyAdminLoginOtp}
+                  className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
                 >
-                  Unlock Dashboard
+                  Verify
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAdminMode("forgot");
-                    setMessage("");
-                  }}
-                  className="w-full text-sm font-semibold text-[#8df5d7] hover:text-white"
-                >
-                  Forgot password? Reset with OTP
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (adminLogin.email.trim().toLowerCase() !== ADMIN_EMAIL) {
-                      setMessage("Enter the registered admin Gmail.");
-                      return;
-                    }
-                    try {
-                      const code = generateOtp();
-                      await sendOtpEmail(ADMIN_EMAIL, "Admin", code, "admin password reset");
-                      setAdminOtp({
-                        code,
-                        expiresAt: Date.now() + OTP_VALIDITY_MS,
-                        verified: false,
-                      });
-                      setMessage("OTP sent to admin Gmail.");
-                    } catch {
-                      setMessage("Could not send OTP.");
-                    }
-                  }}
-                  className="w-full rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-3 text-sm font-black text-[#ffe4a3]"
-                >
-                  Send OTP
-                </button>
-                {adminOtp && (
-                  <>
-                    <input
-                      value={adminOtpInput}
-                      onChange={(e) => setAdminOtpInput(e.target.value)}
-                      placeholder="Enter OTP"
-                      className={inputCls}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!adminOtp || Date.now() > adminOtp.expiresAt) {
-                          setMessage("OTP expired.");
-                          return;
-                        }
-                        if (adminOtpInput.trim() !== adminOtp.code) {
-                          setMessage("Invalid OTP.");
-                          return;
-                        }
-                        setAdminOtp({ ...adminOtp, verified: true });
-                        setMessage("OTP verified. Set new password.");
-                      }}
-                      className="w-full rounded-xl border border-[#18c29c]/30 py-3 text-sm font-bold text-[#9cf8dd]"
-                    >
-                      Verify OTP
-                    </button>
-                  </>
-                )}
-                {adminOtp?.verified && (
-                  <input
-                    type="password"
-                    value={newAdminPassword}
-                    onChange={(e) => setNewAdminPassword(e.target.value)}
-                    placeholder="New admin password"
-                    className={inputCls}
-                  />
-                )}
-                {adminOtp?.verified && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (newAdminPassword.length < 6) {
-                        setMessage("Password must be at least 6 characters.");
-                        return;
-                      }
-                      localStorage.setItem("skillvane_admin_password", newAdminPassword);
-                      setAdminMode("login");
-                      setMessage("Password updated. Login again.");
-                    }}
-                    className="w-full rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#f59e0b] py-3 text-sm font-black text-[#1b1202]"
-                  >
-                    Save New Password
-                  </button>
-                )}
-                {message && <p className="text-sm text-[#ffe4a3]">{message}</p>}
-                <button
-                  type="button"
-                  onClick={() => setAdminMode("login")}
-                  className="w-full text-sm text-slate-400 hover:text-white"
-                >
-                  Back to login
-                </button>
-              </>
+              </div>
+            )}
+            {message && (
+              <p
+                className={`text-sm ${
+                  /sent/i.test(message) ? "text-[#9cf8dd]" : "text-red-300"
+                }`}
+              >
+                {message}
+              </p>
             )}
           </div>
         ) : (
