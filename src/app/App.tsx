@@ -77,6 +77,10 @@ const TRAINER_WHATSAPP_LINK =
 const ADMIN_EMAIL = "saidhuljohny@gmail.com";
 const ADMIN_DEFAULT_PASSWORD = "SkillVane@1711";
 const OTP_VALIDITY_MS = 10 * 60 * 1000;
+const ENROLLMENT_COUPON_CODE = "SKILLVANE7";
+const ENROLLMENT_COUPON_DISCOUNT_PERCENT = 10;
+const ENROLLMENT_COUPON_START_DATE = "2026-06-23T00:00:00+05:30";
+const ENROLLMENT_COUPON_VALID_DAYS = 7;
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // COURSE DATA - Add a new course here and it appears on the site
@@ -781,6 +785,73 @@ function formatINR(n: number) {
   }).format(n);
 }
 
+function getCouponExpiryDate() {
+  const startDate = new Date(ENROLLMENT_COUPON_START_DATE);
+  startDate.setDate(
+    startDate.getDate() + ENROLLMENT_COUPON_VALID_DAYS,
+  );
+  return startDate;
+}
+
+function getDefaultPricing(course: Course): PaymentPricing {
+  return {
+    originalAmount: course.price,
+    discountAmount: 0,
+    amountPaid: course.price,
+  };
+}
+
+function getCouponPricing(
+  course: Course,
+  inputCode: string,
+): {
+  pricing: PaymentPricing;
+  valid: boolean;
+  message: string;
+} {
+  const code = inputCode.trim().toUpperCase();
+  const expiryDate = getCouponExpiryDate();
+
+  if (!code) {
+    return {
+      pricing: getDefaultPricing(course),
+      valid: false,
+      message: "Enter coupon code to check discount.",
+    };
+  }
+
+  if (code !== ENROLLMENT_COUPON_CODE) {
+    return {
+      pricing: getDefaultPricing(course),
+      valid: false,
+      message: "Coupon code is not valid.",
+    };
+  }
+
+  if (Date.now() > expiryDate.getTime()) {
+    return {
+      pricing: getDefaultPricing(course),
+      valid: false,
+      message: "This coupon has expired.",
+    };
+  }
+
+  const discountAmount = Math.round(
+    (course.price * ENROLLMENT_COUPON_DISCOUNT_PERCENT) / 100,
+  );
+
+  return {
+    pricing: {
+      originalAmount: course.price,
+      discountAmount,
+      amountPaid: Math.max(0, course.price - discountAmount),
+      couponCode: ENROLLMENT_COUPON_CODE,
+    },
+    valid: true,
+    message: `${ENROLLMENT_COUPON_DISCOUNT_PERCENT}% discount applied.`,
+  };
+}
+
 function GradientText({
   from,
   to,
@@ -1118,6 +1189,10 @@ interface EnrollmentRecord {
   paymentId: string;
   student: StudentDetails;
   course: Course;
+  originalAmount: number;
+  discountAmount: number;
+  amountPaid: number;
+  couponCode?: string;
   paidAt: Date;
 }
 
@@ -1130,8 +1205,18 @@ interface EnrollmentLedgerRow {
   courseId: string;
   courseTitle: string;
   courseType: string;
+  originalAmount: number;
+  discountAmount: number;
+  couponCode?: string;
   amount: number;
   paidAt: string;
+}
+
+interface PaymentPricing {
+  originalAmount: number;
+  discountAmount: number;
+  amountPaid: number;
+  couponCode?: string;
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1153,7 +1238,10 @@ function saveEnrollmentLedger(record: EnrollmentRecord) {
     courseId: record.course.id,
     courseTitle: record.course.title,
     courseType: record.course.subtitle,
-    amount: record.course.price,
+    originalAmount: record.originalAmount,
+    discountAmount: record.discountAmount,
+    couponCode: record.couponCode,
+    amount: record.amountPaid,
     paidAt: record.paidAt.toISOString(),
   };
 
@@ -1224,7 +1312,10 @@ async function saveToGoogleSheet(record: EnrollmentRecord) {
       course: record.course.title,
       course_type: record.course.subtitle,
       course_id: record.course.id,
-      amount: record.course.price,
+      original_amount: record.originalAmount,
+      discount_amount: record.discountAmount,
+      coupon_code: record.couponCode || "",
+      amount: record.amountPaid,
       drive_access_required: Boolean(record.course.driveLink),
       drive_link: record.course.driveLink || "",
       drive_access_email: record.student.email,
@@ -1247,7 +1338,10 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     invoice_no: record.invoiceNo,
     payment_id: record.paymentId,
     course_name: `${record.course.title} - ${record.course.subtitle}`,
-    amount: formatINR(record.course.price),
+    amount: formatINR(record.amountPaid),
+    original_amount: formatINR(record.originalAmount),
+    discount_amount: formatINR(record.discountAmount),
+    coupon_code: record.couponCode || "No coupon",
     paid_at: record.paidAt.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "long",
