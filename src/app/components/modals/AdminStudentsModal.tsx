@@ -78,6 +78,9 @@ interface EnrollmentLedgerRow {
   courseId: string;
   courseTitle: string;
   courseType: string;
+  originalAmount?: number;
+  discountAmount?: number;
+  couponCode?: string;
   amount: number;
   paidAt: string;
 }
@@ -184,7 +187,10 @@ export function AdminStudentsModal({
       "Course ID",
       "Course",
       "Course Type",
-      "Amount",
+      "Original Amount",
+      "Discount",
+      "Coupon Code",
+      "Paid Amount",
       "Paid Date",
     ];
     const rows = ledger.map((row) => [
@@ -196,6 +202,9 @@ export function AdminStudentsModal({
       row.courseId,
       row.courseTitle,
       row.courseType,
+      row.originalAmount ?? row.amount,
+      row.discountAmount ?? 0,
+      row.couponCode || "",
       row.amount,
       row.paidAt ? new Date(row.paidAt).toLocaleString("en-IN") : "",
     ]);
@@ -613,7 +622,7 @@ export function AdminStudentsModal({
 
                       {ledger.length > 0 && (
                         <div className="mt-4 max-h-44 overflow-auto rounded-xl border border-white/10">
-                          <table className="w-full min-w-[760px] text-left text-xs">
+                          <table className="w-full min-w-[860px] text-left text-xs">
                             <thead className="bg-[#07111f] text-[10px] uppercase tracking-wider text-slate-500">
                               <tr>
                                 <th className="px-3 py-2">Date</th>
@@ -621,6 +630,7 @@ export function AdminStudentsModal({
                                 <th className="px-3 py-2">Email</th>
                                 <th className="px-3 py-2">Phone</th>
                                 <th className="px-3 py-2">Course</th>
+                                <th className="px-3 py-2">Coupon</th>
                                 <th className="px-3 py-2">Amount</th>
                                 <th className="px-3 py-2">Transaction</th>
                               </tr>
@@ -644,6 +654,15 @@ export function AdminStudentsModal({
                                     <td className="px-3 py-2">{row.email}</td>
                                     <td className="px-3 py-2">{row.phone}</td>
                                     <td className="px-3 py-2">{row.courseTitle}</td>
+                                    <td className="px-3 py-2">
+                                      {row.couponCode ? (
+                                        <span className="rounded-full bg-[#f2b84b]/10 px-2 py-1 font-bold text-[#f2b84b]">
+                                          {row.couponCode}
+                                        </span>
+                                      ) : (
+                                        <span className="text-slate-600">-</span>
+                                      )}
+                                    </td>
                                     <td className="px-3 py-2">
                                       ₹{Number(row.amount || 0).toLocaleString("en-IN")}
                                     </td>

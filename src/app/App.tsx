@@ -2059,7 +2059,7 @@ function EnrollmentFormModal({
               className="text-xs font-mono uppercase tracking-widest mb-0.5"
               style={{ color: course.accentFrom }}
             >
-              Step 1 of 2 - Your Details
+              Step 1 of 3 - Your Details
             </p>
             <h2
               className="font-black text-white text-base"
@@ -2212,7 +2212,7 @@ function EnrollmentFormModal({
               boxShadow: `0 8px 24px ${course.accentFrom}40`,
             }}
           >
-            Continue to Payment
+            Continue to Amount
           </button>
         </form>
       </div>
@@ -2223,6 +2223,196 @@ function EnrollmentFormModal({
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Invoice Modal
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function PaymentReviewModal({
+  course,
+  student,
+  onClose,
+  onBack,
+  onPay,
+}: {
+  course: Course;
+  student: StudentDetails;
+  onClose: () => void;
+  onBack: () => void;
+  onPay: (pricing: PaymentPricing) => void;
+}) {
+  const [couponInput, setCouponInput] = useState("");
+  const [message, setMessage] = useState(
+    `Use ${ENROLLMENT_COUPON_CODE} before ${getCouponExpiryDate().toLocaleDateString(
+      "en-IN",
+      { day: "2-digit", month: "short", year: "numeric" },
+    )}.`,
+  );
+  const [pricing, setPricing] = useState<PaymentPricing>(() =>
+    getDefaultPricing(course),
+  );
+  const [couponValid, setCouponValid] = useState(false);
+  const couponExpiry = getCouponExpiryDate();
+
+  const applyCoupon = () => {
+    const result = getCouponPricing(course, couponInput);
+    setPricing(result.pricing);
+    setCouponValid(result.valid);
+    setMessage(result.message);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#f2b84b]/30 shadow-2xl overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(242,184,75,0.16),transparent_42%)]" />
+        <div
+          className="relative px-5 py-4 flex items-center justify-between border-b border-white/10"
+          style={{
+            background: `linear-gradient(135deg, ${course.accentFrom}1f, rgba(242,184,75,0.12))`,
+          }}
+        >
+          <div>
+            <p className="text-xs font-mono uppercase tracking-widest mb-0.5 text-[#f2b84b]">
+              Step 2 of 3 - Amount & Coupon
+            </p>
+            <h2
+              className="font-black text-white text-base"
+              style={{
+                fontFamily: "'Outfit', system-ui, sans-serif",
+              }}
+            >
+              Confirm enrollment
+            </h2>
+            <p className="text-xs text-white/45">
+              {student.name} - {student.email}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="relative px-5 py-5 space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8df5d7]">
+                  Selected Course
+                </p>
+                <h3 className="mt-1 text-lg font-black text-white">
+                  {course.title}
+                </h3>
+                <p className="text-sm text-white/45">
+                  {course.subtitle}
+                </p>
+              </div>
+              <div className="rounded-xl bg-[#f2b84b]/10 px-3 py-2 text-right">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#f2b84b]">
+                  Payable
+                </p>
+                <p className="text-xl font-black text-white">
+                  {formatINR(pricing.amountPaid)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[#f2b84b]/20 bg-[#f2b84b]/[0.06] p-4">
+            <label className="block text-xs font-black uppercase tracking-wider text-[#f2b84b] mb-2">
+              Coupon Code
+            </label>
+            <div className="flex gap-2">
+              <input
+                value={couponInput}
+                onChange={(e) => {
+                  setCouponInput(e.target.value.toUpperCase());
+                  if (couponValid) {
+                    setCouponValid(false);
+                    setPricing(getDefaultPricing(course));
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    applyCoupon();
+                  }
+                }}
+                placeholder={ENROLLMENT_COUPON_CODE}
+                className="min-w-0 flex-1 rounded-xl border border-white/10 bg-[#050d18]/80 px-4 py-3 text-sm font-bold uppercase tracking-wider text-white placeholder-white/25 outline-none transition-all focus:border-[#f2b84b]/70"
+              />
+              <button
+                type="button"
+                onClick={applyCoupon}
+                className="rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#f59e0b] px-4 py-3 text-xs font-black text-[#1b1202] shadow-lg shadow-[#f2b84b]/20 transition-transform hover:-translate-y-0.5"
+              >
+                Apply
+              </button>
+            </div>
+            <p
+              className={`mt-2 text-xs font-semibold ${
+                couponValid ? "text-emerald-300" : "text-white/45"
+              }`}
+            >
+              {message}
+            </p>
+            <p className="mt-1 text-[11px] text-white/35">
+              Coupon expires on{" "}
+              {couponExpiry.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+              .
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-[#050d18]/80 p-4 space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-white/50">Course amount</span>
+              <span className="font-bold text-white">
+                {formatINR(pricing.originalAmount)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-white/50">Coupon discount</span>
+              <span className="font-bold text-emerald-300">
+                - {formatINR(pricing.discountAmount)}
+              </span>
+            </div>
+            <div className="border-t border-white/10 pt-3 flex items-center justify-between">
+              <span className="text-sm font-black uppercase tracking-wider text-white">
+                Final payment
+              </span>
+              <span className="text-2xl font-black text-white">
+                {formatINR(pricing.amountPaid)}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[0.42fr_0.58fr]">
+            <button
+              type="button"
+              onClick={onBack}
+              className="rounded-xl border border-white/15 px-4 py-3 text-sm font-bold text-white/70 transition-all hover:bg-white/5 hover:text-white"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => onPay(pricing)}
+              className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f8cff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20 transition-transform hover:-translate-y-0.5"
+            >
+              Proceed to Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function InvoiceModal({
   record,
   onClose,
@@ -2352,8 +2542,14 @@ function InvoiceModal({
                 {record.course.subtitle}
               </p>
               <p className="text-xs font-bold text-emerald-400 mt-1">
-                {formatINR(record.course.price)} paid
+                {formatINR(record.amountPaid)} paid
               </p>
+              {record.couponCode && (
+                <p className="text-[11px] text-[#f2b84b] mt-1">
+                  {record.couponCode} saved{" "}
+                  {formatINR(record.discountAmount)}
+                </p>
+              )}
             </div>
           </div>
 
@@ -2677,6 +2873,10 @@ export default function App() {
   const [formCourse, setFormCourse] = useState<Course | null>(
     null,
   );
+  const [paymentReview, setPaymentReview] = useState<{
+    course: Course;
+    student: StudentDetails;
+  } | null>(null);
   const [invoice, setInvoice] =
     useState<EnrollmentRecord | null>(null);
 
@@ -2727,6 +2927,7 @@ export default function App() {
     const anyOpen = !!(
       modalCourse ||
       formCourse ||
+      paymentReview ||
       invoice ||
       showLogin ||
       showAdmin ||
@@ -2739,6 +2940,7 @@ export default function App() {
   }, [
     modalCourse,
     formCourse,
+    paymentReview,
     invoice,
     showLogin,
     showAdmin,
@@ -2804,12 +3006,14 @@ export default function App() {
     return null;
   };
 
-  // Step 2: Form submitted -> open Razorpay
+  // Step 3: Amount confirmed -> open Razorpay
   const startEnrollmentPayment = async (
     course: Course,
     student: StudentDetails,
+    pricing: PaymentPricing = getDefaultPricing(course),
   ) => {
     setFormCourse(null);
+    setPaymentReview(null);
     setShowDashboard(false);
     setPayLoading(course.id);
     setPayError(null);
@@ -2830,7 +3034,7 @@ export default function App() {
 
       const options = {
         key: RAZORPAY_KEY,
-        amount: course.price * 100, // Amount in paise
+        amount: Math.round(pricing.amountPaid * 100), // Amount in paise
         currency: "INR",
         name: "SkillVane IT Academy",
         description: `${course.title} - ${course.subtitle}`,
@@ -2852,6 +3056,10 @@ export default function App() {
             paymentId: response.razorpay_payment_id,
             student,
             course,
+            originalAmount: pricing.originalAmount,
+            discountAmount: pricing.discountAmount,
+            amountPaid: pricing.amountPaid,
+            couponCode: pricing.couponCode,
             paidAt: new Date(),
           };
           saveEnrollmentLedger(record);
@@ -2932,6 +3140,10 @@ export default function App() {
           course_title: course.title,
           student_email: student.email,
           student_name: student.name,
+          original_amount: String(pricing.originalAmount),
+          discount_amount: String(pricing.discountAmount),
+          coupon_code: pricing.couponCode || "",
+          amount_paid: String(pricing.amountPaid),
         },
         theme: {
           color: course.accentFrom,
@@ -2996,7 +3208,7 @@ export default function App() {
     if (currentStudent) {
       const savedStudent = getSavedStudentDetails(currentStudent);
       if (savedStudent) {
-        void startEnrollmentPayment(course, savedStudent);
+        setPaymentReview({ course, student: savedStudent });
         return;
       }
     }
@@ -3006,7 +3218,8 @@ export default function App() {
 
   const handleFormSubmit = async (student: StudentDetails) => {
     if (!formCourse) return;
-    await startEnrollmentPayment(formCourse, student);
+    setPaymentReview({ course: formCourse, student });
+    setFormCourse(null);
   };
 
   const COURSE_CATEGORIES: {
@@ -3455,7 +3668,26 @@ export default function App() {
         />
       )}
 
-      {/* â”€â”€ Invoice / Success Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {paymentReview && (
+        <PaymentReviewModal
+          course={paymentReview.course}
+          student={paymentReview.student}
+          onClose={() => setPaymentReview(null)}
+          onBack={() => {
+            setFormCourse(paymentReview.course);
+            setPaymentReview(null);
+          }}
+          onPay={(pricing) =>
+            startEnrollmentPayment(
+              paymentReview.course,
+              paymentReview.student,
+              pricing,
+            )
+          }
+        />
+      )}
+
+      {/* â”€â”€ Invoice / Success Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */} 
       {invoice && (
         <InvoiceModal
           record={invoice}
