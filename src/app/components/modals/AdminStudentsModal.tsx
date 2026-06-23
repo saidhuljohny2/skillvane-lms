@@ -69,6 +69,24 @@ async function sendOtpEmail(toEmail: string, toName: string, otp: string, purpos
 
 type AdminTab = "certificates" | "students";
 
+interface EnrollmentLedgerRow {
+  invoiceNo: string;
+  paymentId: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  courseId: string;
+  courseTitle: string;
+  courseType: string;
+  amount: number;
+  paidAt: string;
+}
+
+function csvCell(value: unknown) {
+  const text = String(value ?? "");
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
 export function AdminStudentsModal({
   courses,
   onClose,
@@ -105,6 +123,15 @@ export function AdminStudentsModal({
     studentName: "",
     completionDate: new Date().toISOString().slice(0, 10),
   });
+  const [ledger, setLedger] = useState<EnrollmentLedgerRow[]>(() => {
+    try {
+      return JSON.parse(
+        localStorage.getItem("skillvane_enrollment_ledger") || "[]",
+      );
+    } catch {
+      return [];
+    }
+  });
   const courseById = useMemo(
     () => new Map(courses.map((course) => [course.id, course])),
     [courses],
@@ -137,10 +164,62 @@ export function AdminStudentsModal({
       ),
     [students],
   );
+  const totalLedgerAmount = useMemo(
+    () => ledger.reduce((sum, row) => sum + (Number(row.amount) || 0), 0),
+    [ledger],
+  );
 
   const persistStudents = (next: Record<string, StoredStudent>) => {
     setStudents(next);
     localStorage.setItem("skillvane_students", JSON.stringify(next));
+  };
+
+  const downloadEnrollmentLedger = () => {
+    const headers = [
+      "Invoice No",
+      "Payment / Transaction ID",
+      "Student Name",
+      "Email",
+      "Phone",
+      "Course ID",
+      "Course",
+      "Course Type",
+      "Amount",
+      "Paid Date",
+    ];
+    const rows = ledger.map((row) => [
+      row.invoiceNo,
+      row.paymentId,
+      row.studentName,
+      row.email,
+      row.phone,
+      row.courseId,
+      row.courseTitle,
+      row.courseType,
+      row.amount,
+      row.paidAt ? new Date(row.paidAt).toLocaleString("en-IN") : "",
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map(csvCell).join(","))
+      .join("\n");
+    const blob = new Blob([`\ufeff${csv}`], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `skillvane-enrollments-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setMessage("Enrollment Excel/CSV downloaded.");
+  };
+
+  const clearEnrollmentLedger = () => {
+    localStorage.removeItem("skillvane_enrollment_ledger");
+    setLedger([]);
+    setMessage("Enrollment ledger cleared from this browser.");
   };
 
   const getCourseNames = (student: StoredStudent) =>
@@ -468,6 +547,117 @@ export function AdminStudentsModal({
                     exit={{ opacity: 0, x: -12 }}
                     className="grid gap-4 xl:grid-cols-[0.82fr_1.18fr]"
                   >
+                    <div className="rounded-2xl border border-[#f2b84b]/20 bg-[#f2b84b]/[0.05] p-4 xl:col-span-2">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <h3 className="text-sm font-black uppercase tracking-wider text-[#f2b84b]">
+                            Enrollment Payment Ledger
+                          </h3>
+                          <p className="mt-1 text-xs text-slate-400">
+                            Captures successful enrollments from this browser:
+                            name, email, phone, date, course, amount, invoice,
+                            and transaction ID.
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                          <button
+                            type="button"
+                            onClick={downloadEnrollmentLedger}
+                            disabled={ledger.length === 0}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#f59e0b] px-4 py-2.5 text-xs font-black text-[#1b1202] disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <Download className="h-4 w-4" />
+                            Download Excel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={clearEnrollmentLedger}
+                            disabled={ledger.length === 0}
+                            className="rounded-xl border border-red-400/25 px-4 py-2.5 text-xs font-black text-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <div className="rounded-xl border border-white/10 bg-[#050d18]/70 p-3">
+                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                            Paid Enrollments
+                          </p>
+                          <p className="mt-1 text-2xl font-black text-white">
+                            {ledger.length}
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-[#050d18]/70 p-3">
+                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                            Total Amount
+                          </p>
+                          <p className="mt-1 text-2xl font-black text-white">
+                            ₹{totalLedgerAmount.toLocaleString("en-IN")}
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-[#050d18]/70 p-3 sm:col-span-2">
+                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                            Latest Transaction
+                          </p>
+                          <p className="mt-1 truncate text-sm font-bold text-[#9cf8dd]">
+                            {ledger.length
+                              ? `${ledger[ledger.length - 1].studentName} - ${
+                                  ledger[ledger.length - 1].paymentId
+                                }`
+                              : "No paid enrollments captured yet"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {ledger.length > 0 && (
+                        <div className="mt-4 max-h-44 overflow-auto rounded-xl border border-white/10">
+                          <table className="w-full min-w-[760px] text-left text-xs">
+                            <thead className="bg-[#07111f] text-[10px] uppercase tracking-wider text-slate-500">
+                              <tr>
+                                <th className="px-3 py-2">Date</th>
+                                <th className="px-3 py-2">Student</th>
+                                <th className="px-3 py-2">Email</th>
+                                <th className="px-3 py-2">Phone</th>
+                                <th className="px-3 py-2">Course</th>
+                                <th className="px-3 py-2">Amount</th>
+                                <th className="px-3 py-2">Transaction</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5 text-slate-300">
+                              {ledger
+                                .slice()
+                                .reverse()
+                                .map((row) => (
+                                  <tr key={row.paymentId}>
+                                    <td className="px-3 py-2">
+                                      {row.paidAt
+                                        ? new Date(row.paidAt).toLocaleDateString(
+                                            "en-IN",
+                                          )
+                                        : ""}
+                                    </td>
+                                    <td className="px-3 py-2 font-bold text-white">
+                                      {row.studentName}
+                                    </td>
+                                    <td className="px-3 py-2">{row.email}</td>
+                                    <td className="px-3 py-2">{row.phone}</td>
+                                    <td className="px-3 py-2">{row.courseTitle}</td>
+                                    <td className="px-3 py-2">
+                                      ₹{Number(row.amount || 0).toLocaleString("en-IN")}
+                                    </td>
+                                    <td className="px-3 py-2 font-mono text-[#9cf8dd]">
+                                      {row.paymentId}
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-[#8df5d7]">
                         Add / Update Student

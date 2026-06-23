@@ -1121,6 +1121,19 @@ interface EnrollmentRecord {
   paidAt: Date;
 }
 
+interface EnrollmentLedgerRow {
+  invoiceNo: string;
+  paymentId: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  courseId: string;
+  courseTitle: string;
+  courseType: string;
+  amount: number;
+  paidAt: string;
+}
+
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1128,6 +1141,32 @@ function generateInvoiceNo() {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   return `SV-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
+}
+
+function saveEnrollmentLedger(record: EnrollmentRecord) {
+  const row: EnrollmentLedgerRow = {
+    invoiceNo: record.invoiceNo,
+    paymentId: record.paymentId,
+    studentName: record.student.name,
+    email: record.student.email,
+    phone: record.student.phone,
+    courseId: record.course.id,
+    courseTitle: record.course.title,
+    courseType: record.course.subtitle,
+    amount: record.course.price,
+    paidAt: record.paidAt.toISOString(),
+  };
+
+  const existing: EnrollmentLedgerRow[] = JSON.parse(
+    localStorage.getItem("skillvane_enrollment_ledger") || "[]",
+  );
+  const withoutDuplicate = existing.filter(
+    (item) => item.paymentId !== row.paymentId,
+  );
+  localStorage.setItem(
+    "skillvane_enrollment_ledger",
+    JSON.stringify([...withoutDuplicate, row]),
+  );
 }
 
 async function loadRazorpay(): Promise<void> {
@@ -2721,6 +2760,7 @@ export default function App() {
             course,
             paidAt: new Date(),
           };
+          saveEnrollmentLedger(record);
 
           // Auto-create/update student account and enroll in course
           try {
