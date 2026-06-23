@@ -25,6 +25,7 @@ import {
   Briefcase,
   Heart,
   ShoppingCart,
+  Landmark,
   ArrowRight,
   MonitorPlay,
   FileText,
@@ -675,6 +676,74 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR?usp=sharing", // Replace with Retailer project Google Drive folder link
     notesLink:
       "https://drive.google.com/drive/folders/REPLACE_WITH_RETAILER_NOTES_LINK", // Replace with Retailer notes link
+  },
+
+  // â”€â”€ Course 6 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  {
+    id: "project-banking",
+    type: "project",
+    badge: "REAL PROJECT",
+    icon: Landmark,
+    accentFrom: "#059669",
+    accentTo: "#22c55e",
+    title: "Banking GCP",
+    subtitle: "Data Engineering Project",
+    price: 1499,
+    originalPrice: 3000,
+    highlights: [
+      "End-to-end real-world banking data platform",
+      "Cloud SQL, Pub/Sub, GCS, BigQuery & Dataproc pipelines",
+      "Bronze, Silver and Gold layer implementation",
+      "Airflow orchestration with production-style DAGs",
+      "CI/CD with Cloud Build, GitHub and Airflow",
+      "Portfolio-ready architecture walkthrough and code review",
+    ],
+    curriculum: [
+      {
+        module: "Project Overview & Architecture",
+        topics: [
+          "Banking Data Platform Introduction",
+          "Architecture and Service Selection on GCP",
+          "Project Setup and Banking Dataset Walkthrough",
+        ],
+      },
+      {
+        module: "Source Systems & Landing Setup",
+        topics: [
+          "Cloud SQL MySQL Source Setup",
+          "Pub/Sub Source Setup",
+          "Landing Layer and Metadata Layer Setup",
+        ],
+      },
+      {
+        module: "Batch & Streaming Ingestion",
+        topics: [
+          "Cloud SQL to GCS Ingestion Pipeline",
+          "Pub/Sub to BigQuery Ingestion Pipeline",
+          "Dataproc Cluster Creation",
+        ],
+      },
+      {
+        module: "Medallion Data Processing",
+        topics: [
+          "Bronze Layer Loading with PySpark on Dataproc",
+          "Silver Layer Transformations",
+          "Gold Layer Business-Ready Tables",
+        ],
+      },
+      {
+        module: "Airflow Orchestration & CI/CD",
+        topics: [
+          "Airflow Environment Creation",
+          "Banking Ingestion, Bronze, Silver and Gold DAGs",
+          "Manual DAG Triggering and CI/CD with Cloud Build",
+        ],
+      },
+    ],
+    driveLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_BANKING_PROJECT_LINK", // Replace with Banking project Google Drive folder link
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_BANKING_NOTES_LINK", // Replace with Banking notes link
   },
 
   // â”€â”€ ADD A NEW COURSE HERE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -2104,12 +2173,12 @@ function CourseCard({
   const isLiveBatch = category === "live-batch";
   const isFeaturedLiveBatch = course.id === "gcp-live";
   const moduleCount = course.curriculum.length;
-  const curriculumHref =
-    course.curriculumDownload || gcpDataEngineeringCurriculum;
+  const curriculumHref = isLiveBatch ? course.curriculumDownload : undefined;
+  const cardHighlights = course.highlights.slice(0, 4);
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex flex-col overflow-hidden rounded-2xl border border-white/12 bg-[#0b1423] shadow-xl shadow-black/20 transition-colors duration-300 hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 ${
+      className={`group course-card-3d relative flex h-[640px] flex-col overflow-hidden rounded-2xl border border-white/12 bg-[#0b1423] shadow-xl shadow-black/20 transition-colors duration-300 hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 ${
         isFeaturedLiveBatch
           ? "border-[#f2b84b]/40 bg-[#0c1626] shadow-2xl shadow-[#f2b84b]/10"
           : ""
@@ -2150,21 +2219,21 @@ function CourseCard({
       )}
 
       <div
-        className={`flex flex-1 flex-col ${
-          isFeaturedLiveBatch ? "p-4 sm:p-6" : "p-4 sm:p-5"
+        className={`flex h-full flex-1 flex-col ${
+          isFeaturedLiveBatch ? "p-4 sm:p-6" : "p-3.5 sm:p-4"
         }`}
       >
         {/* Icon + badge */}
-        <div className="flex items-center gap-3 mb-4 relative z-10">
+        <div className={`relative z-10 flex items-center gap-3 ${isFeaturedLiveBatch ? "mb-4" : "mb-3"}`}>
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md ring-1 ring-white/10 group-hover:scale-105 transition-transform duration-300"
+            className={`${isFeaturedLiveBatch ? "h-12 w-12" : "h-10 w-10"} flex flex-shrink-0 items-center justify-center rounded-xl shadow-md ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-105`}
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
               border: `1.5px solid ${course.accentFrom}50`,
             }}
           >
             <Icon
-              className="w-6 h-6"
+              className={isFeaturedLiveBatch ? "h-6 w-6" : "h-5 w-5"}
               style={{ color: course.accentFrom }}
             />
           </div>
@@ -2183,7 +2252,7 @@ function CourseCard({
         {/* Title */}
         <h3
           className={`relative z-10 mb-1 font-black leading-tight text-white group-hover:text-[#fff8dd] ${
-            isFeaturedLiveBatch ? "text-2xl sm:text-3xl" : "text-xl"
+            isFeaturedLiveBatch ? "text-2xl sm:text-3xl" : "text-lg"
           }`}
           style={{
             fontFamily:
@@ -2192,7 +2261,7 @@ function CourseCard({
         >
           {course.title}
         </h3>
-        <p className="text-sm text-slate-400 mb-5 relative z-10">
+        <p className={`relative z-10 text-sm text-slate-400 ${isFeaturedLiveBatch ? "mb-5" : "mb-3"}`}>
           {course.subtitle}
         </p>
 
@@ -2216,7 +2285,7 @@ function CourseCard({
         )}
 
         {/* Meta pills */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className={`flex flex-wrap gap-2 ${isFeaturedLiveBatch ? "mb-4" : "mb-3"}`}>
           <span className="flex items-center gap-1 text-xs text-[#ffe4a3] bg-[#f2b84b]/10 border border-[#f2b84b]/24 px-2.5 py-1 rounded-full">
             <Zap className="w-3 h-3" />
             {isLiveBatch ? "Free demo available" : "On-demand access"}
@@ -2249,16 +2318,16 @@ function CourseCard({
           </span>
         </div>
 
-        <div className="relative z-10 mb-4 rounded-xl border border-white/10 bg-[#07111f]/72 p-3">
-          <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]">
+        <div className={`relative z-10 rounded-xl border border-white/10 bg-[#07111f]/72 ${isFeaturedLiveBatch ? "mb-4 p-3" : "mb-3 p-2.5"}`}>
+          <div className={`${isFeaturedLiveBatch ? "mb-3" : "mb-2"} flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]`}>
             <CheckCircle2 className="h-3.5 w-3.5" />
             What's included
           </div>
-          <ul className={`grid gap-2 ${isFeaturedLiveBatch ? "sm:grid-cols-2" : ""}`}>
-            {course.highlights.map((h) => (
+          <ul className={`grid ${isFeaturedLiveBatch ? "gap-2 sm:grid-cols-2" : "gap-1.5"}`}>
+            {cardHighlights.map((h) => (
               <li
                 key={h}
-                className="flex items-start gap-2.5 rounded-lg bg-white/[0.035] px-3 py-2 text-xs leading-relaxed text-slate-200"
+                className={`flex items-start gap-2.5 rounded-lg bg-white/[0.035] text-slate-200 ${isFeaturedLiveBatch ? "px-3 py-2 text-xs leading-relaxed" : "px-2.5 py-1.5 text-[11px] leading-snug"}`}
               >
                 <Check className="w-3.5 h-3.5 text-emerald-300 mt-0.5 flex-shrink-0 drop-shadow-[0_0_8px_rgba(110,231,183,0.35)]" />
                 {h}
@@ -2268,9 +2337,9 @@ function CourseCard({
         </div>
 
         {/* Price */}
-        <div className="flex flex-wrap items-baseline gap-2 mb-4 relative z-10 rounded-xl border border-white/10 bg-white/[0.045] px-4 py-3 shadow-inner shadow-white/5">
+        <div className={`relative z-10 mt-auto flex flex-wrap items-baseline gap-2 rounded-xl border border-white/10 bg-white/[0.045] shadow-inner shadow-white/5 ${isFeaturedLiveBatch ? "mb-4 px-4 py-3" : "mb-3 px-3 py-2.5"}`}>
           <span
-            className="text-3xl font-black text-white"
+            className={`${isFeaturedLiveBatch ? "text-3xl" : "text-2xl"} font-black text-white`}
             style={{
               fontFamily:
                 "'Space Grotesk', system-ui, sans-serif",
@@ -2299,14 +2368,16 @@ function CourseCard({
         <div className="relative z-10 space-y-3">
           {isFeaturedLiveBatch ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <a
-                href={curriculumHref}
-                download
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/35 bg-[#f2b84b]/12 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-all hover:border-[#f2b84b]/60 hover:bg-[#f2b84b]/18"
-              >
-                <Download className="h-4 w-4" />
-                Download Curriculum
-              </a>
+              {curriculumHref && (
+                <a
+                  href={curriculumHref}
+                  download
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/35 bg-[#f2b84b]/12 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-all hover:border-[#f2b84b]/60 hover:bg-[#f2b84b]/18"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Curriculum
+                </a>
+              )}
               {demoAccess && (
                 <a
                   href={demoAccess.href}
@@ -2319,16 +2390,7 @@ function CourseCard({
                 </a>
               )}
             </div>
-          ) : (
-            <a
-              href={curriculumHref}
-              download
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/35 bg-[#f2b84b]/12 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-all hover:border-[#f2b84b]/60 hover:bg-[#f2b84b]/18"
-            >
-              <Download className="h-4 w-4" />
-              Download Curriculum
-            </a>
-          )}
+          ) : null}
           {!isFeaturedLiveBatch && demoAccess && (
             <a
               href={demoAccess.href}
@@ -2342,7 +2404,7 @@ function CourseCard({
           )}
           <button
             onClick={() => onEnroll(course)}
-            className="magnetic-button w-full py-3.5 rounded-xl text-sm font-black text-white hover:shadow-xl active:scale-[0.99] transition-all shadow-lg"
+            className={`magnetic-button w-full rounded-xl text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
             }}
@@ -2835,11 +2897,11 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+          <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {visibleCourses.map((course, index) => (
               <Reveal
                 key={course.id}
-                className={course.id === "gcp-live" ? "lg:col-span-2" : ""}
+                className={`h-full ${course.id === "gcp-live" ? "lg:col-span-2" : ""}`}
                 delay={index * 0.08}
               >
                 <CourseCard
