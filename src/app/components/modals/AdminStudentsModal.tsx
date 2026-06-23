@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
 import {
   Award,
+  BookOpen,
+  Copy,
   Download,
   GraduationCap,
   Lock,
+  Mail,
+  Phone,
   Search,
   Shield,
   Users,
@@ -108,6 +112,10 @@ export function AdminStudentsModal({
     studentName: "",
     completionDate: new Date().toISOString().slice(0, 10),
   });
+  const courseById = useMemo(
+    () => new Map(courses.map((course) => [course.id, course])),
+    [courses],
+  );
 
   const studentList = useMemo(
     () =>
@@ -116,10 +124,16 @@ export function AdminStudentsModal({
           (s) =>
             !search.trim() ||
             s.name.toLowerCase().includes(search.toLowerCase()) ||
-            s.email.toLowerCase().includes(search.toLowerCase()),
+            s.email.toLowerCase().includes(search.toLowerCase()) ||
+            (s.phone || "").includes(search) ||
+            (s.enrolledCourses || []).some((courseId) =>
+              (courseById.get(courseId)?.title || courseId)
+                .toLowerCase()
+                .includes(search.toLowerCase()),
+            ),
         )
         .sort((a, b) => a.email.localeCompare(b.email)),
-    [students, search],
+    [students, search, courseById],
   );
 
   const totalEnrollments = useMemo(
@@ -134,6 +148,35 @@ export function AdminStudentsModal({
   const persistStudents = (next: Record<string, StoredStudent>) => {
     setStudents(next);
     localStorage.setItem("skillvane_students", JSON.stringify(next));
+  };
+
+  const getCourseNames = (student: StoredStudent) =>
+    (student.enrolledCourses || []).map(
+      (courseId) => courseById.get(courseId)?.title || courseId,
+    );
+
+  const copyStudentDetails = async (student: StoredStudent) => {
+    const courseNames = getCourseNames(student);
+    const details = [
+      "SkillVane Student Login",
+      `Name: ${student.name}`,
+      `Email: ${student.email}`,
+      `Phone: ${student.phone || "Not provided"}`,
+      `Password: ${student.password || "Not set"}`,
+      `Courses: ${courseNames.length ? courseNames.join(", ") : "No courses enrolled"}`,
+      `Created: ${
+        student.createdAt
+          ? new Date(student.createdAt).toLocaleString("en-IN")
+          : "Not available"
+      }`,
+    ].join("\n");
+
+    try {
+      await navigator.clipboard.writeText(details);
+      setMessage("Student details copied.");
+    } catch {
+      setMessage("Unable to copy details. Please copy manually.");
+    }
   };
 
   const resetForm = () =>
@@ -486,7 +529,7 @@ export function AdminStudentsModal({
                     initial={{ opacity: 0, x: 12 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -12 }}
-                    className="grid gap-4 xl:grid-cols-2"
+                    className="grid gap-4 xl:grid-cols-[0.82fr_1.18fr]"
                   >
                     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-[#8df5d7]">
@@ -566,72 +609,148 @@ export function AdminStudentsModal({
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                      <div className="mb-4 flex items-center gap-2">
-                        <Search className="h-4 w-4 text-slate-500" />
-                        <input
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          placeholder="Search students..."
-                          className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
-                        />
+                      <div className="mb-4 space-y-3">
+                        <div>
+                          <h3 className="text-sm font-black uppercase tracking-wider text-[#8df5d7]">
+                            Enrolled Students & Logins
+                          </h3>
+                          <p className="mt-1 text-xs text-slate-500">
+                            View every student, password, phone number, enrolled
+                            courses, and account date.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#050d18]/70 px-3 py-2.5">
+                          <Search className="h-4 w-4 text-slate-500" />
+                          <input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search by name, email, phone, or course..."
+                            className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
+                          />
+                        </div>
                       </div>
-                      <div className="max-h-[420px] space-y-2 overflow-y-auto">
+                      <div className="max-h-[520px] space-y-3 overflow-y-auto pr-1">
                         {studentList.length === 0 ? (
                           <p className="py-8 text-center text-sm text-slate-500">
                             No students yet.
                           </p>
                         ) : (
-                          studentList.map((student) => (
-                            <div
-                              key={student.email}
-                              className="group rounded-xl border border-white/10 bg-[#050d18]/60 p-3 transition-colors hover:border-[#18c29c]/25"
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0">
-                                  <p className="font-bold text-white">{student.name}</p>
-                                  <p className="truncate text-xs text-slate-500">
-                                    {student.email}
-                                  </p>
-                                  <p className="mt-1 text-xs text-[#9cf8dd]">
-                                    {(student.enrolledCourses || []).length} course(s)
-                                  </p>
-                                </div>
-                                <div className="flex gap-1.5">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setForm({
-                                        email: student.email,
-                                        name: student.name,
-                                        phone: student.phone || "",
-                                        password: student.password || "",
-                                        enrolledCourses: student.enrolledCourses || [],
-                                      });
-                                      setCertificate((c) => ({
-                                        ...c,
-                                        studentName: student.name,
-                                      }));
-                                    }}
-                                    className="rounded-lg border border-[#18c29c]/25 px-2.5 py-1.5 text-[10px] font-black text-[#9cf8dd]"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const next = { ...students };
-                                      delete next[student.email];
-                                      persistStudents(next);
-                                      setMessage("Student removed.");
-                                    }}
-                                    className="rounded-lg border border-red-400/25 px-2.5 py-1.5 text-[10px] font-black text-red-300"
-                                  >
-                                    Del
-                                  </button>
+                          studentList.map((student) => {
+                            const courseNames = getCourseNames(student);
+                            return (
+                              <div
+                                key={student.email}
+                                className="group rounded-2xl border border-white/10 bg-[#050d18]/70 p-4 transition-colors hover:border-[#18c29c]/25"
+                              >
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                  <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <p className="text-base font-black text-white">
+                                        {student.name}
+                                      </p>
+                                      <span className="rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#9cf8dd]">
+                                        {courseNames.length} enrolled
+                                      </span>
+                                    </div>
+                                    <div className="mt-3 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
+                                      <p className="flex min-w-0 items-center gap-2">
+                                        <Mail className="h-3.5 w-3.5 flex-shrink-0 text-[#7cc7ff]" />
+                                        <span className="truncate">{student.email}</span>
+                                      </p>
+                                      <p className="flex items-center gap-2">
+                                        <Phone className="h-3.5 w-3.5 flex-shrink-0 text-[#18c29c]" />
+                                        {student.phone || "Phone not added"}
+                                      </p>
+                                      <p className="rounded-lg border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-3 py-2 font-black text-[#ffe4a3] sm:col-span-2">
+                                        Password:{" "}
+                                        <span className="font-mono text-white">
+                                          {student.password || "Not set"}
+                                        </span>
+                                      </p>
+                                    </div>
+
+                                    <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                                      <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#f2b84b]">
+                                        <BookOpen className="h-3.5 w-3.5" />
+                                        Courses
+                                      </div>
+                                      {courseNames.length ? (
+                                        <div className="flex flex-wrap gap-2">
+                                          {courseNames.map((courseName) => (
+                                            <span
+                                              key={`${student.email}-${courseName}`}
+                                              className="rounded-full border border-[#2f80ed]/25 bg-[#2f80ed]/10 px-3 py-1 text-xs font-bold text-[#bfe3ff]"
+                                            >
+                                              {courseName}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <p className="text-xs text-slate-500">
+                                          No courses assigned yet.
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    <p className="mt-2 text-[11px] text-slate-500">
+                                      Created:{" "}
+                                      {student.createdAt
+                                        ? new Date(student.createdAt).toLocaleString(
+                                            "en-IN",
+                                          )
+                                        : "Not available"}
+                                    </p>
+                                  </div>
+
+                                  <div className="grid grid-cols-3 gap-1.5 sm:flex sm:flex-col">
+                                    <button
+                                      type="button"
+                                      onClick={() => copyStudentDetails(student)}
+                                      className="inline-flex items-center justify-center gap-1 rounded-lg border border-[#7cc7ff]/25 px-2.5 py-2 text-[10px] font-black text-[#bfe3ff]"
+                                    >
+                                      <Copy className="h-3.5 w-3.5" />
+                                      Copy
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setForm({
+                                          email: student.email,
+                                          name: student.name,
+                                          phone: student.phone || "",
+                                          password: student.password || "",
+                                          enrolledCourses:
+                                            student.enrolledCourses || [],
+                                        });
+                                        setCertificate((c) => ({
+                                          ...c,
+                                          studentName: student.name,
+                                        }));
+                                        setMessage(
+                                          "Student loaded in the update form.",
+                                        );
+                                      }}
+                                      className="rounded-lg border border-[#18c29c]/25 px-2.5 py-2 text-[10px] font-black text-[#9cf8dd]"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const next = { ...students };
+                                        delete next[student.email];
+                                        persistStudents(next);
+                                        setMessage("Student removed.");
+                                      }}
+                                      className="rounded-lg border border-red-400/25 px-2.5 py-2 text-[10px] font-black text-red-300"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))
+                            );
+                          })
                         )}
                       </div>
                     </div>
