@@ -8,9 +8,11 @@ import { CertificateStamp } from "./CertificateStamp";
 export function CertificatePreview({
   studentName,
   completionDate,
+  courseName = "GCP Data Engineering",
 }: {
   studentName: string;
   completionDate: string;
+  courseName?: string;
 }) {
   const name = studentName.trim() || "Student Name";
   const date = formatCertificateDate(completionDate) || "Completion Date";
@@ -53,7 +55,7 @@ export function CertificatePreview({
           Certificate of Completion
         </p>
         <h4 className="mt-2 font-serif text-3xl font-bold italic text-[#07111f] sm:text-4xl">
-          GCP Data Engineering
+          {courseName}
         </h4>
         <div className="mx-auto my-4 h-1 w-20 rounded-full bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#f2b84b]" />
         <p className="text-sm text-slate-500">This is to certify that</p>
@@ -61,7 +63,7 @@ export function CertificatePreview({
           {name}
         </p>
         <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-slate-600">
-          has successfully completed the GCP Data Engineering training program at
+          has successfully completed the {courseName} training program at
           SkillVane IT Academy.
         </p>
       </div>

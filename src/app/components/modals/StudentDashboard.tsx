@@ -2,7 +2,9 @@ import { useState } from "react";
 import {
   Award,
   BookOpen,
+  Calendar,
   CheckCircle2,
+  Download,
   GraduationCap,
   LayoutGrid,
   LogOut,
@@ -14,7 +16,10 @@ import {
   Youtube,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { CertificatePreview } from "@/app/components/certificate/CertificatePreview";
+import { openCertificatePrintWindow } from "@/app/lib/certificate";
 import type { LoggedInStudent } from "@/app/types";
+import skillVaneLogo from "@/imports/logo1.png";
 
 const FREE_LEARNING_PLAYLIST_URL =
   "https://www.youtube.com/playlist?list=PLk8wwChOsCPzoZHuQEiJqWVvhHFdFa6sy";
@@ -76,6 +81,12 @@ export function StudentDashboard({
   onEnroll: (course: Course) => void;
 }) {
   const [tab, setTab] = useState<DashTab>("overview");
+  const [certificateCourse, setCertificateCourse] = useState<Course | null>(null);
+  const [certificateForm, setCertificateForm] = useState({
+    studentName: student.name,
+    completionDate: new Date().toISOString().slice(0, 10),
+  });
+  const [certificateMessage, setCertificateMessage] = useState("");
   const enrolledCourses = courses.filter((c) =>
     student.enrolledCourses.includes(c.id),
   );
@@ -97,6 +108,35 @@ export function StudentDashboard({
     const next = { ...confirmedAccess, [courseId]: true };
     setConfirmedAccess(next);
     localStorage.setItem(accessStorageKey, JSON.stringify(next));
+  };
+
+  const openCertificate = (course: Course) => {
+    setCertificateCourse(course);
+    setCertificateForm({
+      studentName: student.name,
+      completionDate: new Date().toISOString().slice(0, 10),
+    });
+    setCertificateMessage("");
+  };
+
+  const generateCertificate = () => {
+    if (!certificateCourse) return;
+    if (!certificateForm.studentName.trim() || !certificateForm.completionDate) {
+      setCertificateMessage("Please enter name and completion date.");
+      return;
+    }
+
+    const ok = openCertificatePrintWindow({
+      studentName: certificateForm.studentName,
+      completionDate: certificateForm.completionDate,
+      courseName: certificateCourse.title,
+      logoUrl: skillVaneLogo,
+    });
+    setCertificateMessage(
+      ok
+        ? "Certificate opened. Use Save as PDF in the print dialog."
+        : "Please allow popups to generate the certificate.",
+    );
   };
 
   const progress =
@@ -331,19 +371,39 @@ export function StudentDashboard({
                               </div>
                             </div>
                             {access ? (
-                              <a
-                                href={access.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 py-2.5 text-sm font-black text-[#9cf8dd]"
-                              >
-                                <access.icon className="h-4 w-4" />
-                                {access.label}
-                              </a>
+                              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                <a
+                                  href={access.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 py-2.5 text-sm font-black text-[#9cf8dd]"
+                                >
+                                  <access.icon className="h-4 w-4" />
+                                  {access.label}
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => openCertificate(course)}
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3]"
+                                >
+                                  <Award className="h-4 w-4" />
+                                  Certificate
+                                </button>
+                              </div>
                             ) : confirmed ? (
-                              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-2.5 text-xs font-bold text-[#9cf8dd]">
-                                <CheckCircle2 className="h-4 w-4" />
-                                Access confirmed
+                              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                <div className="flex items-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-2.5 text-xs font-bold text-[#9cf8dd]">
+                                  <CheckCircle2 className="h-4 w-4" />
+                                  Access confirmed
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openCertificate(course)}
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3]"
+                                >
+                                  <Award className="h-4 w-4" />
+                                  Certificate
+                                </button>
                               </div>
                             ) : (
                               <div className="mt-3 space-y-2">
@@ -362,6 +422,14 @@ export function StudentDashboard({
                                   className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-300"
                                 >
                                   I received access
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openCertificate(course)}
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3]"
+                                >
+                                  <Award className="h-4 w-4" />
+                                  Generate Certificate
                                 </button>
                               </div>
                             )}
@@ -454,6 +522,103 @@ export function StudentDashboard({
           </button>
         </div>
       </motion.div>
+
+      {certificateCourse && (
+        <div className="fixed inset-0 z-[140] flex items-end justify-center p-0 sm:items-center sm:p-4">
+          <div
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+            onClick={() => setCertificateCourse(null)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="relative max-h-[94dvh] w-full max-w-5xl overflow-y-auto rounded-t-3xl border border-[#f2b84b]/25 bg-[#07111f] p-4 shadow-2xl sm:rounded-3xl sm:p-5 lms-dashboard-scroll"
+          >
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f2b84b]">
+                  Completion Certificate
+                </p>
+                <h3 className="mt-1 text-xl font-black text-white">
+                  {certificateCourse.title}
+                </h3>
+                <p className="text-sm text-slate-400">
+                  Edit the certificate name and completion date before generating.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCertificateCourse(null)}
+                className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-slate-400 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
+              <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-black uppercase tracking-wider text-slate-400">
+                    Certificate Name
+                  </span>
+                  <input
+                    value={certificateForm.studentName}
+                    onChange={(e) =>
+                      setCertificateForm({
+                        ...certificateForm,
+                        studentName: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-[#18c29c]/50"
+                    placeholder="Student full name"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-black uppercase tracking-wider text-slate-400">
+                    Completion Date
+                  </span>
+                  <div className="relative">
+                    <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="date"
+                      value={certificateForm.completionDate}
+                      onChange={(e) =>
+                        setCertificateForm({
+                          ...certificateForm,
+                          completionDate: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-[#18c29c]/50"
+                    />
+                  </div>
+                </label>
+
+                {certificateMessage && (
+                  <p className="rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-3 py-2 text-xs font-semibold text-[#ffe4a3]">
+                    {certificateMessage}
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={generateCertificate}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f2b84b] to-[#f59e0b] px-5 py-3 text-sm font-black text-[#1b1202] shadow-lg shadow-[#f2b84b]/20"
+                >
+                  <Download className="h-4 w-4" />
+                  Generate PDF
+                </button>
+              </div>
+
+              <CertificatePreview
+                studentName={certificateForm.studentName}
+                completionDate={certificateForm.completionDate}
+                courseName={certificateCourse.title}
+              />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ export interface CertificateData {
   studentName: string;
   completionDate: string;
   logoUrl: string;
+  courseName?: string;
 }
 
 export function escapeHtml(value: string) {
@@ -67,6 +68,7 @@ export function buildCertificatePrintHtml(data: CertificateData) {
   const date = formatCertificateDate(data.completionDate);
   const id = buildCertificateId(name, data.completionDate);
   const stamp = getCertificateStampSvg(140);
+  const courseName = data.courseName?.trim() || "GCP Data Engineering";
 
   return `<!doctype html>
 <html lang="en">
@@ -156,11 +158,11 @@ export function buildCertificatePrintHtml(data: CertificateData) {
       </header>
       <div class="body">
         <p class="eyebrow">Certificate of Completion</p>
-        <h2 class="title">GCP Data Engineering</h2>
+        <h2 class="title">${escapeHtml(courseName)}</h2>
         <div class="rule"></div>
         <p class="copy">This is to certify that</p>
         <div class="name">${escapeHtml(name)}</div>
-        <p class="desc">has successfully completed the <strong>GCP Data Engineering</strong> training program at SkillVane IT Academy, demonstrating proficiency in BigQuery, Dataflow, Dataproc, Cloud Composer, production pipelines, and real-world data engineering projects.</p>
+        <p class="desc">has successfully completed the <strong>${escapeHtml(courseName)}</strong> training program at SkillVane IT Academy, demonstrating proficiency through structured learning, guided practice, and real-world data engineering projects.</p>
       </div>
       <footer class="footer">
         <div class="sig">Completion Date<br/>${escapeHtml(date)}</div>
