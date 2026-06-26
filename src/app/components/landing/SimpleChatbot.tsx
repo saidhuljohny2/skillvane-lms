@@ -5,7 +5,7 @@ const CHAT_OPTIONS = [
   {
     label: "Course fees",
     answer:
-      "The main GCP Data Engineering live batch is ₹12,000. Other self-paced and project courses are listed in the Courses section with their current prices.",
+      "The main GCP Data Engineering live batch is ₹12,000. Other self-paced and project courses are listed in the Courses section with their current prices. Enroll in 2 or more courses in one checkout to get an extra 10% off.",
   },
   {
     label: "Live batch timing",
