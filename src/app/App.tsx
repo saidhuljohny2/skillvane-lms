@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef, useMemo } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
@@ -81,6 +81,8 @@ const ENROLLMENT_COUPON_CODE = "SKILLVANE10";
 const ENROLLMENT_COUPON_DISCOUNT_PERCENT = 10;
 const ENROLLMENT_COUPON_START_DATE = "2026-06-23T00:00:00+05:30";
 const ENROLLMENT_COUPON_VALID_DAYS = 7;
+const MULTI_COURSE_DISCOUNT_PERCENT = 10;
+const MULTI_COURSE_MIN_COUNT = 2;
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // COURSE DATA - Add a new course here and it appears on the site
@@ -794,62 +796,101 @@ function getCouponExpiryDate() {
 }
 
 function getDefaultPricing(course: Course): PaymentPricing {
-  return {
-    originalAmount: course.price,
-    discountAmount: 0,
-    amountPaid: course.price,
-  };
+  return getCheckoutPricing([course]).pricing;
 }
 
-function getCouponPricing(
-  course: Course,
-  inputCode: string,
+function getCheckoutPricing(
+  courses: Course[],
+  inputCode = "",
 ): {
   pricing: PaymentPricing;
-  valid: boolean;
-  message: string;
+  couponValid: boolean;
+  couponMessage: string;
 } {
+  const originalAmount = courses.reduce((sum, c) => sum + c.price, 0);
+  const multiCourseDiscount =
+    courses.length >= MULTI_COURSE_MIN_COUNT
+      ? Math.round(
+          (originalAmount * MULTI_COURSE_DISCOUNT_PERCENT) / 100,
+        )
+      : 0;
+  const afterMulti = originalAmount - multiCourseDiscount;
+
   const code = inputCode.trim().toUpperCase();
   const expiryDate = getCouponExpiryDate();
+  let couponDiscount = 0;
+  let couponValid = false;
+  let couponMessage = code
+    ? "Coupon code is not valid."
+    : `Add ${MULTI_COURSE_MIN_COUNT}+ courses for an extra ${MULTI_COURSE_DISCOUNT_PERCENT}% off, or enter a coupon code.`;
 
-  if (!code) {
-    return {
-      pricing: getDefaultPricing(course),
-      valid: false,
-      message: "Enter coupon code to check discount.",
-    };
+  if (code) {
+    if (code !== ENROLLMENT_COUPON_CODE) {
+      couponMessage = "Coupon code is not valid.";
+    } else if (Date.now() > expiryDate.getTime()) {
+      couponMessage = "This coupon has expired.";
+    } else {
+      couponDiscount = Math.round(
+        (afterMulti * ENROLLMENT_COUPON_DISCOUNT_PERCENT) / 100,
+      );
+      couponValid = true;
+      couponMessage = `${ENROLLMENT_COUPON_DISCOUNT_PERCENT}% coupon discount applied.`;
+    }
+  } else if (multiCourseDiscount > 0) {
+    couponMessage = `${MULTI_COURSE_DISCOUNT_PERCENT}% multi-course discount applied.`;
   }
 
-  if (code !== ENROLLMENT_COUPON_CODE) {
-    return {
-      pricing: getDefaultPricing(course),
-      valid: false,
-      message: "Coupon code is not valid.",
-    };
-  }
-
-  if (Date.now() > expiryDate.getTime()) {
-    return {
-      pricing: getDefaultPricing(course),
-      valid: false,
-      message: "This coupon has expired.",
-    };
-  }
-
-  const discountAmount = Math.round(
-    (course.price * ENROLLMENT_COUPON_DISCOUNT_PERCENT) / 100,
-  );
+  const discountAmount = multiCourseDiscount + couponDiscount;
 
   return {
     pricing: {
-      originalAmount: course.price,
+      courses,
+      originalAmount,
+      multiCourseDiscount,
+      couponDiscount,
       discountAmount,
-      amountPaid: Math.max(0, course.price - discountAmount),
-      couponCode: ENROLLMENT_COUPON_CODE,
+      amountPaid: Math.max(0, originalAmount - discountAmount),
+      couponCode: couponValid ? ENROLLMENT_COUPON_CODE : undefined,
     },
-    valid: true,
-    message: `${ENROLLMENT_COUPON_DISCOUNT_PERCENT}% discount applied.`,
+    couponValid,
+    couponMessage,
   };
+}
+
+function splitPricingAcrossCourses(
+  courses: Course[],
+  pricing: PaymentPricing,
+): {
+  course: Course;
+  originalAmount: number;
+  discountAmount: number;
+  amountPaid: number;
+}[] {
+  if (courses.length === 0) return [];
+
+  let allocatedPaid = 0;
+  return courses.map((course, index) => {
+    const originalAmount = course.price;
+    if (index === courses.length - 1) {
+      const amountPaid = pricing.amountPaid - allocatedPaid;
+      return {
+        course,
+        originalAmount,
+        amountPaid,
+        discountAmount: originalAmount - amountPaid,
+      };
+    }
+
+    const ratio = course.price / pricing.originalAmount;
+    const amountPaid = Math.round(pricing.amountPaid * ratio);
+    allocatedPaid += amountPaid;
+    return {
+      course,
+      originalAmount,
+      amountPaid,
+      discountAmount: originalAmount - amountPaid,
+    };
+  });
 }
 
 function GradientText({
@@ -1189,8 +1230,11 @@ interface EnrollmentRecord {
   paymentId: string;
   student: StudentDetails;
   course: Course;
+  courses: Course[];
   originalAmount: number;
   discountAmount: number;
+  multiCourseDiscount?: number;
+  couponDiscount?: number;
   amountPaid: number;
   couponCode?: string;
   paidAt: Date;
@@ -1213,8 +1257,11 @@ interface EnrollmentLedgerRow {
 }
 
 interface PaymentPricing {
+  courses: Course[];
   originalAmount: number;
   discountAmount: number;
+  multiCourseDiscount: number;
+  couponDiscount: number;
   amountPaid: number;
   couponCode?: string;
 }
@@ -1229,31 +1276,41 @@ function generateInvoiceNo() {
 }
 
 function saveEnrollmentLedger(record: EnrollmentRecord) {
-  const row: EnrollmentLedgerRow = {
+  const splits = splitPricingAcrossCourses(record.courses, {
+    courses: record.courses,
+    originalAmount: record.originalAmount,
+    discountAmount: record.discountAmount,
+    multiCourseDiscount: record.multiCourseDiscount ?? 0,
+    couponDiscount: record.couponDiscount ?? 0,
+    amountPaid: record.amountPaid,
+    couponCode: record.couponCode,
+  });
+
+  const rows: EnrollmentLedgerRow[] = splits.map((split) => ({
     invoiceNo: record.invoiceNo,
     paymentId: record.paymentId,
     studentName: record.student.name,
     email: record.student.email,
     phone: record.student.phone,
-    courseId: record.course.id,
-    courseTitle: record.course.title,
-    courseType: record.course.subtitle,
-    originalAmount: record.originalAmount,
-    discountAmount: record.discountAmount,
+    courseId: split.course.id,
+    courseTitle: split.course.title,
+    courseType: split.course.subtitle,
+    originalAmount: split.originalAmount,
+    discountAmount: split.discountAmount,
     couponCode: record.couponCode,
-    amount: record.amountPaid,
+    amount: split.amountPaid,
     paidAt: record.paidAt.toISOString(),
-  };
+  }));
 
   const existing: EnrollmentLedgerRow[] = JSON.parse(
     localStorage.getItem("skillvane_enrollment_ledger") || "[]",
   );
   const withoutDuplicate = existing.filter(
-    (item) => item.paymentId !== row.paymentId,
+    (item) => item.paymentId !== record.paymentId,
   );
   localStorage.setItem(
     "skillvane_enrollment_ledger",
-    JSON.stringify([...withoutDuplicate, row]),
+    JSON.stringify([...withoutDuplicate, ...rows]),
   );
 }
 
@@ -1309,11 +1366,15 @@ async function saveToGoogleSheet(record: EnrollmentRecord) {
       name: record.student.name,
       email: record.student.email,
       phone: record.student.phone,
-      course: record.course.title,
-      course_type: record.course.subtitle,
-      course_id: record.course.id,
+      course: record.courses.map((c) => c.title).join(" | "),
+      course_type:
+        record.courses.length === 1
+          ? record.courses[0].subtitle
+          : `${record.courses.length} courses`,
+      course_id: record.courses.map((c) => c.id).join(","),
       original_amount: record.originalAmount,
       discount_amount: record.discountAmount,
+      multi_course_discount: record.multiCourseDiscount ?? 0,
       coupon_code: record.couponCode || "",
       amount: record.amountPaid,
       drive_access_required: Boolean(record.course.driveLink),
@@ -1337,10 +1398,14 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     to_email: record.student.email,
     invoice_no: record.invoiceNo,
     payment_id: record.paymentId,
-    course_name: `${record.course.title} - ${record.course.subtitle}`,
+    course_name:
+      record.courses.length === 1
+        ? `${record.courses[0].title} - ${record.courses[0].subtitle}`
+        : record.courses.map((c) => c.title).join(", "),
     amount: formatINR(record.amountPaid),
     original_amount: formatINR(record.originalAmount),
     discount_amount: formatINR(record.discountAmount),
+    multi_course_discount: formatINR(record.multiCourseDiscount ?? 0),
     coupon_code: record.couponCode || "No coupon",
     paid_at: record.paidAt.toLocaleDateString("en-IN", {
       day: "2-digit",
@@ -2225,35 +2290,70 @@ function EnrollmentFormModal({
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PaymentReviewModal({
   course,
+  allCourses,
+  enrolledCourseIds,
   student,
   onClose,
   onBack,
   onPay,
 }: {
   course: Course;
+  allCourses: Course[];
+  enrolledCourseIds: string[];
   student: StudentDetails;
   onClose: () => void;
   onBack: () => void;
   onPay: (pricing: PaymentPricing) => void;
 }) {
+  const [selectedIds, setSelectedIds] = useState<string[]>([course.id]);
   const [couponInput, setCouponInput] = useState("");
-  const [message, setMessage] = useState(
-    `Use ${ENROLLMENT_COUPON_CODE} before ${getCouponExpiryDate().toLocaleDateString(
-      "en-IN",
-      { day: "2-digit", month: "short", year: "numeric" },
-    )}.`,
-  );
-  const [pricing, setPricing] = useState<PaymentPricing>(() =>
-    getDefaultPricing(course),
-  );
-  const [couponValid, setCouponValid] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
   const couponExpiry = getCouponExpiryDate();
 
+  const selectedCourses = useMemo(
+    () =>
+      selectedIds
+        .map((id) => allCourses.find((c) => c.id === id))
+        .filter((c): c is Course => Boolean(c)),
+    [allCourses, selectedIds],
+  );
+
+  const addOnCourses = useMemo(
+    () =>
+      allCourses.filter(
+        (c) =>
+          c.id !== course.id && !enrolledCourseIds.includes(c.id),
+      ),
+    [allCourses, course.id, enrolledCourseIds],
+  );
+
+  const checkout = useMemo(
+    () =>
+      getCheckoutPricing(
+        selectedCourses,
+        couponApplied ? couponInput : "",
+      ),
+    [selectedCourses, couponApplied, couponInput],
+  );
+  const { pricing, couponValid, couponMessage } = checkout;
+
+  const toggleAddOnCourse = (courseId: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(courseId)
+        ? prev.filter((id) => id !== courseId)
+        : [...prev, courseId],
+    );
+    if (couponApplied) {
+      setCouponApplied(false);
+    }
+  };
+
   const applyCoupon = () => {
-    const result = getCouponPricing(course, couponInput);
-    setPricing(result.pricing);
-    setCouponValid(result.valid);
-    setMessage(result.message);
+    setCouponApplied(true);
+  };
+
+  const resetCoupon = () => {
+    setCouponApplied(false);
   };
 
   return (
@@ -2262,17 +2362,17 @@ function PaymentReviewModal({
         className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#f2b84b]/30 shadow-2xl overflow-hidden">
+      <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#f2b84b]/30 shadow-2xl overflow-hidden max-h-[92svh] flex flex-col">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(242,184,75,0.16),transparent_42%)]" />
         <div
-          className="relative px-5 py-4 flex items-center justify-between border-b border-white/10"
+          className="relative px-5 py-4 flex items-center justify-between border-b border-white/10 shrink-0"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}1f, rgba(242,184,75,0.12))`,
           }}
         >
           <div>
             <p className="text-xs font-mono uppercase tracking-widest mb-0.5 text-[#f2b84b]">
-              Step 2 of 3 - Amount & Coupon
+              Step 2 of 3 - Amount & Offers
             </p>
             <h2
               className="font-black text-white text-base"
@@ -2294,21 +2394,41 @@ function PaymentReviewModal({
           </button>
         </div>
 
-        <div className="relative px-5 py-5 space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4">
+        <div className="relative px-5 py-5 space-y-4 overflow-y-auto flex-1">
+          <div className="rounded-2xl border border-[#18c29c]/25 bg-[#18c29c]/[0.08] px-4 py-3">
+            <p className="text-xs font-black uppercase tracking-wider text-[#8df5d7]">
+              Bundle offer
+            </p>
+            <p className="mt-1 text-sm text-white/75">
+              Add {MULTI_COURSE_MIN_COUNT} or more courses in one checkout and
+              get an extra{" "}
+              <span className="font-bold text-[#9cf8dd]">
+                {MULTI_COURSE_DISCOUNT_PERCENT}% off
+              </span>{" "}
+              the combined total.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8df5d7]">
-                  Selected Course
+                  Selected ({selectedCourses.length})
                 </p>
-                <h3 className="mt-1 text-lg font-black text-white">
-                  {course.title}
-                </h3>
-                <p className="text-sm text-white/45">
-                  {course.subtitle}
-                </p>
+                <div className="mt-2 space-y-2">
+                  {selectedCourses.map((selected) => (
+                    <div key={selected.id}>
+                      <h3 className="text-sm font-black text-white">
+                        {selected.title}
+                      </h3>
+                      <p className="text-xs text-white/45">
+                        {selected.subtitle} · {formatINR(selected.price)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="rounded-xl bg-[#f2b84b]/10 px-3 py-2 text-right">
+              <div className="rounded-xl bg-[#f2b84b]/10 px-3 py-2 text-right shrink-0">
                 <p className="text-[10px] font-black uppercase tracking-wider text-[#f2b84b]">
                   Payable
                 </p>
@@ -2319,6 +2439,44 @@ function PaymentReviewModal({
             </div>
           </div>
 
+          {addOnCourses.length > 0 && (
+            <div className="rounded-2xl border border-white/10 bg-[#050d18]/80 p-4">
+              <p className="text-xs font-black uppercase tracking-wider text-white/70 mb-3">
+                Add more courses
+              </p>
+              <div className="space-y-2">
+                {addOnCourses.map((addOn) => {
+                  const checked = selectedIds.includes(addOn.id);
+                  return (
+                    <label
+                      key={addOn.id}
+                      className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
+                        checked
+                          ? "border-[#18c29c]/40 bg-[#18c29c]/10"
+                          : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-white truncate">
+                          {addOn.title}
+                        </p>
+                        <p className="text-xs text-white/45">
+                          {formatINR(addOn.price)}
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleAddOnCourse(addOn.id)}
+                        className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#18c29c]"
+                      />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="rounded-2xl border border-[#f2b84b]/20 bg-[#f2b84b]/[0.06] p-4">
             <label className="block text-xs font-black uppercase tracking-wider text-[#f2b84b] mb-2">
               Coupon Code
@@ -2328,10 +2486,7 @@ function PaymentReviewModal({
                 value={couponInput}
                 onChange={(e) => {
                   setCouponInput(e.target.value.toUpperCase());
-                  if (couponValid) {
-                    setCouponValid(false);
-                    setPricing(getDefaultPricing(course));
-                  }
+                  if (couponApplied) resetCoupon();
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -2352,19 +2507,21 @@ function PaymentReviewModal({
             </div>
             <p
               className={`mt-2 text-xs font-semibold ${
-                couponValid ? "text-emerald-300" : "text-white/45"
+                couponValid || pricing.multiCourseDiscount > 0
+                  ? "text-emerald-300"
+                  : "text-white/45"
               }`}
             >
-              {message}
-            </p>
-            <p className="mt-1 text-[11px] text-white/35">
-              Coupon expires on{" "}
-              {couponExpiry.toLocaleDateString("en-IN", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })}
-              .
+              {couponApplied || pricing.multiCourseDiscount > 0
+                ? couponMessage
+                : `Use ${ENROLLMENT_COUPON_CODE} before ${couponExpiry.toLocaleDateString(
+                    "en-IN",
+                    {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    },
+                  )}.`}
             </p>
           </div>
 
@@ -2375,12 +2532,24 @@ function PaymentReviewModal({
                 {formatINR(pricing.originalAmount)}
               </span>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-white/50">Coupon discount</span>
-              <span className="font-bold text-emerald-300">
-                - {formatINR(pricing.discountAmount)}
-              </span>
-            </div>
+            {pricing.multiCourseDiscount > 0 && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-white/50">
+                  Multi-course discount ({MULTI_COURSE_DISCOUNT_PERCENT}%)
+                </span>
+                <span className="font-bold text-emerald-300">
+                  - {formatINR(pricing.multiCourseDiscount)}
+                </span>
+              </div>
+            )}
+            {pricing.couponDiscount > 0 && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-white/50">Coupon discount</span>
+                <span className="font-bold text-emerald-300">
+                  - {formatINR(pricing.couponDiscount)}
+                </span>
+              </div>
+            )}
             <div className="border-t border-white/10 pt-3 flex items-center justify-between">
               <span className="text-sm font-black uppercase tracking-wider text-white">
                 Final payment
@@ -2533,23 +2702,48 @@ function InvoiceModal({
             </div>
             <div className="p-3 rounded-xl bg-white/4 border border-white/8">
               <p className="text-xs text-white/40 mb-1">
-                Course Enrolled
+                {record.courses.length > 1
+                  ? "Courses Enrolled"
+                  : "Course Enrolled"}
               </p>
-              <p className="text-sm font-semibold text-white">
-                {record.course.title}
-              </p>
-              <p className="text-xs text-white/50 mt-0.5">
-                {record.course.subtitle}
-              </p>
-              <p className="text-xs font-bold text-emerald-400 mt-1">
+              {record.courses.length > 1 ? (
+                <ul className="space-y-2">
+                  {record.courses.map((enrolledCourse) => (
+                    <li key={enrolledCourse.id}>
+                      <p className="text-sm font-semibold text-white">
+                        {enrolledCourse.title}
+                      </p>
+                      <p className="text-xs text-white/50">
+                        {enrolledCourse.subtitle}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold text-white">
+                    {record.course.title}
+                  </p>
+                  <p className="text-xs text-white/50 mt-0.5">
+                    {record.course.subtitle}
+                  </p>
+                </>
+              )}
+              <p className="text-xs font-bold text-emerald-400 mt-2">
                 {formatINR(record.amountPaid)} paid
               </p>
-              {record.couponCode && (
+              {record.multiCourseDiscount ? (
+                <p className="text-[11px] text-[#8df5d7] mt-1">
+                  Multi-course saved{" "}
+                  {formatINR(record.multiCourseDiscount)}
+                </p>
+              ) : null}
+              {record.couponCode && record.couponDiscount ? (
                 <p className="text-[11px] text-[#f2b84b] mt-1">
                   {record.couponCode} saved{" "}
-                  {formatINR(record.discountAmount)}
+                  {formatINR(record.couponDiscount)}
                 </p>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -3008,14 +3202,17 @@ export default function App() {
 
   // Step 3: Amount confirmed -> open Razorpay
   const startEnrollmentPayment = async (
-    course: Course,
     student: StudentDetails,
-    pricing: PaymentPricing = getDefaultPricing(course),
+    pricing: PaymentPricing,
   ) => {
+    const courses = pricing.courses;
+    const primaryCourse = courses[0];
+    if (!primaryCourse) return;
+
     setFormCourse(null);
     setPaymentReview(null);
     setShowDashboard(false);
-    setPayLoading(course.id);
+    setPayLoading(primaryCourse.id);
     setPayError(null);
 
     try {
@@ -3037,7 +3234,10 @@ export default function App() {
         amount: Math.round(pricing.amountPaid * 100), // Amount in paise
         currency: "INR",
         name: "SkillVane IT Academy",
-        description: `${course.title} - ${course.subtitle}`,
+        description:
+          courses.length === 1
+            ? `${courses[0].title} - ${courses[0].subtitle}`
+            : `${courses.length} SkillVane courses`,
         image: "", // Optional: Add your logo URL
         handler: (response: any) => {
           setPayLoading(null);
@@ -3055,16 +3255,19 @@ export default function App() {
             invoiceNo: generateInvoiceNo(),
             paymentId: response.razorpay_payment_id,
             student,
-            course,
+            course: primaryCourse,
+            courses,
             originalAmount: pricing.originalAmount,
             discountAmount: pricing.discountAmount,
+            multiCourseDiscount: pricing.multiCourseDiscount,
+            couponDiscount: pricing.couponDiscount,
             amountPaid: pricing.amountPaid,
             couponCode: pricing.couponCode,
             paidAt: new Date(),
           };
           saveEnrollmentLedger(record);
 
-          // Auto-create/update student account and enroll in course
+          // Auto-create/update student account and enroll in courses
           try {
             const studentsData = localStorage.getItem(
               "skillvane_students",
@@ -3072,34 +3275,35 @@ export default function App() {
             const students: Record<string, any> = studentsData
               ? JSON.parse(studentsData)
               : {};
+            const courseIds = courses.map((c) => c.id);
 
             if (!students[student.email]) {
-              // Create new student account
               students[student.email] = {
                 email: student.email,
                 name: student.name,
                 phone: student.phone,
                 password: student.password,
-                enrolledCourses: [course.id],
+                enrolledCourses: courseIds,
                 createdAt: new Date().toISOString(),
               };
             } else {
-              // Add course to existing student
               students[student.email].name = student.name;
               students[student.email].phone = student.phone;
               students[student.email].password = student.password;
               if (!students[student.email].enrolledCourses) {
                 students[student.email].enrolledCourses = [];
               }
-              if (
-                !students[
-                  student.email
-                ].enrolledCourses.includes(course.id)
-              ) {
-                students[student.email].enrolledCourses.push(
-                  course.id,
-                );
-              }
+              courseIds.forEach((courseId) => {
+                if (
+                  !students[student.email].enrolledCourses.includes(
+                    courseId,
+                  )
+                ) {
+                  students[student.email].enrolledCourses.push(
+                    courseId,
+                  );
+                }
+              });
             }
 
             localStorage.setItem(
@@ -3136,17 +3340,18 @@ export default function App() {
           contact: "+91" + student.phone,
         },
         notes: {
-          course_id: course.id,
-          course_title: course.title,
+          course_id: courses.map((c) => c.id).join(","),
+          course_title: courses.map((c) => c.title).join(" | "),
           student_email: student.email,
           student_name: student.name,
           original_amount: String(pricing.originalAmount),
           discount_amount: String(pricing.discountAmount),
+          multi_course_discount: String(pricing.multiCourseDiscount),
           coupon_code: pricing.couponCode || "",
           amount_paid: String(pricing.amountPaid),
         },
         theme: {
-          color: course.accentFrom,
+          color: primaryCourse.accentFrom,
           backdrop_color: "rgba(0, 0, 0, 0.8)",
         },
         modal: {
@@ -3313,6 +3518,16 @@ export default function App() {
             description="Choose the format that fits your schedule and career goals."
             accent="teal"
           />
+
+          <div className="mx-auto mb-7 max-w-3xl rounded-2xl border border-[#18c29c]/25 bg-[#18c29c]/[0.08] px-4 py-3 text-center">
+            <p className="text-sm font-bold text-[#9cf8dd]">
+              Save an extra {MULTI_COURSE_DISCOUNT_PERCENT}% when you enroll in{" "}
+              {MULTI_COURSE_MIN_COUNT} or more courses in one checkout
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              Select additional courses at the payment step before you pay
+            </p>
+          </div>
 
           {/* Category tabs */}
           <div className="premium-surface mx-auto mb-7 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
@@ -3671,6 +3886,8 @@ export default function App() {
       {paymentReview && (
         <PaymentReviewModal
           course={paymentReview.course}
+          allCourses={COURSES}
+          enrolledCourseIds={currentStudent?.enrolledCourses ?? []}
           student={paymentReview.student}
           onClose={() => setPaymentReview(null)}
           onBack={() => {
@@ -3678,11 +3895,7 @@ export default function App() {
             setPaymentReview(null);
           }}
           onPay={(pricing) =>
-            startEnrollmentPayment(
-              paymentReview.course,
-              paymentReview.student,
-              pricing,
-            )
+            startEnrollmentPayment(paymentReview.student, pricing)
           }
         />
       )}
