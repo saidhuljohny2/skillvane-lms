@@ -570,7 +570,7 @@ const COURSES: Course[] = [
     accentTo: "#f87171",
     title: "Health Care GCP",
     subtitle: "Data Engineering Project",
-    price: 1499,
+    price: 899,
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world healthcare dataset",
@@ -631,7 +631,7 @@ const COURSES: Course[] = [
     accentTo: "#f59e0b",
     title: "Retailer GCP",
     subtitle: "Data Engineering Project",
-    price: 1499,
+    price: 899,
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world retail/e-commerce dataset",
@@ -692,7 +692,7 @@ const COURSES: Course[] = [
     accentTo: "#22c55e",
     title: "Banking GCP",
     subtitle: "Data Engineering Project",
-    price: 1499,
+    price: 899,
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world banking data platform",
