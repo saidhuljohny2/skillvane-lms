@@ -122,7 +122,7 @@ const COURSES: Course[] = [
     accentFrom: "#4361ee",
     accentTo: "#3bc9db",
     title: "New Batch: GCP Data Engineering",
-    subtitle: "Full Course - Live Morning Batch",
+    subtitle: "Full Course - Live Batch",
     price: 14999,
     originalPrice: 18000,
     duration: "3 months",
@@ -130,8 +130,8 @@ const COURSES: Course[] = [
     curriculumDownload: gcpDataEngineeringCurriculum,
     tag: "Main Focus",
     highlights: [
-      "Demo: Auguest 26, 27 & 28 - 3 Free Demo Sessions",
-      "at 9:30 PM to 10:30 PM",
+      "Demo: August 26, 27 & 28 - 3 Free Demo Sessions",
+      "Starts August 26 at 9:30 PM IST",
       "Recordings Shared Daily",
       "Comprehensive Material",
       "Resume assistance & career guidance",
@@ -2902,8 +2902,8 @@ function CourseCard({
           <div className="relative z-10 mb-4 grid gap-2 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.04] p-3 sm:grid-cols-3">
             {[
               { label: "Duration", value: "3 months" },
-              { label: "Timings", value: "7:00 AM - 8:00 AM" },
-              { label: "Demo", value: "July 1, 2, 3" },
+              { label: "Timings", value: "9:30 PM IST" },
+              { label: "Demo", value: "August 26, 27, 28" },
             ].map((item) => (
               <div key={item.label}>
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#f2b84b]">
@@ -3463,7 +3463,7 @@ export default function App() {
     },
     {
       q: "What is the difference between the Live Batch and Recordings course?",
-      a: "The Live Batch gives you real-time interaction with the instructor (Mon-Fri, 7:30-8:30 AM) plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
+      a: "The Live Batch gives you real-time interaction with the instructor from 9:30 PM IST plus daily recordings, notes, and resume assistance. The Recordings course gives you the full video archive of the latest batch to study at your own pace.",
     },
     {
       q: "Can I buy the project courses without the main GCP course?",

@@ -10,12 +10,12 @@ const CHAT_OPTIONS = [
   {
     label: "Live batch timing",
     answer:
-      "The next GCP Data Engineering morning batch runs for 3 months, from 7:00 AM to 8:00 AM IST.",
+      "The next GCP Data Engineering live batch starts on August 26 at 9:30 PM IST and runs for 3 months.",
   },
   {
     label: "Free demo",
     answer:
-      "Free demo classes are planned for July 1, 2, and 3. You can join the demo from the live batch course card.",
+      "Free demo classes are planned for August 26, 27, and 28 at 9:30 PM IST. You can join the demo from the live batch course card.",
   },
   {
     label: "Curriculum",
