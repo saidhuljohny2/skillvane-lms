@@ -24,9 +24,9 @@ export function EnrollmentTicker() {
   }, []);
 
   return (
-    <div className="relative overflow-hidden border-b border-white/8 bg-gradient-to-r from-[#18c29c]/8 via-[#07111f] to-[#f2b84b]/8 py-2.5">
+    <div className="relative overflow-hidden border-b border-white/[0.07] bg-gradient-to-r from-[#2dd4a6]/[0.05] via-[#07111d] to-[#eab96e]/[0.04] py-2.5">
       <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 text-sm">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#18c29c]/25 bg-[#18c29c]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#9cf8dd]">
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.07] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#8bedd0]">
           <Users className="h-3 w-3" />
           Live
         </span>
@@ -40,7 +40,7 @@ export function EnrollmentTicker() {
               transition={{ duration: 0.35 }}
               className="absolute inset-0 truncate text-center font-semibold text-slate-300"
             >
-              <span className="text-[#f2b84b]">●</span> {MESSAGES[index]}
+              <span className="text-[#eab96e]">●</span> {MESSAGES[index]}
             </motion.p>
           </AnimatePresence>
         </div>

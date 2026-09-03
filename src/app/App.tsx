@@ -1021,7 +1021,7 @@ function CourseModal({
               <h2
                 className="text-base sm:text-lg font-bold leading-tight text-white"
                 style={{
-                  fontFamily: "'Outfit', system-ui, sans-serif",
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
                 }}
               >
                 {course.title}
@@ -1049,7 +1049,7 @@ function CourseModal({
                   className="text-3xl font-extrabold text-white"
                   style={{
                     fontFamily:
-                      "'Outfit', system-ui, sans-serif",
+                      "'Space Grotesk', system-ui, sans-serif",
                   }}
                 >
                   {formatINR(course.price)}
@@ -1090,7 +1090,7 @@ function CourseModal({
             <h3
               className="text-sm font-bold text-white mb-3"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               What&apos;s Included
@@ -1113,7 +1113,7 @@ function CourseModal({
             <h3
               className="text-sm font-bold text-white mb-3"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               Curriculum
@@ -1796,16 +1796,16 @@ function LoginModal({
   return (
     <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#02060c]/86 backdrop-blur-lg"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-md bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,194,156,0.18),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(242,184,75,0.12),transparent_36%)]" />
+      <div className="relative w-full overflow-hidden rounded-t-2xl border border-white/[0.09] bg-[#0a1522] shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:max-w-md sm:rounded-[1.5rem]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(45,212,166,0.1),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(234,185,110,0.055),transparent_36%)]" />
         {/* Header */}
         <div className="relative px-5 py-4 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#18c29c] to-[#2f80ed] flex items-center justify-center shadow-lg shadow-[#18c29c]/20">
-              <Lock className="w-5 h-5 text-white" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#2dd4a6] shadow-lg shadow-[#2dd4a6]/10">
+              <Lock className="h-5 w-5 text-[#04110d]" />
             </div>
             <div>
             <h2
@@ -1865,7 +1865,7 @@ function LoginModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
               />
               {errors.name && (
                 <p className="text-xs text-red-300 mt-1">
@@ -1888,7 +1888,7 @@ function LoginModal({
                 setOtpInput("");
               }}
               placeholder="your.email@example.com"
-              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
             />
             {errors.email && (
               <p className="text-xs text-red-300 mt-1">
@@ -1909,7 +1909,7 @@ function LoginModal({
                   setForm({ ...form, phone: e.target.value })
                 }
                 placeholder="10-digit mobile number"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
               />
               {errors.phone && (
                 <p className="text-xs text-red-300 mt-1">
@@ -1943,12 +1943,12 @@ function LoginModal({
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value)}
                       placeholder="6-digit OTP"
-                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
                     />
                     <button
                       type="button"
                       onClick={verifyStudentLoginOtp}
-                      className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-3 text-sm font-black text-white"
+                      className="rounded-xl bg-[#2dd4a6] px-4 py-3 text-sm font-black text-[#04110d]"
                     >
                       Verify
                     </button>
@@ -2129,7 +2129,7 @@ function EnrollmentFormModal({
             <h2
               className="font-black text-white text-base"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               {course.title}
@@ -2377,7 +2377,7 @@ function PaymentReviewModal({
             <h2
               className="font-black text-white text-base"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               Confirm enrollment
@@ -2811,17 +2811,17 @@ function CourseCard({
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex h-[640px] flex-col overflow-hidden rounded-2xl border border-white/12 bg-[#0b1423] shadow-xl shadow-black/20 transition-colors duration-300 hover:border-[#18c29c]/35 hover:shadow-2xl hover:shadow-[#18c29c]/10 ${
+      className={`group course-card-3d relative flex h-full min-h-[620px] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b1522] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[#2dd4a6]/25 hover:bg-[#0d1928] ${
         isFeaturedLiveBatch
-          ? "border-[#f2b84b]/40 bg-[#0c1626] shadow-2xl shadow-[#f2b84b]/10"
+          ? "border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
           : ""
       }`}
-      whileHover={{ y: -6, scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+      whileHover={{ y: -3 }}
+      transition={{ type: "spring", stiffness: 300, damping: 26 }}
     >
       {/* Accent top bar */}
       <div
-        className="h-1.5 w-full"
+        className="h-1 w-full opacity-80"
         style={{
           background: `linear-gradient(90deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
         }}
@@ -2835,7 +2835,7 @@ function CourseCard({
         }}
       />
 
-      <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-full border border-white/12 bg-black/20 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/80 backdrop-blur-xl">
+      <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-lg border border-white/[0.08] bg-black/15 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300 backdrop-blur-xl">
         {CATEGORY_LABELS[category]}
       </div>
 
@@ -2859,7 +2859,7 @@ function CourseCard({
         {/* Icon + badge */}
         <div className={`relative z-10 flex items-center gap-3 ${isFeaturedLiveBatch ? "mb-4" : "mb-3"}`}>
           <div
-            className={`${isFeaturedLiveBatch ? "h-12 w-12" : "h-10 w-10"} flex flex-shrink-0 items-center justify-center rounded-xl shadow-md ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-105`}
+            className={`${isFeaturedLiveBatch ? "h-12 w-12" : "h-10 w-10"} flex flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-white/[0.08] transition-transform duration-300 group-hover:-rotate-2`}
             style={{
               background: `linear-gradient(135deg, ${course.accentFrom}25 0%, ${course.accentTo}15 100%)`,
               border: `1.5px solid ${course.accentFrom}50`,
@@ -2951,8 +2951,8 @@ function CourseCard({
           </span>
         </div>
 
-        <div className={`relative z-10 rounded-xl border border-white/10 bg-[#07111f]/72 ${isFeaturedLiveBatch ? "mb-4 p-3" : "mb-3 p-2.5"}`}>
-          <div className={`${isFeaturedLiveBatch ? "mb-3" : "mb-2"} flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8df5d7]`}>
+        <div className={`relative z-10 rounded-xl border border-white/[0.07] bg-[#07111c]/80 ${isFeaturedLiveBatch ? "mb-4 p-3" : "mb-3 p-2.5"}`}>
+          <div className={`${isFeaturedLiveBatch ? "mb-3" : "mb-2"} flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8bedd0]`}>
             <CheckCircle2 className="h-3.5 w-3.5" />
             What's included
           </div>
@@ -2970,7 +2970,7 @@ function CourseCard({
         </div>
 
         {/* Price */}
-        <div className={`relative z-10 mt-auto flex flex-wrap items-baseline gap-2 rounded-xl border border-white/10 bg-white/[0.045] shadow-inner shadow-white/5 ${isFeaturedLiveBatch ? "mb-4 px-4 py-3" : "mb-3 px-3 py-2.5"}`}>
+        <div className={`relative z-10 mt-auto flex flex-wrap items-baseline gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] ${isFeaturedLiveBatch ? "mb-4 px-4 py-3" : "mb-3 px-3 py-2.5"}`}>
           <span
             className={`${isFeaturedLiveBatch ? "text-3xl" : "text-2xl"} font-black text-white`}
             style={{
@@ -3506,7 +3506,7 @@ export default function App() {
       {/* Courses */}
       <section
         id="courses"
-        className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden"
+        className="relative overflow-hidden bg-[#07111d] py-16 sm:py-24"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
@@ -3519,8 +3519,8 @@ export default function App() {
             accent="teal"
           />
 
-          <div className="mx-auto mb-7 max-w-3xl rounded-2xl border border-[#18c29c]/25 bg-[#18c29c]/[0.08] px-4 py-3 text-center">
-            <p className="text-sm font-bold text-[#9cf8dd]">
+          <div className="mx-auto mb-8 max-w-3xl rounded-xl border border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.055] px-5 py-4 text-center">
+            <p className="text-sm font-bold text-[#8bedd0]">
               Save an extra {MULTI_COURSE_DISCOUNT_PERCENT}% when you enroll in{" "}
               {MULTI_COURSE_MIN_COUNT} or more courses in one checkout
             </p>
@@ -3530,15 +3530,15 @@ export default function App() {
           </div>
 
           {/* Category tabs */}
-          <div className="premium-surface mx-auto mb-7 flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-2xl p-2">
+          <div className="mx-auto mb-9 flex w-fit max-w-full flex-wrap justify-center gap-1 rounded-xl border border-white/[0.08] bg-[#0b1522] p-1.5 shadow-xl shadow-black/10">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
                 key={value}
                 onClick={() => setActiveCategory(value)}
                 className={`relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-black transition-all ${
                   activeCategory === value
-                    ? "bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] text-white shadow-lg shadow-[#18c29c]/20"
-                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#f2b84b]/35 hover:text-white"
+                    ? "bg-[#2dd4a6] text-[#04110d] shadow-lg shadow-[#2dd4a6]/10"
+                    : "border border-transparent text-slate-400 hover:bg-white/[0.045] hover:text-white"
                 }`}
               >
                 {activeCategory === value && (
@@ -3594,7 +3594,7 @@ export default function App() {
       {/* â”€â”€ Instructor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="free-learning"
-        className="section-shell relative overflow-hidden border-y border-white/10 py-14 sm:py-20"
+        className="section-shell relative overflow-hidden border-y border-white/[0.07] py-16 sm:py-24"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_10%,rgba(239,68,68,0.14),transparent_30%),radial-gradient(ellipse_at_82%_70%,rgba(24,194,156,0.12),transparent_34%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -3606,7 +3606,7 @@ export default function App() {
             accent="red"
           />
 
-          <div className="premium-surface rounded-2xl p-4">
+          <div className="premium-surface rounded-[1.35rem] p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-4">
                 <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-red-400/25 bg-red-500/15 shadow-xl shadow-red-500/10">
@@ -3652,7 +3652,7 @@ export default function App() {
 
       <section
         id="instructor"
-        className="section-shell relative overflow-hidden py-14 sm:py-20"
+        className="section-shell relative overflow-hidden py-16 sm:py-24"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_20%,rgba(24,194,156,0.12),transparent_32%),radial-gradient(ellipse_at_86%_62%,rgba(47,128,237,0.1),transparent_34%)]" />
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6">
@@ -3662,7 +3662,7 @@ export default function App() {
             accent="teal"
           />
 
-          <div className="premium-surface rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 md:gap-8 items-center md:items-start">
+          <div className="premium-surface flex flex-col items-center gap-7 rounded-[1.5rem] p-5 sm:p-7 md:flex-row md:items-start md:gap-10">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
               <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
                 <ImageWithFallback
@@ -3721,7 +3721,7 @@ export default function App() {
                       className="text-xl sm:text-2xl font-black text-[#f2b84b]"
                       style={{
                         fontFamily:
-                          "'Outfit', system-ui, sans-serif",
+                          "'Space Grotesk', system-ui, sans-serif",
                       }}
                     >
                       {value}
@@ -3739,7 +3739,7 @@ export default function App() {
 
       <section
         id="testimonials"
-        className="relative overflow-hidden border-y border-white/10 bg-[#07111f] py-14 sm:py-20"
+        className="relative overflow-hidden border-y border-white/[0.07] bg-[#060d17] py-16 sm:py-24"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_22%_12%,rgba(242,184,75,0.1),transparent_30%),radial-gradient(ellipse_at_80%_70%,rgba(24,194,156,0.1),transparent_34%)]" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
@@ -3762,7 +3762,7 @@ export default function App() {
       </section>
 
       {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section id="faq" className="relative py-12 sm:py-16 bg-[#08111f] overflow-hidden">
+      <section id="faq" className="relative overflow-hidden bg-[#07111d] py-16 sm:py-24">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
           <SectionHeading
@@ -3775,7 +3775,7 @@ export default function App() {
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className="premium-surface rounded-xl overflow-hidden"
+                className="premium-surface overflow-hidden rounded-xl"
               >
                 <button
                   className="w-full flex items-center justify-between p-4 text-left hover:bg-white/[0.06] transition-colors"
@@ -3808,7 +3808,7 @@ export default function App() {
       <FinalCTA scrollTo={scrollTo} />
 
       {/* Footer */}
-      <footer className="py-6 border-t border-white/10 bg-[#050b14]">
+      <footer className="border-t border-white/[0.07] bg-[#050b13] py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center overflow-hidden">
@@ -3821,7 +3821,7 @@ export default function App() {
             <span
               className="font-bold text-white"
               style={{
-                fontFamily: "'Outfit', system-ui, sans-serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
               }}
             >
               SkillVane IT Academy

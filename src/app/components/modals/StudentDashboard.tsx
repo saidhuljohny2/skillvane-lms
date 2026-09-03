@@ -153,25 +153,25 @@ export function StudentDashboard({
   return (
     <div className="fixed inset-0 z-[120] flex items-end justify-center p-0 sm:items-center sm:p-4">
       <div
-        className="absolute inset-0 bg-[#020817]/88 backdrop-blur-xl"
+        className="absolute inset-0 bg-[#02060c]/86 backdrop-blur-lg"
         onClick={onClose}
       />
 
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative flex h-[96dvh] w-full max-w-6xl flex-col overflow-hidden rounded-t-3xl border border-white/12 bg-[#07111f] shadow-2xl sm:h-[90vh] sm:rounded-3xl"
+        className="relative flex h-[96dvh] w-full max-w-6xl flex-col overflow-hidden rounded-t-3xl border border-white/[0.09] bg-[#08121f] shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:h-[90vh] sm:rounded-[1.5rem]"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_10%_0%,rgba(24,194,156,0.15),transparent_35%),radial-gradient(ellipse_at_90%_10%,rgba(242,184,75,0.1),transparent_30%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_10%_0%,rgba(45,212,166,0.09),transparent_35%),radial-gradient(ellipse_at_90%_10%,rgba(234,185,110,0.055),transparent_30%)]" />
 
         {/* Header */}
-        <header className="relative flex items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6">
+        <header className="relative flex items-center justify-between border-b border-white/[0.08] bg-[#0b1522]/70 px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#18c29c] via-[#2f80ed] to-[#7cc7ff] shadow-lg shadow-[#18c29c]/25">
-              <GraduationCap className="h-6 w-6 text-white" />
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#2dd4a6] shadow-lg shadow-[#2dd4a6]/10">
+              <GraduationCap className="h-5 w-5 text-[#04110d]" />
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8df5d7]">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8bedd0]">
                 Student Portal
               </p>
               <h2 className="truncate text-lg font-black text-white sm:text-xl">
@@ -200,7 +200,7 @@ export function StudentDashboard({
 
         <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">
           {/* Nav */}
-          <nav className="flex gap-1 border-b border-white/10 p-2 lg:w-52 lg:flex-col lg:border-b-0 lg:border-r lg:p-4">
+          <nav className="flex gap-1 border-b border-white/[0.08] bg-[#07111d]/55 p-2 lg:w-52 lg:flex-col lg:border-b-0 lg:border-r lg:p-4">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -208,7 +208,7 @@ export function StudentDashboard({
                 onClick={() => setTab(id)}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition-all lg:justify-start lg:px-4 ${
                   tab === id
-                    ? "bg-gradient-to-r from-[#18c29c]/20 to-[#2f80ed]/10 text-white ring-1 ring-[#18c29c]/25"
+                    ? "bg-[#2dd4a6]/10 text-[#8bedd0] ring-1 ring-[#2dd4a6]/20"
                     : "text-slate-400 hover:bg-white/5 hover:text-white"
                 }`}
               >

@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { GcpCloudVisual } from "@/app/components/effects/GcpCloudVisual";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
-import { FloatingOrbs } from "@/app/components/effects/FloatingOrbs";
 import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
 import { Reveal, RevealStagger, RevealItem } from "@/app/components/effects/Reveal";
 
@@ -28,39 +27,38 @@ export function LandingHero({
   scrollTo: (id: string) => void;
 }) {
   return (
-    <section className="hero-solid relative overflow-hidden bg-[#050c16] lg:min-h-[100svh]">
+    <section className="hero-solid relative overflow-hidden bg-[#060d17] lg:min-h-[100svh]">
       <HeroBackground />
-      <FloatingOrbs />
 
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
         style={{
           background:
-            "radial-gradient(ellipse 55% 45% at 75% 35%, rgba(66,133,244,0.14), transparent 55%), radial-gradient(ellipse 40% 35% at 20% 70%, rgba(52,168,83,0.08), transparent 50%)",
+            "radial-gradient(ellipse 48% 42% at 78% 35%, rgba(76,141,255,0.11), transparent 58%), radial-gradient(ellipse 38% 32% at 20% 62%, rgba(45,212,166,0.075), transparent 55%)",
         }}
       />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-7 px-4 pb-12 pt-24 sm:px-6 sm:pb-16 lg:min-h-[100svh] lg:grid-cols-2 lg:gap-8 lg:pb-24 lg:pt-28">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:min-h-[100svh] lg:grid-cols-[1.08fr_0.92fr] lg:gap-16 lg:pb-24 lg:pt-28">
         <div className="relative z-10 order-1 lg:order-1">
           <Reveal>
-            <div className="glass-pill mb-4 inline-flex items-center gap-2 px-3 py-2 sm:mb-6 sm:px-4">
-              <Sparkles className="h-3.5 w-3.5 text-[#8df5d7]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9cf8dd] sm:text-xs sm:tracking-[0.22em]">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.07] px-3 py-2 sm:mb-7">
+              <Sparkles className="h-3.5 w-3.5 text-[#65e5c1]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8bedd0] sm:text-xs">
                 SkillVane IT Academy
               </span>
             </div>
           </Reveal>
 
           <Reveal delay={0.06}>
-            <div className="glass-panel rounded-3xl p-5 sm:p-8">
-              <h1 className="text-[2rem] font-black leading-[1.06] tracking-tight text-white min-[390px]:text-[2.25rem] sm:text-5xl lg:text-[3rem]">
+            <div>
+              <h1 className="max-w-2xl text-[2.5rem] font-black leading-[1.02] tracking-[-0.045em] text-white min-[390px]:text-[2.8rem] sm:text-6xl lg:text-[4rem]">
                 Master{" "}
-                <span className="text-shimmer bg-gradient-to-r from-[#4285F4] via-[#34A853] to-[#FBBC04] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#65e5c1] via-[#8bc8ff] to-[#eab96e] bg-clip-text text-transparent">
                   GCP Data Engineering
                 </span>
               </h1>
-              <p className="mt-4 text-sm leading-6 text-slate-300 sm:text-lg sm:leading-7">
+              <p className="mt-6 max-w-xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">
                 Learn BigQuery, Dataflow, Composer, Pub/Sub &amp; more - taught
                 live by{" "}
                 <span className="font-bold text-white">Shaik Saidhul</span>,
@@ -70,7 +68,7 @@ export function LandingHero({
               <button
                 type="button"
                 onClick={() => scrollTo("courses")}
-                className="glass-pill attention-vibrate mt-5 inline-flex max-w-full items-center gap-2 border-[#f2b84b]/25 px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-[#ffe4a3] sm:px-4 sm:text-xs sm:tracking-[0.14em]"
+                className="mt-6 inline-flex max-w-full items-center gap-2 rounded-lg border border-[#eab96e]/20 bg-[#eab96e]/[0.07] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#f2d29f] sm:px-4 sm:text-xs sm:tracking-[0.14em]"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
@@ -79,11 +77,11 @@ export function LandingHero({
                 Live batch · August 26 · 9:30 PM IST
               </button>
 
-              <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => scrollTo("courses")}
-                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4285F4]/90 via-[#34A853] to-[#2f80ed] px-6 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#4285F4]/20 sm:px-8 sm:py-4 sm:text-base"
+                  className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-[#2dd4a6] px-6 py-3.5 text-sm font-black text-[#04110d] shadow-xl shadow-[#2dd4a6]/10 hover:bg-[#55dfb9] sm:px-8 sm:py-4 sm:text-base"
                 >
                   Explore Courses
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -91,9 +89,9 @@ export function LandingHero({
                 <button
                   type="button"
                   onClick={() => scrollTo("free-learning")}
-                  className="glass-btn magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-bold text-white sm:px-8 sm:py-4 sm:text-base"
+                  className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.035] px-6 py-3.5 text-sm font-bold text-white hover:border-white/20 hover:bg-white/[0.06] sm:px-8 sm:py-4 sm:text-base"
                 >
-                  <Play className="h-5 w-5 text-[#f2b84b]" />
+                  <Play className="h-5 w-5 text-[#eab96e]" />
                   Free Lessons
                 </button>
               </div>
@@ -101,13 +99,13 @@ export function LandingHero({
           </Reveal>
 
           <RevealStagger
-            className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4"
+            className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4"
             stagger={0.05}
           >
             {STATS.map(({ icon: Icon, val, sub }) => (
               <RevealItem key={sub}>
-                <div className="glass-stat rounded-2xl p-3.5 text-center sm:p-4 sm:text-left">
-                  <Icon className="mx-auto mb-2 h-4 w-4 text-[#7cc7ff] sm:mx-0" />
+                <div className="glass-stat rounded-xl p-3.5 text-center sm:p-4 sm:text-left">
+                  <Icon className="mx-auto mb-2 h-4 w-4 text-[#8bc8ff] sm:mx-0" />
                   <div className="text-xl font-black text-white sm:text-2xl">
                     <AnimatedCounter value={val} />
                   </div>
@@ -121,8 +119,8 @@ export function LandingHero({
         </div>
 
         <Reveal delay={0.1} className="relative order-2 lg:order-2">
-          <div className="glass-panel glass-panel-glow mx-auto w-full max-w-[420px] rounded-[1.5rem] p-3 sm:max-w-none sm:rounded-[2rem] sm:p-6">
-            <p className="mb-4 text-center text-[10px] font-black uppercase tracking-[0.24em] text-[#8df5d7]">
+          <div className="glass-panel glass-panel-glow mx-auto w-full max-w-[460px] rounded-[1.5rem] p-4 sm:max-w-none sm:rounded-[1.75rem] sm:p-6">
+            <p className="mb-4 text-center text-[10px] font-black uppercase tracking-[0.24em] text-[#8bedd0]">
               Google Cloud data platform
             </p>
             <GcpCloudVisual />
@@ -131,7 +129,7 @@ export function LandingHero({
                 (tag) => (
                   <span
                     key={tag}
-                    className="glass-pill px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-300 sm:px-3 sm:text-[10px]"
+                  className="glass-pill px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-400 sm:px-3 sm:text-[10px]"
                   >
                     {tag}
                   </span>
@@ -159,7 +157,7 @@ export function LandingHero({
         View programs
       </motion.button>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#08111f] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#07111d] to-transparent" />
     </section>
   );
 }

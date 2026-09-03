@@ -15,27 +15,24 @@ export function SectionHeading({
   accent?: "teal" | "gold" | "red";
 }) {
   const accentStyles = {
-    teal: "border-[#18c29c]/25 bg-[#18c29c]/10 text-[#8df5d7]",
-    gold: "border-[#f2b84b]/25 bg-[#f2b84b]/10 text-[#ffe4a3]",
-    red: "border-red-400/25 bg-red-500/10 text-red-200",
+    teal: "border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.07] text-[#8bedd0]",
+    gold: "border-[#eab96e]/20 bg-[#eab96e]/[0.07] text-[#f2d29f]",
+    red: "border-red-400/20 bg-red-500/[0.07] text-red-200",
   };
 
   return (
     <Reveal
-      className={`mb-8 sm:mb-10 ${align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}`}
+      className={`mb-9 sm:mb-12 ${align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}`}
     >
       <span
-        className={`mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-mono uppercase tracking-[0.2em] ${accentStyles[accent]}`}
+        className={`mb-5 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] sm:text-xs ${accentStyles[accent]}`}
       >
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
-        </span>
+        <span className="h-1.5 w-1.5 rounded-full bg-current" />
         {eyebrow}
       </span>
-      <h2 className="text-3xl font-black text-white sm:text-5xl">{title}</h2>
+      <h2 className="text-3xl font-black tracking-[-0.035em] text-white sm:text-5xl">{title}</h2>
       {description && (
-        <p className="mt-4 text-base leading-relaxed text-slate-300 sm:text-lg">
+        <p className="mt-4 text-base leading-relaxed text-slate-400 sm:text-lg">
           {description}
         </p>
       )}

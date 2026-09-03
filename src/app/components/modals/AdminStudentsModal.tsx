@@ -352,27 +352,27 @@ export function AdminStudentsModal({
   };
 
   const inputCls =
-    "w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#18c29c]/50 focus:outline-none focus:ring-2 focus:ring-[#18c29c]/20";
+    "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/15";
 
   return (
     <div className="fixed inset-0 z-[130] flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-[#020817]/80 backdrop-blur-md" onClick={onClose} />
+      <div className="absolute inset-0 bg-[#02060c]/86 backdrop-blur-lg" onClick={onClose} />
 
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        className="relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/12 bg-[#07111f] shadow-2xl sm:max-h-[92dvh] sm:max-w-6xl sm:rounded-3xl"
+        className="relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/[0.09] bg-[#08121f] shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:max-h-[92dvh] sm:max-w-6xl sm:rounded-[1.5rem]"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,rgba(24,194,156,0.12),transparent_40%),radial-gradient(ellipse_at_100%_0%,rgba(242,184,75,0.08),transparent_35%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,rgba(45,212,166,0.08),transparent_40%),radial-gradient(ellipse_at_100%_0%,rgba(234,185,110,0.05),transparent_35%)]" />
 
         {/* Header */}
-        <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6">
+        <div className="relative flex items-center justify-between border-b border-white/[0.08] bg-[#0b1522]/70 px-5 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f2b84b] to-[#fff0a8] shadow-lg shadow-[#f2b84b]/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#eab96e] shadow-lg shadow-[#eab96e]/10">
               <Shield className="h-5 w-5 text-[#1b1202]" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f2b84b]">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#eab96e]">
                 Admin Control
               </p>
               <h2 className="text-lg font-black text-white sm:text-xl">
@@ -392,7 +392,7 @@ export function AdminStudentsModal({
         {!unlocked ? (
           <div className="relative space-y-4 px-5 py-6 sm:max-w-md sm:mx-auto sm:w-full sm:py-8">
             <div className="mb-2 text-center">
-              <Lock className="mx-auto mb-3 h-10 w-10 text-[#18c29c]" />
+              <Lock className="mx-auto mb-3 h-10 w-10 text-[#2dd4a6]" />
               <p className="text-sm text-slate-300">
                 Login with OTP sent to the registered admin Gmail.
               </p>
@@ -424,7 +424,7 @@ export function AdminStudentsModal({
                 <button
                   type="button"
                   onClick={verifyAdminLoginOtp}
-                  className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20"
+                  className="rounded-xl bg-[#2dd4a6] px-4 text-sm font-black text-[#04110d] shadow-lg shadow-[#2dd4a6]/10"
                 >
                   Verify
                 </button>
@@ -443,7 +443,7 @@ export function AdminStudentsModal({
         ) : (
           <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">
             {/* Sidebar */}
-            <aside className="border-b border-white/10 p-4 lg:w-56 lg:border-b-0 lg:border-r lg:p-5">
+            <aside className="border-b border-white/[0.08] bg-[#07111d]/55 p-4 lg:w-56 lg:border-b-0 lg:border-r lg:p-5">
               <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-1">
                 {[
                   { label: "Students", val: studentList.length, icon: Users },

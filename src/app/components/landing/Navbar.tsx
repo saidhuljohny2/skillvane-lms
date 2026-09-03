@@ -47,55 +47,55 @@ export function Navbar({
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-[90] h-[3px] bg-[#07111f]">
+      <div className="fixed inset-x-0 top-0 z-[90] h-0.5 bg-[#060d17]">
         <motion.div
-          className="h-full origin-left rounded-r-full bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] shadow-[0_0_24px_rgba(242,184,75,0.5)]"
+          className="h-full origin-left rounded-r-full bg-gradient-to-r from-[#2dd4a6] via-[#76b4ff] to-[#eab96e]"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
       <motion.nav
-        className={`fixed inset-x-0 top-[3px] z-[70] transition-all duration-500 ${
+        className={`fixed inset-x-0 top-0.5 z-[70] transition-all duration-300 ${
           scrolled
-            ? "border-b border-white/10 bg-[#07111f]/75 shadow-2xl shadow-black/30 backdrop-blur-2xl"
-            : "border-b border-transparent bg-transparent"
+            ? "border-b border-white/[0.08] bg-[#060d17]/90 shadow-[0_16px_45px_rgba(0,0,0,0.24)] backdrop-blur-xl"
+            : "border-b border-transparent bg-[#060d17]/25 backdrop-blur-sm"
         }`}
         initial={false}
-        animate={{ paddingBlock: scrolled ? 0 : 4 }}
+        animate={{ paddingBlock: scrolled ? 0 : 3 }}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between px-4 sm:px-6">
           <button
             type="button"
             onClick={() => scrollTo("courses")}
-            className="group flex items-center gap-2.5"
+            className="group flex items-center gap-3"
           >
-            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-white shadow-lg shadow-[#18c29c]/20 ring-1 ring-white/15 transition-transform group-hover:scale-105">
-              <img src={logo} alt="SkillVane logo" className="h-10 w-10 object-contain" />
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[0.7rem] bg-white p-0.5 shadow-lg shadow-black/20 ring-1 ring-white/15 transition-transform group-hover:-rotate-2">
+              <img src={logo} alt="SkillVane logo" className="h-9 w-9 object-contain" />
             </div>
-            <span className="text-base font-bold tracking-tight">
-              SkillVane{" "}
-              <span className="bg-gradient-to-r from-[#18c29c] via-[#7cc7ff] to-[#f2b84b] bg-clip-text text-transparent">
+            <span className="text-[0.95rem] font-black tracking-[-0.02em] text-white">
+              SkillVane
+              <span className="ml-1.5 text-xs font-semibold tracking-normal text-slate-400">
                 IT Academy
               </span>
             </span>
           </button>
 
-          <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] p-1 md:flex">
+          <div className="hidden items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-1 md:flex">
             {NAV.map(({ id, label }) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => scrollTo(id)}
-                className={`relative rounded-full px-4 py-2 text-sm font-bold transition-colors ${
+                className={`relative rounded-lg px-3.5 py-2 text-[13px] font-semibold transition-colors ${
                   activeSection === id
                     ? "text-white"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:bg-white/[0.04] hover:text-white"
                 }`}
               >
                 {activeSection === id && (
                   <motion.span
                     layoutId="nav-pill"
-                    className="absolute inset-0 rounded-full bg-white/10 ring-1 ring-white/10"
+                    className="absolute inset-0 rounded-lg bg-white/[0.07] ring-1 ring-white/[0.08]"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -108,7 +108,7 @@ export function Navbar({
             <button
               type="button"
               onClick={onAdmin}
-              className="flex items-center gap-2 rounded-xl border border-[#f2b84b]/25 px-3 py-2 text-sm font-semibold text-[#ffe4a3] transition-all hover:border-[#f2b84b]/50 hover:text-white"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 transition-all hover:bg-white/[0.04] hover:text-[#eab96e]"
             >
               <Lock className="h-4 w-4" />
               Admin
@@ -118,7 +118,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onLogout}
-                  className="flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-300 hover:text-white"
+                  className="flex items-center gap-2 rounded-lg border border-white/[0.09] px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-white/[0.04] hover:text-white"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout
@@ -126,7 +126,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onDashboard}
-                  className="magnetic-button flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#18c29c]/25"
+                  className="magnetic-button flex items-center gap-2 rounded-lg bg-[#2dd4a6] px-5 py-2.5 text-sm font-black text-[#04110d] shadow-lg shadow-[#2dd4a6]/10 hover:bg-[#55dfb9]"
                 >
                   <GraduationCap className="h-4 w-4" />
                   Dashboard
@@ -137,7 +137,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onLogin}
-                  className="flex items-center gap-2 rounded-xl border border-white/12 px-4 py-2 text-sm font-semibold text-slate-300 hover:border-[#18c29c]/40 hover:text-white"
+                  className="flex items-center gap-2 rounded-lg border border-white/[0.09] px-4 py-2 text-sm font-semibold text-slate-300 hover:border-[#2dd4a6]/30 hover:bg-white/[0.03] hover:text-white"
                 >
                   <LogIn className="h-4 w-4" />
                   Login
@@ -145,7 +145,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={() => scrollTo("courses")}
-                  className="magnetic-button group flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#18c29c]/25"
+                  className="magnetic-button group flex items-center gap-2 rounded-lg bg-[#2dd4a6] px-5 py-2.5 text-sm font-black text-[#04110d] shadow-lg shadow-[#2dd4a6]/10 hover:bg-[#55dfb9]"
                 >
                   View Courses
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -156,7 +156,7 @@ export function Navbar({
 
           <button
             type="button"
-            className="rounded-lg p-2 text-slate-400 md:hidden"
+            className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-2 text-slate-300 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -168,7 +168,7 @@ export function Navbar({
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="border-t border-white/10 bg-[#0b1524]/95 px-4 py-4 backdrop-blur-xl md:hidden"
+            className="border-t border-white/[0.08] bg-[#08121f]/98 px-4 py-4 shadow-2xl backdrop-blur-xl md:hidden"
           >
             {NAV.map(({ id, label }) => (
               <button
@@ -178,7 +178,9 @@ export function Navbar({
                   scrollTo(id);
                   setMobileOpen(false);
                 }}
-                className="block w-full border-b border-white/5 py-3 text-left text-sm font-semibold text-slate-300 last:border-0"
+                className={`block w-full rounded-lg px-3 py-3 text-left text-sm font-semibold ${
+                  activeSection === id ? "bg-white/[0.06] text-white" : "text-slate-400"
+                }`}
               >
                 {label}
               </button>
