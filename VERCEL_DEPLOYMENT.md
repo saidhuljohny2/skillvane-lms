@@ -16,17 +16,13 @@ https://github.com/saidhuljohny2/skillvane-lms.git
    - Install command: `npm install`
 4. Deploy the project.
 
-Add the public Supabase client configuration in Vercel Project Settings >
-Environment Variables:
+If using Razorpay, add these in Vercel Project Settings > Environment Variables:
 
 ```text
-VITE_SUPABASE_URL
-VITE_SUPABASE_ANON_KEY
+RAZORPAY_KEY_ID
+RAZORPAY_KEY_SECRET
+VITE_RAZORPAY_KEY
 ```
-
-Never add a Razorpay secret or Supabase service-role key to a `VITE_*`
-variable. Payment order creation and verification must run in a server-side
-function, where private secrets are not exposed to the browser.
 
 ## 2. Claim A Free Domain
 
