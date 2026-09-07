@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multi-Cloud Data Engineer Program | SkillVane</title>
+    <meta
+      name="description"
+      content="4-month online Multi-Cloud Data Engineer Program covering GCP + Azure with case studies and real-world projects. Trainer: Shaik Saidhul."
+    />
+    <style>
+      :root {
+        --navy: #07111c;
+        --ink: #0c1a28;
+        --card: #102233;
+        --line: rgba(255, 255, 255, 0.1);
+        --muted: #9fb0c3;
+        --text: #e8eef6;
+        --gold: #eab96e;
+        --teal: #2dd4a6;
+        --blue: #6aa8ff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: #050a12;
+        color: var(--text);
+        line-height: 1.5;
+      }
+      .page {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 64px;
+      }
+      .hero {
+        background: linear-gradient(165deg, #0e2236 0%, #07111c 55%, #0a1c18 100%);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 36px 28px 28px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(45, 212, 166, 0.18), transparent 68%);
+      }
+      .kicker {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 14px;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.7rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+        max-width: 16ch;
+      }
+      h1 span {
+        color: var(--gold);
+      }
+      .lede {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 1.05rem;
+        max-width: 52ch;
+      }
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+        margin-top: 22px;
+      }
+      .meta div {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .meta dt {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .meta dd {
+        margin-top: 4px;
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        padding: 11px 16px;
+        font-weight: 800;
+        font-size: 13px;
+        text-decoration: none;
+        cursor: pointer;
+        border: 0;
+      }
+      .btn-primary {
+        background: var(--teal);
+        color: #04110d;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+      h2 {
+        margin: 36px 0 14px;
+        font-size: 1.25rem;
+        letter-spacing: -0.03em;
+      }
+      .journey {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .phase {
+        background: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        min-height: 148px;
+      }
+      .phase b {
+        display: block;
+        color: var(--teal);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .phase strong {
+        display: block;
+        font-size: 0.98rem;
+        margin-bottom: 6px;
+      }
+      .phase p {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #d7e6f5;
+      }
+      .module {
+        background: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 18px 8px;
+        margin-bottom: 10px;
+      }
+      .module h3 {
+        font-size: 1.02rem;
+        margin-bottom: 10px;
+      }
+      .module ul {
+        padding: 0 0 8px 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .module li {
+        margin-bottom: 6px;
+      }
+      .cases {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .case {
+        background: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .case span {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--blue);
+        margin-bottom: 8px;
+      }
+      .outcomes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 18px;
+        background: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 22px;
+      }
+      .outcomes li {
+        color: var(--muted);
+        font-size: 14px;
+        margin-left: 18px;
+        margin-bottom: 8px;
+      }
+      footer {
+        margin-top: 32px;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      footer strong {
+        color: var(--text);
+      }
+      @media (max-width: 800px) {
+        .journey,
+        .cases,
+        .outcomes {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+          color: #111;
+        }
+        .page {
+          padding: 0;
+        }
+        .hero,
+        .phase,
+        .module,
+        .case,
+        .outcomes,
+        .meta div {
+          background: #fff;
+          color: #111;
+          border-color: #ddd;
+        }
+        .lede,
+        .phase p,
+        .module ul,
+        .outcomes li,
+        footer {
+          color: #444;
+        }
+        .actions {
+          display: none;
+        }
+        h1 span,
+        .meta dt,
+        .kicker,
+        .phase b {
+          color: #0a7a5c;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="kicker">SkillVane IT Academy · Live Online</div>
+        <h1>Multi-Cloud Data Engineer Program <span>(GCP + Azure)</span></h1>
+        <p class="lede">
+          A production-style 4-month program with case studies and real-world
+          projects. Build batch, streaming, and lakehouse pipelines the way
+          industry teams do.
+        </p>
+        <dl class="meta">
+          <div>
+            <dt>Duration</dt>
+            <dd>4 months</dd>
+          </div>
+          <div>
+            <dt>Language</dt>
+            <dd>English</dd>
+          </div>
+          <div>
+            <dt>Mode</dt>
+            <dd>Online live</dd>
+          </div>
+          <div>
+            <dt>Trainer</dt>
+            <dd>Shaik Saidhul</dd>
+          </div>
+        </dl>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" onclick="window.print()">
+            Print / Save as PDF
+          </button>
+          <a class="btn btn-ghost" href="https://wa.me/917305101711">WhatsApp +91 7305101711</a>
+        </div>
+      </header>
+
+      <h2>4-month learning path</h2>
+      <div class="journey">
+        <article class="phase">
+          <b>Month 1</b>
+          <strong>Foundations</strong>
+          <p>Cloud, GCP IAM, Linux on Cloud Shell, and Python for data engineers.</p>
+        </article>
+        <article class="phase">
+          <b>Month 2</b>
+          <strong>GCP data platform</strong>
+          <p>GCS, Cloud SQL + DMS, BigQuery analytics, and PySpark on Dataproc.</p>
+        </article>
+        <article class="phase">
+          <b>Month 3</b>
+          <strong>Streaming & Azure</strong>
+          <p>Dataflow, Pub/Sub, Composer DAGs, Azure foundations, and ADLS Gen2.</p>
+        </article>
+        <article class="phase">
+          <b>Month 4</b>
+          <strong>Lakehouse & projects</strong>
+          <p>ADF, Synapse, Databricks Delta/Unity Catalog, and interview-ready capstones.</p>
+        </article>
+      </div>
+
+      <h2>Tools you will master</h2>
+      <div class="stack">
+        <span class="chip">SQL</span>
+        <span class="chip">Python</span>
+        <span class="chip">Linux</span>
+        <span class="chip">PySpark</span>
+        <span class="chip">Apache Beam</span>
+        <span class="chip">Airflow</span>
+        <span class="chip">BigQuery</span>
+        <span class="chip">Dataproc</span>
+        <span class="chip">Dataflow</span>
+        <span class="chip">Pub/Sub</span>
+        <span class="chip">Composer</span>
+        <span class="chip">ADLS Gen2</span>
+        <span class="chip">Azure Data Factory</span>
+        <span class="chip">Synapse</span>
+        <span class="chip">Databricks</span>
+        <span class="chip">Delta Lake</span>
+      </div>
+
+      <h2>Structured curriculum</h2>
+
+      <section class="module">
+        <h3>01 · Cloud Computing Foundations</h3>
+        <ul>
+          <li>What cloud computing is and why businesses moved to cloud</li>
+          <li>Cloud service providers: GCP, Azure, AWS</li>
+          <li>Data Lake, Data Warehouse, and Lakehouse mental models</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>02 · GCP Platform, IAM & Linux</h3>
+        <ul>
+          <li>Console, Cloud Shell, Cloud SDK, regions, zones, projects, folders, billing</li>
+          <li>IAM: principals, roles, service accounts, resource hierarchy</li>
+          <li>Free account setup plus Linux files, permissions, grep, awk, sed</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>03 · Python for Data Engineers</h3>
+        <ul>
+          <li>Types, structures, control flow, functions, classes, modules, packaging</li>
+          <li>File I/O, exceptions, logging, datetime, REST APIs with requests</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>04 · Google Cloud Storage</h3>
+        <ul>
+          <li>Buckets, objects, IAM, lifecycle, versioning, transfer, monitoring</li>
+          <li>Labs on console and CLI: create, upload, download, permissions</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>05 · Cloud SQL & Database Migration</h3>
+        <ul>
+          <li>Instances, users, HA, backups, Studio/Shell/workbench connectivity</li>
+          <li>Project: manual export/import vs automated Cloud SQL DMS</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>06 · BigQuery SQL & Analytics</h3>
+        <ul>
+          <li>Architecture, slots, nested JSON, native vs external tables, views</li>
+          <li>Load/export/stream, optimization, Spotify and social-media case studies</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>07 · Dataproc & PySpark</h3>
+        <ul>
+          <li>Managed Spark clusters, preemptible cost control, job debugging</li>
+          <li>Read/transform/write files, SQL, and BigQuery; 3 PySpark case studies</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>08 · Dataflow, Apache Beam & Pub/Sub</h3>
+        <ul>
+          <li>Beam vs Spark, Dataflow vs Dataproc, topics/subscriptions/acks</li>
+          <li>Templates, e-commerce processing, end-to-end streaming pipeline</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>09 · Cloud Composer (Airflow DAGs)</h3>
+        <ul>
+          <li>Environment setup, retries, logging, BigQuery / Dataproc / Dataflow DAGs</li>
+          <li>CI/CD for DAGs using Cloud Build and GitHub</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>10 · Azure Foundations & ADLS Gen2</h3>
+        <ul>
+          <li>Subscriptions, resource groups, IAM, free account, ADLS hierarchy</li>
+          <li>RBAC vs ACLs, Hot/Cool/Archive tiers, portal/CLI/SDK/REST access</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>11 · Azure SQL, Data Factory & Synapse</h3>
+        <ul>
+          <li>ADF pipelines, IR, datasets, triggers, monitoring, and parallelism</li>
+          <li>Incremental ADF + ADLS + SQL case study; Synapse pools and lake SQL</li>
+        </ul>
+      </section>
+      <section class="module">
+        <h3>12 · Databricks Lakehouse (Azure / GCP)</h3>
+        <ul>
+          <li>Workspace, clusters, Unity Catalog, Delta Lake ACID and incremental ELT</li>
+          <li>Structured Streaming and Autoloader case studies; performance tuning</li>
+        </ul>
+      </section>
+
+      <h2>Flagship case studies</h2>
+      <div class="cases">
+        <article class="case">
+          <span>BigQuery</span>
+          <strong>Spotify analytics platform</strong>
+          <p>Design a real-world analytics warehouse with nested data, views, and governed access.</p>
+        </article>
+        <article class="case">
+          <span>BigQuery</span>
+          <strong>Enterprise social media analytics</strong>
+          <p>Ingest, model, and serve campaign-scale social data for business intelligence.</p>
+        </article>
+        <article class="case">
+          <span>PySpark</span>
+          <strong>Travel, healthcare & ML feature jobs</strong>
+          <p>Clean employee travel records, process patient health data, and prepare ML datasets.</p>
+        </article>
+        <article class="case">
+          <span>Streaming</span>
+          <strong>E-commerce + Pub/Sub + Dataflow</strong>
+          <p>Ship an end-to-end streaming pipeline across Python, Pub/Sub, Dataflow, BigQuery, and GCS.</p>
+        </article>
+        <article class="case">
+          <span>Azure</span>
+          <strong>Incremental ADF pipeline</strong>
+          <p>Build production-style incremental load with ADF, ADLS, and Azure SQL Database.</p>
+        </article>
+        <article class="case">
+          <span>Databricks</span>
+          <strong>Streaming + Autoloader</strong>
+          <p>Process real-time data with Structured Streaming and ingest files with Autoloader.</p>
+        </article>
+      </div>
+
+      <h2>What students can expect</h2>
+      <ul class="outcomes">
+        <li>Build end-to-end data engineering pipelines on GCP and Azure</li>
+        <li>Develop strong SQL, Python, PySpark, Linux, and Apache Beam skills</li>
+        <li>Implement batch and real-time processing pipelines</li>
+        <li>Design Bronze → Silver → Gold / Medallion architecture</li>
+        <li>Work with industry-standard DE services and lakehouse patterns</li>
+        <li>Ship production-ready projects and troubleshoot real scenarios</li>
+        <li>Understand cloud, data lake, warehouse, and lakehouse architectures</li>
+        <li>Prepare for data engineer interviews with scenario-based practice</li>
+      </ul>
+
+      <footer>
+        <p><strong>Shaik Saidhul</strong> · Cloud Expert · SkillVane IT Academy</p>
+        <p>Teaching language: English · Mode: Online · Phone/WhatsApp: +91 7305101711</p>
+        <p>Thank you.</p>
+      </footer>
+    </div>
+  </body>
+</html>

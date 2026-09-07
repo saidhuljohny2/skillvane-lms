@@ -18,7 +18,7 @@ const STATS = [
   { icon: Users, val: "2500+", sub: "Learners" },
   { icon: Star, val: "4.9/5", sub: "Rating" },
   { icon: Award, val: "9+ yrs", sub: "Experience" },
-  { icon: Cloud, val: "12+", sub: "GCP services" },
+  { icon: Cloud, val: "2", sub: "Clouds: GCP + Azure" },
 ];
 
 export function LandingHero({
@@ -55,14 +55,14 @@ export function LandingHero({
               <h1 className="max-w-2xl text-[2.5rem] font-black leading-[1.02] tracking-[-0.045em] text-white min-[390px]:text-[2.8rem] sm:text-6xl lg:text-[4rem]">
                 Master{" "}
                 <span className="bg-gradient-to-r from-[#65e5c1] via-[#8bc8ff] to-[#eab96e] bg-clip-text text-transparent">
-                  GCP Data Engineering
+                  Multi-Cloud Data Engineering
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">
-                Learn BigQuery, Dataflow, Composer, Pub/Sub &amp; more - taught
-                live by{" "}
+                GCP + Azure in 4 months — BigQuery, Dataflow, ADF, Synapse,
+                Databricks &amp; more, taught live by{" "}
                 <span className="font-bold text-white">Shaik Saidhul</span>,
-                with hands-on projects and career support.
+                with case studies and career support.
               </p>
 
               <button

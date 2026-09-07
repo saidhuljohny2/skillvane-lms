@@ -10,7 +10,7 @@ const CHAT_OPTIONS = [
   {
     label: "Live batch timing",
     answer:
-      "The next GCP Data Engineering live batch starts on August 26 at 9:30 PM IST and runs for 3 months.",
+      "The next Multi-Cloud Data Engineer live batch starts on August 26 at 9:30 PM IST and runs for 4 months (GCP + Azure).",
   },
   {
     label: "Free demo",

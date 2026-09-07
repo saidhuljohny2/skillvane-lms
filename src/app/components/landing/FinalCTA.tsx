@@ -9,7 +9,7 @@ export function FinalCTA({ scrollTo }: { scrollTo: (id: string) => void }) {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(45,212,166,0.13),transparent_48%),radial-gradient(ellipse_at_90%_60%,rgba(234,185,110,0.07),transparent_38%)]" />
           <div className="relative mx-auto max-w-2xl">
             <h2 className="text-3xl font-black tracking-[-0.035em] text-white sm:text-5xl">
-              Start your GCP journey today
+              Start your multi-cloud journey today
             </h2>
             <p className="mt-5 text-base leading-relaxed text-slate-400 sm:text-lg">
               5 programs. Live batch, recordings, foundation & projects. Trusted
