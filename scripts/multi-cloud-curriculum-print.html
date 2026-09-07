@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Multi-Cloud Data Engineer Program Curriculum</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; font-family: Arial, Helvetica, sans-serif; color: #10232c; }
+  .page { width: 210mm; min-height: 297mm; padding: 14mm 14mm 16mm; page-break-after: always; position: relative; }
+  .page:last-child { page-break-after: auto; }
+  .cover {
+    background: #07353a;
+    color: #fff;
+    padding: 16mm 16mm 14mm;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: "";
+    position: absolute; inset: -40mm auto auto -40mm;
+    width: 180mm; height: 180mm; border-radius: 50%;
+    border: 18px solid rgba(255,255,255,.04);
+  }
+  .topbar { display: flex; justify-content: space-between; align-items: center; }
+  .brand { display: flex; gap: 12px; align-items: center; }
+  .brand img { width: 42px; height: 42px; background: #fff; border-radius: 10px; object-fit: contain; padding: 4px; }
+  .brand h2 { font-size: 13px; letter-spacing: .08em; }
+  .brand p { font-size: 8px; letter-spacing: .22em; color: #d7efe8; margin-top: 3px; }
+  .year {
+    border: 1.5px solid #fff; border-radius: 999px; padding: 7px 14px;
+    font-size: 10px; font-weight: 800; letter-spacing: .16em;
+  }
+  .kicker { margin-top: 28mm; color: #7ee0b8; font-size: 11px; font-weight: 800; letter-spacing: .2em; }
+  .cover-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; margin-top: 8mm; }
+  .cover h1 { font-size: 34px; line-height: 1.08; font-weight: 800; }
+  .cover h1 span { display: block; font-size: 22px; color: #7ee0b8; margin-top: 6px; }
+  .sub { margin-top: 10px; font-size: 14px; color: #e7f4ef; }
+  .pill {
+    display: inline-block; margin-top: 14px; border-radius: 999px; padding: 8px 14px;
+    background: #0b454c; color: #7ee0b8; font-size: 9px; font-weight: 800; letter-spacing: .12em;
+  }
+  .trainer {
+    background: #fff; color: #10232c; border-radius: 18px; padding: 10px; text-align: center;
+  }
+  .trainer img { width: 100%; height: 148px; object-fit: cover; object-position: top; border-radius: 12px; }
+  .trainer small { display: block; margin-top: 8px; color: #1a7a63; font-size: 9px; font-weight: 800; letter-spacing: .16em; }
+  .trainer strong { display: block; margin-top: 4px; font-size: 16px; }
+  .trainer em { display: block; font-style: normal; font-size: 12px; color: #4d6670; }
+  .snap { margin-top: 18mm; }
+  .snap-head { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; }
+  .snap-head span { color: #7ee0b8; font-size: 9px; letter-spacing: .16em; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .card { background: #0b454c; border-radius: 12px; padding: 12px 10px; min-height: 68px; }
+  .card b { display: block; color: #7ee0b8; font-size: 8px; letter-spacing: .14em; margin-bottom: 6px; }
+  .card span { font-size: 13px; font-weight: 800; }
+  .cover-foot { display: flex; justify-content: space-between; margin-top: 16mm; font-size: 11px; }
+  .cover-foot b { color: #7ee0b8; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8mm; }
+  .mod-label { color: #1a7a63; font-size: 11px; font-weight: 800; letter-spacing: .22em; text-align: right; }
+  .mod-label strong { display: block; color: #10232c; font-size: 20px; letter-spacing: 0; margin-top: 4px; }
+  .count { color: #1a7a63; font-size: 10px; font-weight: 800; margin-top: 4px; }
+  h3.page-title { font-size: 22px; }
+  .muted { color: #5b7380; font-size: 12px; margin-top: 4px; }
+  .road { margin-top: 8mm; }
+  .road-item { display: grid; grid-template-columns: 18px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #e4ecef; }
+  .num { color: #1a7a63; font-weight: 800; font-size: 13px; }
+  .road-item strong { display: block; font-size: 13px; }
+  .road-item span { display: block; color: #5b7380; font-size: 11px; margin-top: 2px; }
+
+  .topic { margin: 0 0 7mm; }
+  .topic h4 { font-size: 13px; margin-bottom: 6px; }
+  .topic h4 i { font-style: normal; color: #1a7a63; margin-right: 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+  .grid p, .list p { font-size: 11.5px; line-height: 1.45; color: #2b4450; padding: 2px 0 2px 12px; position: relative; }
+  .grid p::before, .list p::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: #1a7a63; }
+  .list p { padding-left: 12px; }
+  .foot { position: absolute; left: 14mm; right: 14mm; bottom: 9mm; display: flex; justify-content: space-between; font-size: 10px; color: #6b828c; }
+  .thanks { min-height: 265mm; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .thanks h2 { font-size: 32px; }
+  .thanks p { margin-top: 10px; color: #5b7380; }
+</style>
+</head>
+<body>
+  <section class="page cover">
+    <div class="topbar">
+      <div class="brand">
+        <img src="file:///Users/shaik.saidhul/Projects/skillvane-lms/src/imports/logo1.png" alt="SkillVane" />
+        <div>
+          <h2>SkillVane IT Academy</h2>
+          <p>SKILLS THAT SHAPE CAREERS</p>
+        </div>
+      </div>
+      <div class="year">2026 CURRICULUM</div>
+    </div>
+    <div class="kicker">PROFESSIONAL CAREER PROGRAM</div>
+    <div class="cover-grid">
+      <div>
+        <h1>Multi-Cloud Data Engineer Program <span>(GCP + AZURE)</span></h1>
+        <p class="sub">with Case Studies and Real-world Projects</p>
+        <div class="pill">STRUCTURED LEARNING • HANDS-ON LABS • INDUSTRY PROJECTS</div>
+      </div>
+      <div class="trainer">
+        <img src="file:///Users/shaik.saidhul/Projects/skillvane-lms/src/imports/IMG_20260518_113243.jpg.jpeg" alt="Shaik Saidhul" />
+        <small>COURSE TRAINER</small>
+        <strong>Shaik Saidhul</strong>
+        <em>Cloud Expert</em>
+        <em>+91 7305101711</em>
+      </div>
+    </div>
+    <div class="snap">
+      <div class="snap-head">Course Snapshot <span>EVERYTHING AT A GLANCE</span></div>
+      <div class="cards">
+        <div class="card"><b>ROLE</b><span>Multi-Cloud Data Engineer</span></div>
+        <div class="card"><b>COURSE DURATION</b><span>4 months</span></div>
+        <div class="card"><b>MODE</b><span>Online</span></div>
+        <div class="card"><b>LANGUAGE</b><span>English</span></div>
+      </div>
+    </div>
+    <div class="cover-foot"><b>SkillVane IT Academy</b><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <div>
+        <div class="mod-label" style="text-align:left">COURSE ROADMAP</div>
+        <h3 class="page-title">Your Learning Journey</h3>
+        <p class="muted">A structured path from cloud foundations to production-ready data engineering on GCP and Azure.</p>
+      </div>
+    </div>
+    <div class="road">
+      <div class="road-item"><div class="num">01</div><div><strong>Cloud Introduction</strong><span>What is Cloud Computing? • The need for cloud computing in modern businesses. • Why organizations moved to Cloud • Cloud Service Providers – GCP, Azure, AWS, ...</span></div></div>
+      <div class="road-item"><div class="num">02</div><div><strong>GCP Cloud Basics</strong><span>GCP Cloud basics • GCP interfaces • GCP Locations • GCP Walkthrough • GCP IAM & Admin • Setting up a Free Account in GCP</span></div></div>
+      <div class="road-item"><div class="num">03</div><div><strong>Linux Basics on Cloud Shell</strong><span>Getting started with Linux • Linux Installation • Basic Linux Commands • Cloud shell tips • File and Directory Operations • Text Processing</span></div></div>
+      <div class="road-item"><div class="num">04</div><div><strong>Python for Data Engineer</strong><span>Data Types • Data Structures • File I/O operations • Exception Handling and Logging • REST API basics • Modules and Packages</span></div></div>
+      <div class="road-item"><div class="num">05</div><div><strong>GCP Data Engineering Tools</strong><span>Google Cloud Storage • Cloud SQL • BigQuery (SQL development) • DataProc (Pyspark Development) • DataFlow (Apache Beam development) • Cloud Pub/Sub (Streaming) • Cloud Composer (DAG Development)</span></div></div>
+      <div class="road-item"><div class="num">06</div><div><strong>Azure Data Engineering Tools</strong><span>Azure Introduction • Azure DataLake Storage (ADLS) • Azure SQL DB • Azure Data Factory (ADF) • Azure Synapse</span></div></div>
+      <div class="road-item"><div class="num">07</div><div><strong>Databricks on Azure/GCP</strong><span>Lakehouse Platform • Unity Catalog • Delta Lake • ELT Pipelines • Case Study 1 • Case Study 2</span></div></div>
+      <div class="road-item"><div class="num">08</div><div><strong>By the End of the course What Students can Expect</strong><span>Build end-to-end Data Engineering pipelines on GCP & Azure • SQL, Python, PySpark, Linux & Apache Beam • Medallion Architecture</span></div></div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">Cloud Introduction</h3>
+      <div class="mod-label">MODULE 01<strong>Cloud Introduction</strong><div class="count">4 FOCUSED TOPICS</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Cloud Computing</h4>
+      <div class="list">
+        <p>What is Cloud Computing?</p>
+        <p>The need for cloud computing in modern businesses.</p>
+        <p>Why organizations moved to Cloud</p>
+        <p>Cloud Service Providers – GCP, Azure, AWS, ...</p>
+      </div>
+    </div>
+    <div class="header" style="margin-top:10mm">
+      <h3 class="page-title">GCP Cloud Basics</h3>
+      <div class="mod-label">MODULE 02<strong>GCP Cloud Basics</strong><div class="count">7 FOCUSED TOPICS</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> GCP Cloud basics</h4><div class="list"><p>Introduction to Google Cloud Platform (GCP) and its core services</p></div></div>
+    <div class="topic"><h4><i>02</i> GCP interfaces - Console, Cloud Shell and Cloud SDK</h4></div>
+    <div class="topic"><h4><i>03</i> GCP Locations - Regions, Zones & Global Infrastructure</h4></div>
+    <div class="topic"><h4><i>04</i> GCP Walkthrough - GCP Projects, Organizations, Folders & Billing Accounts</h4></div>
+    <div class="topic"><h4><i>05</i> GCP IAM & Admin - Principals, Roles, Service Accounts & Resource Hierarchy</h4></div>
+    <div class="topic"><h4><i>06</i> Setting up a Free Account in GCP</h4></div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">Linux Basics on Cloud Shell</h3>
+      <div class="mod-label">MODULE 03<strong>Linux Basics on Cloud Shell</strong><div class="count">8 FOCUSED TOPICS</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Getting started with Linux</h4>
+      <div class="grid">
+        <p>Linux Installation</p>
+        <p>Basic Linux Commands</p>
+        <p>Cloud shell tips</p>
+        <p>File and Directory Operations (ls, cd, pwd, mkdir, rmdir, cp, mv, touch, rm, nano)</p>
+        <p>File Content Manipulation (cat, less, head, tail, grep)</p>
+        <p>Text Processing (awk, sed, cut, sort, uniq)</p>
+        <p>User and Permission related (whoami, id, su, sudo, chmod, chown)</p>
+      </div>
+    </div>
+    <div class="header" style="margin-top:8mm">
+      <h3 class="page-title">Python for Data Engineer</h3>
+      <div class="mod-label">MODULE 04<strong>Python for Data Engineer</strong><div class="count">1 FOCUSED TOPIC</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Python Learning Path</h4>
+      <div class="grid">
+        <p>Getting Started with Python</p>
+        <p>Introduction to Python and basic functions</p>
+        <p>Data Types – Strings, Operators, Numbers (Int, Float), Booleans</p>
+        <p>Data Structures – Lists, Tuples, Dictionaries, Sets</p>
+        <p>Python Programming Constructs - if, elif, else statements, for loops, while loops</p>
+        <p>File I/O operations - Read, write, append, rename, remove, copy, move</p>
+        <p>Exception Handling and Logging</p>
+        <p>what is exception handling, why it is needed</p>
+        <p>try and except blocks, else, finally, raise blocks</p>
+        <p>Why Logging? And Logging Levels</p>
+        <p>Writing Logs to File</p>
+        <p>Data and Time operations - Working date and time, Formatting, Parsing, Time delta</p>
+        <p>Modular Programming in Python</p>
+        <p>Functions & Lambda Functions</p>
+        <p>Classes</p>
+        <p>REST API basics</p>
+        <p>What is API</p>
+        <p>HTTP methods (GET, POST, PUT, DELETE)</p>
+        <p>Status Codes, Request Headers, JSON Responses</p>
+        <p>Using the requests Library, Reading API Responses</p>
+        <p>Modules and Packages</p>
+        <p>What is module and packages</p>
+        <p>Importing</p>
+        <p>Built-in modules</p>
+        <p>Install packages</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">GCP Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 05<strong>GCP Data Engineering Tools</strong><div class="count">7 FOCUSED TOPICS</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Google Cloud Storage</h4>
+      <div class="grid">
+        <p>Overview of Cloud Storage as a scalable and durable object storage service.</p>
+        <p>Understanding buckets and objects in Cloud Storage.</p>
+        <p>Use cases for Cloud Storage, such as data backup, multimedia storage, and website content</p>
+        <p>Labs: using console & CLI to do below</p>
+        <p>Creating and managing Cloud Storage buckets.</p>
+        <p>Uploading and downloading objects to and from Cloud Storage.</p>
+        <p>Setting access controls and permissions for buckets and objects.</p>
+        <p>Data Transfer and Lifecycle Management</p>
+        <p>Versioning and Object Versioning</p>
+        <p>Integration with Other GCP Services</p>
+        <p>Monitoring and logging for Cloud Storage operations.</p>
+      </div>
+    </div>
+    <div class="topic"><h4><i>02</i> Cloud SQL</h4>
+      <div class="grid">
+        <p>Introduction to Cloud SQL</p>
+        <p>Creating and Managing Cloud SQL Instances</p>
+        <p>Configuring database settings, users, and access controls.</p>
+        <p>Connecting to Cloud SQL instances using Cloud SQL studio, Shell, Workbenches</p>
+        <p>Importing and exporting data in Cloud SQL.</p>
+        <p>Backups and High Availability</p>
+        <p>Integration with Other GCP Services</p>
+        <p>Managing database user roles and permissions.</p>
+        <p>Introduction to DMS</p>
+        <p>End to End Database migration Project</p>
+        <p>Manual: Export and Import method</p>
+        <p>Automation: Cloud SQL DMS method</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">GCP Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 05<strong>continued</strong></div>
+    </div>
+    <div class="topic"><h4><i>03</i> BigQuery (SQL development)</h4>
+      <div class="grid">
+        <p>Introduction to BigQuery</p>
+        <p>BigQuery Architecture</p>
+        <p>Use cases for BigQuery in business intelligence and analytics.</p>
+        <p>Various method of creating table in BigQuery</p>
+        <p>BigQuery Data Sources and File Formats</p>
+        <p>Native table and External Tables</p>
+        <p>Working with complex data types</p>
+        <p>Working json data, nested, repeated and array data</p>
+        <p>Data Integration and Export</p>
+        <p>Loading data into BigQuery from Cloud Storage, Cloud SQL, and other sources.</p>
+        <p>Exporting data from BigQuery to various formats.</p>
+        <p>Real-time data streaming into BigQuery.</p>
+        <p>Configuring access controls and permissions in BigQuery.</p>
+        <p>BigQuery Views:</p>
+        <p>Views</p>
+        <p>Materialized Views</p>
+        <p>Authorized Views</p>
+        <p>Optimization techniques in BigQuery</p>
+        <p>BigQuery Slots – on demand, flat-rate, flex-slots</p>
+        <p>Case Study-1: implement a real-world analytics data platform for Spotify</p>
+        <p>Case Study-2: Enterprise Social Media analytics platform</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">GCP Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 05<strong>continued</strong></div>
+    </div>
+    <div class="topic"><h4><i>04</i> DataProc (Pyspark Development)</h4>
+      <div class="grid">
+        <p>Introduction to Hadoop and Apache Spark</p>
+        <p>Understanding the difference between Spark and MapReduce</p>
+        <p>What is Spark and Pyspark.</p>
+        <p>Understanding Spark framework and its functionalities</p>
+        <p>Overview of DataProc as a fully managed Apache Spark and Hadoop service.</p>
+        <p>Cluster Creation and Configuration</p>
+        <p>Creating and managing DataProc clusters.</p>
+        <p>Configuring cluster properties for performance and scalability.</p>
+        <p>Preemptible instances and cost optimization.</p>
+        <p>Learning Pyspark:</p>
+        <p>How to read from multiple data sources – csv, text, json, parquet, database table, BigQuery tables</p>
+        <p>How to perform multiple transformations</p>
+        <p>How to write to multiple targets - csv, text, json, parquet, database table, BigQuery tables</p>
+        <p>Running Jobs on DataProc</p>
+        <p>Submitting and monitoring Spark and Hadoop jobs on DataProc.</p>
+        <p>Use of initialization actions and custom scripts.</p>
+        <p>Job debugging and troubleshooting.</p>
+        <p>Case study-1: Data Cleaning of Employee Travel Records</p>
+        <p>Case study-2: Processing real-time patient health data</p>
+        <p>Case study-3: Creating a pyspark job to support ML model creations</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">GCP Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 05<strong>continued</strong></div>
+    </div>
+    <div class="topic"><h4><i>05</i> DataFlow (Apache Beam development)</h4>
+      <div class="grid">
+        <p>Introduction to DataFlow</p>
+        <p>Use cases for DataFlow in real-time analytics and ETL.</p>
+        <p>Understanding the difference between Apache Spark and Apache Beam</p>
+        <p>How Dataflow is different from Dataproc</p>
+        <p>Learning Apache Beam</p>
+        <p>How to read from multiple data sources – csv, text, json, parquet, database table, BigQuery tables</p>
+        <p>How to perform multiple transformations</p>
+        <p>How to write to multiple targets - csv, text, json, parquet, database table, BigQuery tables</p>
+        <p>Case study-1: Template method of creating pipelines</p>
+        <p>Case study-2: E-commerce Transaction Processing</p>
+        <p>Case study-3: End to End Streaming Pipeline using Apache beam with Dataflow, Python app, PubSub, BigQuery, GCS</p>
+      </div>
+    </div>
+    <div class="topic"><h4><i>06</i> Cloud Pub/Sub (Streaming)</h4>
+      <div class="grid">
+        <p>Introduction to Pub/Sub</p>
+        <p>Understanding the role of Pub/Sub in event-driven architectures.</p>
+        <p>Key Pub/Sub concepts: topics, subscriptions, messages, and acknowledgments.</p>
+        <p>Creating and Managing Topics and Subscriptions</p>
+        <p>Using the GCP Console to create Pub/Sub topics and subscriptions.</p>
+        <p>Configuring message retention policies and acknowledgment settings.</p>
+        <p>Publishing and Consuming Messages</p>
+        <p>Writing and deploying code to publish messages to a topic.</p>
+        <p>Implementing subscribers to consume and process messages from subscriptions.</p>
+        <p>Case study-1: Streaming use-case using Dataflow</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">GCP Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 05<strong>continued</strong></div>
+    </div>
+    <div class="topic"><h4><i>07</i> Cloud Composer (DAG Development)</h4>
+      <div class="grid">
+        <p>Introduction to Composer/Airflow</p>
+        <p>Overview of Airflow Architecture</p>
+        <p>Use cases for Composer in managing and scheduling workflows.</p>
+        <p>Creating and Managing Workflows</p>
+        <p>Creating and configuring Composer environments.</p>
+        <p>Defining and scheduling workflows using Apache Airflow.</p>
+        <p>Monitoring and managing workflow executions.</p>
+        <p>Integration with Data Engineering Services</p>
+        <p>Orchestrating workflows involving BigQuery, DataFlow, and other services.</p>
+        <p>Coordinating ETL processes with Composer.</p>
+        <p>Integrating with external systems and APIs.</p>
+        <p>Error Handling and Troubleshooting</p>
+        <p>Handling errors and retries in Composer workflows.</p>
+        <p>Debugging and troubleshooting failed workflow executions.</p>
+        <p>Logging and monitoring for Composer workflows.</p>
+        <p>Level-1-DAG: Orchestrating the BigQuery pipelines</p>
+        <p>Level-2-DAG: Orchestrating the DataProc pipelines</p>
+        <p>Level-3-DAG: Orchestrating the Dataflow pipelines</p>
+        <p>Deploy DAGs: Implementing CI/CD in Composer Using Cloud Build and GitHub</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">Azure Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 06<strong>Azure Data Engineering Tools</strong><div class="count">5 FOCUSED TOPICS</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Azure Introduction</h4>
+      <div class="grid">
+        <p>Introduction to Azure Cloud Platform and its core services</p>
+        <p>Azure interfaces - Console, Cloud Shell and Cloud SDK</p>
+        <p>Azure Locations - Regions, Zones & Global Infrastructure</p>
+        <p>Azure Walkthrough – Subscriptions, Resources, Resource group & Management group</p>
+        <p>Azure IAM & Admin - Identities, Roles, Service Accounts & Resource Hierarchy</p>
+        <p>Setting up a Free Account in Azure Cloud</p>
+      </div>
+    </div>
+    <div class="topic"><h4><i>02</i> Azure DataLake Storage (ADLS)</h4>
+      <div class="grid">
+        <p>Introduction to Azure Data Lake Storage (ADLS)</p>
+        <p>Core Components of ADLS Gen2</p>
+        <p>Blobs, Containers, and Storage Accounts</p>
+        <p>Hierarchical Namespace</p>
+        <p>Why Use Azure Data Lake Storage?</p>
+        <p>Scalability, Cost-Effectiveness, Security</p>
+        <p>Integration with Analytics Services</p>
+        <p>Access and Management of ADLS</p>
+        <p>Data Management via Console, SDK, CLI, REST API</p>
+        <p>Role-Based Access Control (RBAC) and Access Control Lists (ACLs)</p>
+        <p>Pricing Overview</p>
+        <p>Pricing Tiers (Hot, Cool, Archive)</p>
+        <p>Cost Factors</p>
+        <p>Best Practices for ADLS</p>
+        <p>Data Partitioning</p>
+        <p>Tiering Strategy for Cost Optimization</p>
+        <p>Monitoring and Usage Tracking</p>
+        <p>Interactive Access Methods</p>
+        <p>Managing ADLS via Console</p>
+        <p>CLI/Shell Interaction</p>
+        <p>Programmatic Access via SDKs</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">Azure Data Engineering Tools</h3>
+      <div class="mod-label">MODULE 06<strong>continued</strong></div>
+    </div>
+    <div class="topic"><h4><i>03</i> Azure SQL DB</h4>
+      <div class="list">
+        <p>Introduction to Azure SQL Database</p>
+        <p>Key Features</p>
+        <p>Creating a SQL db for practice</p>
+      </div>
+    </div>
+    <div class="topic"><h4><i>04</i> Azure Data Factory (ADF)</h4>
+      <div class="grid">
+        <p>What is ADF and Use cases</p>
+        <p>Core components of ADF and understanding & configuring</p>
+        <p>Integration runtime</p>
+        <p>Linked Services</p>
+        <p>Datasets</p>
+        <p>Pipelines</p>
+        <p>Activities</p>
+        <p>Triggers</p>
+        <p>Key Features of Azure Data Factory</p>
+        <p>Pipelines in ADF</p>
+        <p>Creating and Configuring Pipelines</p>
+        <p>Activities and Triggers</p>
+        <p>Monitoring and Managing Pipeline Runs</p>
+        <p>Orchestration</p>
+        <p>Multiple examples with ADF activities</p>
+        <p>Case study-1: End to End Incremental pipeline with ADF, ADLS, SQL DB.</p>
+        <p>Best Practices for ADF</p>
+        <p>Designing Efficient Pipelines</p>
+        <p>Data Partitioning and Parallelism</p>
+        <p>Monitoring and Optimization for Performance</p>
+      </div>
+    </div>
+    <div class="topic"><h4><i>05</i> Azure Synapse</h4>
+      <div class="list">
+        <p>Synapse Workspace, SQL Pools & Architecture</p>
+        <p>Dedicated & Serverless SQL concepts</p>
+        <p>Data ingestion using Synapse Pipelines</p>
+        <p>External Tables, Views & Data Lake integration</p>
+        <p>Query performance optimization, partitioning & workload management</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">Databricks on Azure/GCP</h3>
+      <div class="mod-label">MODULE 07<strong>Databricks on Azure/GCP</strong><div class="count">1 FOCUSED TOPIC</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Databricks Lakehouse Platform</h4>
+      <div class="grid">
+        <p>Introduction to Databricks Lakehouse Platform</p>
+        <p>Databricks Architecture and Core Components</p>
+        <p>Explore the architecture, including clusters, jobs, and the workspace environment.</p>
+        <p>Key components like Databricks Runtime, Spark, and Delta Lake.</p>
+        <p>Setting Up and Administering a Databricks Workspace</p>
+        <p>Step-by-step guide on workspace creation and management.</p>
+        <p>Admin tasks including user management, permissions, and billing.</p>
+        <p>Working with Notebooks and Clusters</p>
+        <p>Collaborative data science using Databricks notebooks.</p>
+        <p>Cluster setup, management, and autoscaling.</p>
+        <p>Databricks Unity Catalog</p>
+        <p>Unified governance solution for managing data and metadata across the lakehouse.</p>
+        <p>Organizing data assets and enforcing security policies.</p>
+        <p>Managing Data with Delta Lake</p>
+        <p>Understanding Delta Lake’s ACID transactions and versioning capabilities.</p>
+        <p>Best practices for efficient data management.</p>
+        <p>Creating Delta Lake Tables</p>
+        <p>Querying and managing data across multiple file formats.</p>
+        <p>Building ELT Pipelines with Spark SQL and Python</p>
+        <p>Incremental Data Processing with Delta Lake</p>
+        <p>Case Study 1: Real-time data processing with Spark Structured streaming</p>
+        <p>Case Study 2: Databricks Autoloader for file-based ingestion utility</p>
+        <p>Performance Optimization in Databricks</p>
+      </div>
+    </div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="header">
+      <h3 class="page-title">By the End of the course What Students can Expect</h3>
+      <div class="mod-label">MODULE 08<strong>Outcomes</strong><div class="count">8 FOCUSED TOPICS</div></div>
+    </div>
+    <div class="topic"><h4><i>01</i> Build end-to-end Data Engineering pipelines on GCP & Azure</h4></div>
+    <div class="topic"><h4><i>02</i> Develop strong skills in SQL, Python, PySpark, Linux & Apache Beam</h4></div>
+    <div class="topic"><h4><i>03</i> Work with industry standard data engineering services</h4></div>
+    <div class="topic"><h4><i>04</i> Implement Batch & Real-Time Data Processing pipelines</h4></div>
+    <div class="topic"><h4><i>05</i> Design Bronze → Silver → Gold / Medallion Architecture</h4></div>
+    <div class="topic"><h4><i>06</i> Build production-ready projects and troubleshoot real-world data engineering scenarios</h4></div>
+    <div class="topic"><h4><i>07</i> Understand Cloud, Data Lake, Data Warehouse & Lakehouse architectures</h4></div>
+    <div class="topic"><h4><i>08</i> Prepare for Data Engineer interviews with practical, scenario-based knowledge</h4></div>
+    <div class="foot"><span>SkillVane IT Academy</span><span>Learn • Build • Advance</span></div>
+  </section>
+
+  <section class="page">
+    <div class="thanks">
+      <h2>Thank You.</h2>
+      <p><strong>Shaik Saidhul</strong></p>
+      <p>Cloud Expert</p>
+      <p>+91 7305101711</p>
+      <p style="margin-top:18px">Start your multi-cloud data engineering journey with SkillVane.</p>
+      <p>SkillVane IT Academy · Learn • Build • Advance</p>
+    </div>
+  </section>
+</body>
+</html>
