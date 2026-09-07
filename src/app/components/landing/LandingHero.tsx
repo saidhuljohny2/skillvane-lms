@@ -74,7 +74,7 @@ export function LandingHero({
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#18c29c] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#18c29c]" />
                 </span>
-                Live batch · August 26 · 9:30 PM IST
+                Live batch · 26 Sep 2027 · 8:00 PM IST
               </button>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">

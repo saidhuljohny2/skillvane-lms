@@ -104,6 +104,8 @@ interface Course {
   originalPrice?: number;
   duration?: string;
   timings?: string;
+  demoDates?: string;
+  demoSessions?: number;
   highlights: string[];
   curriculum: { module: string; topics: string[] }[];
   curriculumDownload?: string;
@@ -122,20 +124,22 @@ const COURSES: Course[] = [
     icon: MonitorPlay,
     accentFrom: "#4361ee",
     accentTo: "#3bc9db",
-    title: "Multi-Cloud Data Engineer Program",
+    title: "New Batch: Multi-Cloud Data Engineer Program",
     subtitle: "GCP + Azure · Case Studies & Real-world Projects",
-    price: 14999,
-    originalPrice: 18000,
-    duration: "4 months",
-    timings: "9:30 PM to 10:30 PM",
+    price: 22000,
+    originalPrice: 25000,
+    duration: "4 months live sessions",
+    timings: "8:00 PM to 9:00 PM",
+    demoDates: "26 & 27 Sep 2027",
+    demoSessions: 2,
     curriculumDownload: "/multi-cloud-data-engineer-curriculum.html",
     tag: "Main Focus",
     highlights: [
-      "4-month live program covering GCP + Azure",
-      "Case studies and production-style projects",
-      "Demo: August 26, 27 & 28 - 3 Free Demo Sessions",
-      "Starts August 26 at 9:30 PM IST",
-      "Recordings shared daily + interview prep",
+      "Demo: 26 & 27 Sep 2027 - 2 Free Demo Sessions",
+      "4 months live sessions covering GCP + Azure",
+      "Recordings shared daily",
+      "Comprehensive material",
+      "Case studies and real-world projects",
       "Resume assistance & career guidance",
       "Live doubt-clearing in every session",
     ],
@@ -159,6 +163,8 @@ const COURSES: Course[] = [
     originalPrice: 18000,
     duration: "3 months",
     timings: "9:30 PM to 10:30 PM",
+    demoDates: "August 26, 27, 28",
+    demoSessions: 3,
     curriculumDownload: gcpDataEngineeringCurriculum,
     tag: "Popular",
     highlights: [
@@ -2502,7 +2508,7 @@ function CourseCard({
   const category: CourseCategory =
     course.type === "live" ? "live-batch" : "self-paced";
   const isLiveBatch = category === "live-batch";
-  const isFeaturedLiveBatch = course.id === "gcp-live";
+  const isFeaturedLiveBatch = isLiveBatch;
   const moduleCount = course.curriculum.length;
   const curriculumHref = isLiveBatch ? course.curriculumDownload : undefined;
   const cardHighlights = course.highlights.slice(0, 4);
@@ -2601,8 +2607,10 @@ function CourseCard({
             {[
               { label: "Duration", value: course.duration },
               { label: "Timings", value: course.timings },
-              { label: "Demo", value: "August 26, 27, 28" },
-            ].map((item) => (
+              { label: "Demo", value: course.demoDates },
+            ]
+              .filter((item) => item.value)
+              .map((item) => (
               <div key={item.label}>
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#f2b84b]">
                   {item.label}
@@ -2633,10 +2641,10 @@ function CourseCard({
               {course.timings}
             </span>
           )}
-          {isFeaturedLiveBatch && (
+          {course.demoSessions != null && (
             <span className="flex items-center gap-1 text-xs text-[#ffe4a3] bg-[#f2b84b]/10 border border-[#f2b84b]/24 px-2.5 py-1 rounded-full">
               <Play className="w-3 h-3" />
-              3 free demos
+              {course.demoSessions} free demos
             </span>
           )}
           <span className="flex items-center gap-1 text-xs text-slate-300 bg-white/[0.07] border border-white/10 px-2.5 py-1 rounded-full">
@@ -3267,11 +3275,11 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
             {visibleCourses.map((course, index) => (
               <Reveal
                 key={course.id}
-                className={`h-full ${course.id === "gcp-live" ? "lg:col-span-2" : ""}`}
+                className="h-full"
                 delay={index * 0.08}
               >
                 <CourseCard

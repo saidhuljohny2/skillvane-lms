@@ -5,17 +5,17 @@ const CHAT_OPTIONS = [
   {
     label: "Course fees",
     answer:
-      "The main GCP Data Engineering live batch is ₹12,000. Other self-paced and project courses are listed in the Courses section with their current prices. Enroll in 2 or more courses in one checkout to get an extra 10% off.",
+      "The Multi-Cloud Data Engineer live batch is ₹22,000 (₹25,000 actual). Other live, self-paced, and project courses are listed in the Courses section with their current prices. Enroll in 2 or more courses in one checkout to get an extra 10% off.",
   },
   {
     label: "Live batch timing",
     answer:
-      "The next Multi-Cloud Data Engineer live batch starts on August 26 at 9:30 PM IST and runs for 4 months (GCP + Azure).",
+      "The Multi-Cloud Data Engineer live batch runs for 4 months of live sessions, 8:00 PM to 9:00 PM IST (GCP + Azure).",
   },
   {
     label: "Free demo",
     answer:
-      "Free demo classes are planned for August 26, 27, and 28 at 9:30 PM IST. You can join the demo from the live batch course card.",
+      "The Multi-Cloud live batch has 2 free demo sessions on 26 and 27 September 2027 at 8:00 PM IST. You can join the demo from the live batch course card.",
   },
   {
     label: "Curriculum",
