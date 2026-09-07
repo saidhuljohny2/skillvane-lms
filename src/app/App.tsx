@@ -3,6 +3,8 @@ import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
 import gcpDataEngineeringCurriculum from "@/imports/gcp-data-engineering-curriculum.pdf";
+import multiCloudDataEngineeringCurriculum from "@/imports/multi-cloud-data-engineer-curriculum.pdf";
+import { GCP_CURRICULUM } from "@/app/data/gcp-curriculum";
 import { MULTI_CLOUD_CURRICULUM } from "@/app/data/multi-cloud-curriculum";
 import {
   ChevronDown,
@@ -132,7 +134,7 @@ const COURSES: Course[] = [
     timings: "8:00 PM to 9:00 PM",
     demoDates: "26 & 27 Sep 2027",
     demoSessions: 2,
-    curriculumDownload: "/multi-cloud-data-engineer-curriculum.html",
+    curriculumDownload: multiCloudDataEngineeringCurriculum,
     tag: "Main Focus",
     highlights: [
       "Demo: 26 & 27 Sep 2027 - 2 Free Demo Sessions",
@@ -176,7 +178,7 @@ const COURSES: Course[] = [
       "Live doubt-clearing in every session",
       "Private student community access",
     ],
-    curriculum: MULTI_CLOUD_CURRICULUM.slice(0, 9),
+    curriculum: GCP_CURRICULUM,
     zoomLink: "https://meet.google.com/tvb-vzfp-qpm",
     notesLink:
       "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_LIVE_NOTES_LINK",
@@ -189,23 +191,49 @@ const COURSES: Course[] = [
     icon: Video,
     accentFrom: "#7c3aed",
     accentTo: "#a855f7",
-    title: "Multi-Cloud Data Engineer Program",
-    subtitle: "GCP + Azure · Recordings",
+    title: "GCP Data Engineering",
+    subtitle: "Course · Recordings",
     price: 6999,
     originalPrice: 7500,
     highlights: [
-      "Latest batch recordings (full GCP + Azure program)",
+      "Latest batch recordings (full GCP course)",
       "Watch at your own pace, anytime",
-      "Same curriculum as the live batch",
+      "Same curriculum as the GCP live batch",
+      "1 year access to all recordings",
+      "Notes included with every module",
+      "Community access for doubt resolution",
+    ],
+    curriculum: GCP_CURRICULUM,
+    driveLink:
+      "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link",
+    notesLink:
+      "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_RECORDINGS_NOTES_LINK",
+  },
+
+  {
+    id: "multi-cloud-recordings",
+    type: "recording",
+    badge: "SELF-PACED",
+    icon: Video,
+    accentFrom: "#2563eb",
+    accentTo: "#22d3ee",
+    title: "Multi-Cloud Data Engineer Program",
+    subtitle: "GCP + Azure · Self-Paced Recordings",
+    price: 10999,
+    originalPrice: 15000,
+    highlights: [
+      "Full GCP + Azure program recordings",
+      "Same curriculum as the Multi-Cloud live batch",
+      "Watch at your own pace, anytime",
       "1 year access to all recordings",
       "Notes included with every module",
       "Community access for doubt resolution",
     ],
     curriculum: MULTI_CLOUD_CURRICULUM,
     driveLink:
-      "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h?usp=drive_link", // Add your Google Drive folder link here
+      "https://drive.google.com/drive/folders/REPLACE_WITH_MULTI_CLOUD_RECORDINGS_LINK",
     notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_RECORDINGS_NOTES_LINK", // Replace with GCP recordings notes link
+      "https://drive.google.com/drive/folders/REPLACE_WITH_MULTI_CLOUD_RECORDINGS_NOTES_LINK",
   },
 
   // â”€â”€ Course 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
