@@ -37,6 +37,7 @@ interface Course {
   originalPrice?: number;
   duration?: string;
   zoomLink?: string;
+  curriculum?: { module: string; topics: string[] }[];
 }
 
 function formatINR(n: number) {
@@ -94,10 +95,20 @@ export function StudentDashboard({
     (c) => !student.enrolledCourses.includes(c.id),
   );
   const accessStorageKey = `skillvane_drive_access_confirmed_${student.email}`;
+  const progressStorageKey = `skillvane_learning_progress_${student.email}`;
   const [confirmedAccess, setConfirmedAccess] = useState<Record<string, boolean>>(
     () => {
       try {
         return JSON.parse(localStorage.getItem(accessStorageKey) || "{}");
+      } catch {
+        return {};
+      }
+    },
+  );
+  const [completedModules, setCompletedModules] = useState<Record<string, number[]>>(
+    () => {
+      try {
+        return JSON.parse(localStorage.getItem(progressStorageKey) || "{}");
       } catch {
         return {};
       }
@@ -108,6 +119,27 @@ export function StudentDashboard({
     const next = { ...confirmedAccess, [courseId]: true };
     setConfirmedAccess(next);
     localStorage.setItem(accessStorageKey, JSON.stringify(next));
+  };
+
+  const toggleModuleComplete = (courseId: string, moduleIndex: number) => {
+    const completed = new Set(completedModules[courseId] || []);
+    if (completed.has(moduleIndex)) completed.delete(moduleIndex);
+    else completed.add(moduleIndex);
+    const next = {
+      ...completedModules,
+      [courseId]: [...completed].sort((a, b) => a - b),
+    };
+    setCompletedModules(next);
+    localStorage.setItem(progressStorageKey, JSON.stringify(next));
+  };
+
+  const getCourseProgress = (course: Course) => {
+    const moduleCount = course.curriculum?.length || 0;
+    if (moduleCount === 0) return 0;
+    const completedCount = (completedModules[course.id] || []).filter(
+      (index) => index >= 0 && index < moduleCount,
+    ).length;
+    return Math.round((completedCount / moduleCount) * 100);
   };
 
   const openCertificate = (course: Course) => {
@@ -139,10 +171,21 @@ export function StudentDashboard({
     );
   };
 
-  const progress =
-    courses.length > 0
-      ? Math.round((enrolledCourses.length / courses.length) * 100)
-      : 0;
+  const enrolledModuleCount = enrolledCourses.reduce(
+    (total, course) => total + (course.curriculum?.length || 0),
+    0,
+  );
+  const completedModuleCount = enrolledCourses.reduce(
+    (total, course) =>
+      total +
+      (completedModules[course.id] || []).filter(
+        (index) => index >= 0 && index < (course.curriculum?.length || 0),
+      ).length,
+    0,
+  );
+  const progress = enrolledModuleCount
+    ? Math.round((completedModuleCount / enrolledModuleCount) * 100)
+    : 0;
 
   const tabs = [
     { id: "overview" as const, label: "Overview", icon: LayoutGrid },
@@ -237,11 +280,11 @@ export function StudentDashboard({
                           Learning path
                         </div>
                         <h3 className="text-2xl font-black text-white sm:text-3xl">
-                          Your command center
+                          Continue your learning
                         </h3>
                         <p className="mt-2 max-w-lg text-sm text-slate-300">
-                          Access materials, join live sessions, and grow your GCP
-                          skills from one place.
+                          Complete each curriculum module as you learn. Your
+                          progress is saved on this device.
                         </p>
                       </div>
                       <div className="flex flex-col items-center">
@@ -256,7 +299,7 @@ export function StudentDashboard({
                               {progress}%
                             </span>
                             <span className="text-[9px] font-bold uppercase text-slate-500">
-                              Path
+                              Complete
                             </span>
                           </div>
                         </div>
@@ -347,6 +390,7 @@ export function StudentDashboard({
                         const access = getEnrolledCourseAccess(course);
                         const driveHref = getDriveAccessRequestHref(student, course);
                         const confirmed = Boolean(confirmedAccess[course.id]);
+                        const courseProgress = getCourseProgress(course);
                         return (
                           <div
                             key={course.id}
@@ -369,7 +413,66 @@ export function StudentDashboard({
                                 <h4 className="font-black text-white">{course.title}</h4>
                                 <p className="text-xs text-slate-500">{course.subtitle}</p>
                               </div>
+                             </div>
+                            <div className="mt-4">
+                              <div className="mb-2 flex items-center justify-between text-xs">
+                                <span className="font-bold text-slate-300">
+                                  Course progress
+                                </span>
+                                <span className="font-black text-[#8df5d7]">
+                                  {courseProgress}%
+                                </span>
+                              </div>
+                              <div className="h-2 overflow-hidden rounded-full bg-white/[0.07]">
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-[#18c29c] to-[#2f80ed] transition-[width] duration-500"
+                                  style={{ width: `${courseProgress}%` }}
+                                />
+                              </div>
                             </div>
+                            {course.curriculum && course.curriculum.length > 0 && (
+                              <details className="mt-3 rounded-xl border border-white/[0.08] bg-black/10">
+                                <summary className="cursor-pointer px-3 py-2.5 text-xs font-black text-slate-200 marker:text-[#18c29c]">
+                                  Track curriculum ({completedModules[course.id]?.length || 0}/
+                                  {course.curriculum.length} modules)
+                                </summary>
+                                <div className="space-y-1 border-t border-white/[0.07] p-2">
+                                  {course.curriculum.map((module, moduleIndex) => {
+                                    const isComplete = (
+                                      completedModules[course.id] || []
+                                    ).includes(moduleIndex);
+                                    return (
+                                      <button
+                                        key={`${course.id}-${moduleIndex}`}
+                                        type="button"
+                                        onClick={() =>
+                                          toggleModuleComplete(course.id, moduleIndex)
+                                        }
+                                        className={`flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${
+                                          isComplete
+                                            ? "bg-[#18c29c]/10 text-[#9cf8dd]"
+                                            : "text-slate-300 hover:bg-white/5"
+                                        }`}
+                                      >
+                                        <CheckCircle2
+                                          className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
+                                            isComplete ? "fill-[#18c29c]/20" : "text-slate-600"
+                                          }`}
+                                        />
+                                        <span>
+                                          <span className="font-bold">
+                                            Module {moduleIndex + 1}: {module.module}
+                                          </span>
+                                          <span className="mt-0.5 block text-[10px] text-slate-500">
+                                            {module.topics.length} topics
+                                          </span>
+                                        </span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </details>
+                            )}
                             {access ? (
                               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                 <a
