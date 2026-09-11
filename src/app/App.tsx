@@ -63,9 +63,6 @@ import { Reveal } from "@/app/components/effects/Reveal";
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONFIG - Update these two values after setup (see guide below)
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const RAZORPAY_KEY = "rzp_live_Sx2SDk8J6c6HBk";
-const RAZORPAY_KEY_SECRET = "sBIaKza4uMIkT6ehyhqwRQts";
-
 // Paste your Google Apps Script deployment URL here after setup:
 const GOOGLE_SHEET_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
@@ -2953,37 +2950,62 @@ export default function App() {
       // Load Razorpay SDK
       await loadRazorpay();
 
-      // Validate Razorpay key
-      if (
-        !RAZORPAY_KEY ||
-        RAZORPAY_KEY === "YOUR_RAZORPAY_KEY"
-      ) {
-        throw new Error(
-          "Razorpay key not configured. Please add your key at the top of App.tsx",
-        );
+      const orderResponse = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseIds: courses.map((course) => course.id),
+          couponCode: pricing.couponCode || "",
+        }),
+      });
+      const order = await orderResponse.json();
+      if (!orderResponse.ok) {
+        throw new Error(order.error || "Could not create a secure payment order");
+      }
+      if (order.amount !== Math.round(pricing.amountPaid * 100)) {
+        throw new Error("The course price changed. Please reopen checkout and try again.");
       }
 
       const options = {
-        key: RAZORPAY_KEY,
-        amount: Math.round(pricing.amountPaid * 100), // Amount in paise
-        currency: "INR",
+        key: order.keyId,
+        order_id: order.orderId,
+        amount: order.amount,
+        currency: order.currency,
         name: "SkillVane IT Academy",
         description:
           courses.length === 1
             ? `${courses[0].title} - ${courses[0].subtitle}`
             : `${courses.length} SkillVane courses`,
         image: "", // Optional: Add your logo URL
-        handler: (response: any) => {
-          setPayLoading(null);
-
-          // Validate payment response
-          if (!response.razorpay_payment_id) {
+        handler: async (response: any) => {
+          try {
+            const verificationResponse = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+            const verification = await verificationResponse.json();
+            if (!verificationResponse.ok || !verification.verified) {
+              throw new Error(
+                verification.error || "Payment verification failed. Please contact support.",
+              );
+            }
+          } catch (error) {
+            setPayLoading(null);
             setPayError(
-              "Payment verification failed. Please contact support.",
+              error instanceof Error
+                ? error.message
+                : "Payment verification failed. Please contact support.",
             );
-            setTimeout(() => setPayError(null), 6000);
+            setTimeout(() => setPayError(null), 10000);
             return;
           }
+
+          setPayLoading(null);
 
           const record: EnrollmentRecord = {
             invoiceNo: generateInvoiceNo(),
