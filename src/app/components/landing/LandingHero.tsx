@@ -9,7 +9,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { GcpCloudVisual } from "@/app/components/effects/GcpCloudVisual";
+import { MultiCloudVisual } from "@/app/components/effects/GcpCloudVisual";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
 import { Reveal, RevealStagger, RevealItem } from "@/app/components/effects/Reveal";
@@ -121,11 +121,11 @@ export function LandingHero({
         <Reveal delay={0.1} className="relative order-2 lg:order-2">
           <div className="glass-panel glass-panel-glow mx-auto w-full max-w-[460px] rounded-[1.5rem] p-4 sm:max-w-none sm:rounded-[1.75rem] sm:p-6">
             <p className="mb-4 text-center text-[10px] font-black uppercase tracking-[0.24em] text-[#8bedd0]">
-              Google Cloud data platform
+              Multi-cloud data platform
             </p>
-            <GcpCloudVisual />
+            <MultiCloudVisual />
             <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:mt-5 sm:gap-2">
-              {["BigQuery", "Dataflow", "Composer", "Pub/Sub", "DataProc"].map(
+              {["BigQuery", "Dataflow", "ADF", "Synapse", "Databricks"].map(
                 (tag) => (
                   <span
                     key={tag}
@@ -139,7 +139,7 @@ export function LandingHero({
             <div className="glass-pill mx-auto mt-3 flex max-w-sm items-center justify-center gap-2 px-3 py-2.5 sm:mt-4 sm:px-4">
               <Cloud className="h-4 w-4 text-[#4285F4]" />
               <span className="text-[11px] font-bold text-slate-300 sm:text-xs">
-                Production-grade GCP training
+                Production-grade cloud training
               </span>
             </div>
           </div>

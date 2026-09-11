@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import {
   Database,
+  Cloud,
   GitBranch,
   HardDrive,
   Layers,
@@ -12,7 +13,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { GcpCloudMark } from "./GcpCloudMark";
 
-const GCP_SERVICES: {
+const CLOUD_SERVICES: {
   name: string;
   icon: LucideIcon;
   color: string;
@@ -20,13 +21,13 @@ const GCP_SERVICES: {
 }[] = [
   { name: "BigQuery", icon: Database, color: "#4285F4", angle: 0 },
   { name: "Dataflow", icon: Workflow, color: "#18c29c", angle: 40 },
-  { name: "Composer", icon: GitBranch, color: "#7cc7ff", angle: 80 },
-  { name: "Pub/Sub", icon: Radio, color: "#f2b84b", angle: 120 },
-  { name: "DataProc", icon: Server, color: "#a855f7", angle: 160 },
+  { name: "ADF", icon: GitBranch, color: "#38bdf8", angle: 80 },
+  { name: "Synapse", icon: Layers, color: "#60a5fa", angle: 120 },
+  { name: "Databricks", icon: Server, color: "#f97316", angle: 160 },
   { name: "GCS", icon: HardDrive, color: "#34a853", angle: 200 },
-  { name: "Cloud SQL", icon: Database, color: "#ea4335", angle: 240 },
-  { name: "Terraform", icon: Layers, color: "#7b42bc", angle: 280 },
-  { name: "Functions", icon: Zap, color: "#fbbc04", angle: 320 },
+  { name: "ADLS", icon: Database, color: "#0078d4", angle: 240 },
+  { name: "Pub/Sub", icon: Radio, color: "#f2b84b", angle: 280 },
+  { name: "Functions", icon: Zap, color: "#a855f7", angle: 320 },
 ];
 
 function polarToPercent(angleDeg: number, radiusPercent: number) {
@@ -37,7 +38,7 @@ function polarToPercent(angleDeg: number, radiusPercent: number) {
   };
 }
 
-export function GcpCloudVisual() {
+export function MultiCloudVisual() {
   const orbitRadius = 44;
 
   return (
@@ -75,7 +76,7 @@ export function GcpCloudVisual() {
           stroke="rgba(255,255,255,0.1)"
           strokeWidth="0.45"
         />
-        {GCP_SERVICES.map((svc) => {
+        {CLOUD_SERVICES.map((svc) => {
           const rad = (svc.angle * Math.PI) / 180;
           const x2 = 50 + orbitRadius * Math.cos(rad);
           const y2 = 50 + orbitRadius * Math.sin(rad);
@@ -95,7 +96,7 @@ export function GcpCloudVisual() {
         })}
       </svg>
 
-      {GCP_SERVICES.map((svc, i) => {
+      {CLOUD_SERVICES.map((svc, i) => {
         const pos = polarToPercent(svc.angle, orbitRadius);
         const Icon = svc.icon;
         return (
@@ -135,7 +136,7 @@ export function GcpCloudVisual() {
         );
       })}
 
-      {/* Google Cloud hub */}
+      {/* Multi-cloud hub */}
       <motion.div
         className="gcp-cloud-hub glass-panel absolute left-1/2 top-1/2 z-30 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
         initial={{ opacity: 0, scale: 0.88 }}
@@ -146,18 +147,23 @@ export function GcpCloudVisual() {
       >
         <div className="glass-portrait-shine pointer-events-none absolute inset-0 rounded-[inherit]" />
         <motion.div
-          className="gcp-cloud-mark-wrap"
+          className="relative flex items-center gap-2"
           animate={{ y: [0, -3, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <GcpCloudMark className="h-auto w-full" />
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/95 p-1.5 shadow-lg sm:h-12 sm:w-12">
+            <GcpCloudMark className="h-full w-full" />
+          </span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0078d4] shadow-lg shadow-[#0078d4]/20 sm:h-12 sm:w-12">
+            <Cloud className="h-6 w-6 text-white sm:h-7 sm:w-7" />
+          </span>
         </motion.div>
         <div className="relative mt-2 text-center">
           <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#7cc7ff]">
-            Google Cloud
+            GCP + Azure
           </p>
           <p className="mt-0.5 text-xs font-bold text-white sm:text-sm">
-            Data Engineering
+            Multi-Cloud Engineering
           </p>
         </div>
       </motion.div>
