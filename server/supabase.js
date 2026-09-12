@@ -37,7 +37,15 @@ export async function requireSupabaseUser(request) {
 }
 
 export async function requireSupabaseAdmin(request) {
-  const user = await requireSupabaseUser(request);
+  let user;
+  try {
+    user = await requireSupabaseUser(request);
+  } catch (error) {
+    if (error?.statusCode === 401) {
+      error.message = "Please sign in with an administrator account.";
+    }
+    throw error;
+  }
   const rows = await supabaseServiceRequest(
     `/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`,
   );
