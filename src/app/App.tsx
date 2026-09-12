@@ -720,7 +720,7 @@ function CourseModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-[160] flex items-end justify-center p-0 sm:items-center sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -728,10 +728,10 @@ function CourseModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full sm:max-w-2xl max-h-[92dvh] sm:max-h-[85vh] flex flex-col bg-[#0f1526] rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+      <div className="relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-[2rem] border border-white/10 bg-[#0c111c] shadow-[0_35px_120px_rgba(0,0,0,.65)] sm:max-w-4xl sm:rounded-[2rem]">
         {/* Header */}
         <div
-          className="px-4 py-4 sm:px-5 flex items-start justify-between gap-4 flex-shrink-0"
+          className="relative flex flex-shrink-0 items-start justify-between gap-4 overflow-hidden px-5 py-6 sm:px-8 sm:py-8"
           style={{
             background: `linear-gradient(135deg, ${course.accentFrom}22 0%, ${course.accentTo}11 100%)`,
             borderBottom: `1px solid ${course.accentFrom}30`,
@@ -754,14 +754,14 @@ function CourseModal({
                 {course.badge}
               </p>
               <h2
-                className="text-base sm:text-lg font-bold leading-tight text-white"
+              className="max-w-2xl text-xl font-black leading-tight text-white sm:text-3xl"
                 style={{
                   fontFamily: "'Space Grotesk', system-ui, sans-serif",
                 }}
               >
                 {course.title}
               </h2>
-              <p className="text-xs text-white/50">
+              <p className="mt-1 text-sm text-white/55 sm:text-base">
                 {course.subtitle}
               </p>
             </div>
@@ -775,9 +775,9 @@ function CourseModal({
         </div>
 
         {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-4 py-4 sm:px-5 space-y-5">
+        <div className="flex-1 space-y-7 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">
           {/* Price + meta */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.035] p-5 sm:grid-cols-[1fr_auto] sm:items-center">
             <div>
               <div className="flex items-baseline gap-2">
                 <span
@@ -821,7 +821,7 @@ function CourseModal({
           </div>
 
           {/* Highlights */}
-          <div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
             <h3
               className="text-sm font-bold text-white mb-3"
               style={{
@@ -844,7 +844,7 @@ function CourseModal({
           </div>
 
           {/* Curriculum */}
-          <div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
             <h3
               className="text-sm font-bold text-white mb-3"
               style={{
@@ -2493,9 +2493,11 @@ function InvoiceModal({
 function CourseCard({
   course,
   onEnroll,
+  onView,
 }: {
   course: Course;
   onEnroll: (c: Course) => void;
+  onView: (c: Course) => void;
 }) {
   const Icon = course.icon;
   const demoAccess = getDemoAccess(course);
@@ -2509,7 +2511,7 @@ function CourseCard({
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b1522] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[#3b82f6]/25 hover:bg-[#0d1928] ${
+      className={`group course-card-3d relative flex h-full min-h-[500px] flex-col overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#0d131e] shadow-[0_22px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#101827] ${
         isFeaturedLiveBatch
           ? "border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
           : ""
@@ -2535,6 +2537,13 @@ function CourseCard({
 
       <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-lg border border-white/[0.08] bg-black/15 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300 backdrop-blur-xl">
         {CATEGORY_LABELS[category]}
+      </div>
+
+      <div className="relative z-10 flex h-24 items-end overflow-hidden border-b border-white/[0.07] px-5 pb-4">
+        <div className="absolute inset-0 opacity-60" style={{ background: `radial-gradient(circle at 82% 20%, ${course.accentFrom}55, transparent 35%), linear-gradient(120deg, ${course.accentFrom}16, ${course.accentTo}08)` }} />
+        <div className="absolute -right-6 -top-10 h-32 w-32 rounded-full border border-white/10" />
+        <div className="absolute right-8 top-5 h-12 w-12 rounded-full border border-white/10" />
+        <p className="relative text-[10px] font-black uppercase tracking-[0.22em] text-white/55">Career learning track</p>
       </div>
 
       {/* Tag */}
@@ -2735,15 +2744,21 @@ function CourseCard({
               {demoAccess.longLabel}
             </a>
           )}
-          <button
-            onClick={() => onEnroll(course)}
-            className={`magnetic-button w-full rounded-xl text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
-            style={{
-              background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)`,
-            }}
-          >
-            Enroll Now
-          </button>
+          <div className="grid grid-cols-[1fr_1.2fr] gap-2">
+            <button
+              onClick={() => onView(course)}
+              className={`rounded-xl border border-white/12 bg-white/[0.04] text-sm font-black text-white transition-all hover:border-white/25 hover:bg-white/[0.08] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
+            >
+              View course
+            </button>
+            <button
+              onClick={() => onEnroll(course)}
+              className={`magnetic-button rounded-xl text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
+              style={{ background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)` }}
+            >
+              Enroll now
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -3276,6 +3291,7 @@ export default function App() {
                 <CourseCard
                   course={course}
                   onEnroll={handleEnroll}
+                  onView={setModalCourse}
                 />
               </Reveal>
             ))}
