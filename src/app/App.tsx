@@ -482,9 +482,9 @@ const COURSES: Course[] = [
       },
     ],
     driveLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_BANKING_PROJECT_LINK", // Replace with Banking project Google Drive folder link
+      "https://drive.google.com/drive/folders/1JFILNA36Um1SgUKc9jzjFUhm8PnVzgJX",
     notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_BANKING_NOTES_LINK", // Replace with Banking notes link
+      "https://docs.google.com/spreadsheets/d/1yqLvpr-Q2hwvrJRbgWgWjdNwssAI6UBgQDDqa1oqR8k/edit",
   },
 
   // â”€â”€ ADD A NEW COURSE HERE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

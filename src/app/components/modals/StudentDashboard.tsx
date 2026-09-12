@@ -33,6 +33,44 @@ import skillVaneLogo from "@/imports/logo1.png";
 const FREE_LEARNING_PLAYLIST_URL =
   "https://www.youtube.com/playlist?list=PLk8wwChOsCPzoZHuQEiJqWVvhHFdFa6sy";
 
+const BANKING_DRIVE_LESSONS = [
+  ["Project Introduction and Banking Data Platform Architecture", "1xFWqaDub9RzPdvE2s2caIF27WXUogXn4"],
+  ["Create a GCP Free Tier Account", "1zHsNQpoNjDMoSxxf26nbOrzj1k3jNhb7"],
+  ["Project Setup and Repository Walkthrough", "1MJz5r1mvhpYWrVTSIDjBOswFxTl7bDia"],
+  ["Understanding the Banking Dataset", "14rGZynwMvVaOSou8hGDui6Iyb8l7zlYP"],
+  ["Set Up Source 1 - Cloud SQL MySQL Instance", "1rSyv5hZpyShI9wyHk-cOzY-2UmMCMAvd"],
+  ["Set Up Source 2 - Pub/Sub", "1BJOAJoJyC-UvQ3qUNl0tOX0WFBA9FZDf"],
+  ["Set Up the Landing Layer", "1Vu1u8coyvk_8ah6JEX3pGx5iunJrwoUn"],
+  ["Set Up the Metadata Layer", "1p-IBaaZdYs3VS_vpOulUykMEtFvRXqDG"],
+  ["Build Ingestion Pipeline 1 - Cloud SQL to GCS (Part 1)", "1QwbYnSaVijZSDOPnT2zAGKL_7M_dGYk_"],
+  ["Build Ingestion Pipeline 1 - Cloud SQL to GCS (Part 2)", "1QRTrH6GrwPPNWRN5DcdSzuQ7PQp7NcKm"],
+  ["Set Up the Bronze Layer", "1be9gh_Zu0T22vxBUvVByrQHOPxGe_PY8"],
+  ["Create a Dataproc Cluster", "1mK7abGCS-AWIQGQ01xqbPtE4SV02Kzpo"],
+  ["Load Bronze Data with PySpark on Dataproc", "1lo862iw8eg71Leyn7MbMzEjZhOiCkHhQ"],
+  ["Build Ingestion Pipeline 2 - Pub/Sub to BigQuery", "1YErlqaZLBwFSintH157DJJczZk7TXG0u"],
+  ["Set Up the Silver Layer", "10myB0e9DnMQwGbQ8TJaBH1L6qdNMgVTZ"],
+  ["Set Up the Gold Layer", "1kmL7NmykVvGuMOrT-tohFtW1grB2HCp1"],
+  ["Introduction to Airflow Orchestration", "1tc6eaKhSeGe_R2fkEkFgOVFux6mI1LQ8"],
+  ["Create the Banking Ingestion DAG", "1JHfg1w-5OZD-EHCo-CLQk148StmTB-QL"],
+  ["Create the Banking Bronze DAG", "12PAV8I3-kIz-ncano_aEUW11xoZdNjEZ"],
+  ["Create the Banking Silver DAG", "1808yq9coPbhgo-KJywCUwZYPaOwJwZa7"],
+  ["Create the Banking Gold DAG", "1dYyNxDKNospr3qacUaWPgpoYngtc2U1H"],
+  ["Create the Airflow Environment", "1mXcmwPMEN5feJkqM_5iL0buorZFdrEyX"],
+  ["Manually Trigger the Airflow DAGs", "1DakCyNIVHepBrYAZ_1Q2LGeiS7FQ99w7"],
+  ["CI/CD with Cloud Build, GitHub, and Airflow", "1VwPHvcgENI19t-elczdt_6uQgt2MLvHC"],
+].map(([title, fileId], index) => ({
+  module: `${String(index + 1).padStart(2, "0")} · ${title}`,
+  topics: [title],
+  videoUrl: `https://drive.google.com/file/d/${fileId}/view`,
+  resources: [],
+}));
+
+function drivePreviewUrl(url?: string) {
+  if (!url) return null;
+  const fileId = url.match(/\/file\/d\/([^/]+)/)?.[1] || url.match(/[?&]id=([^&]+)/)?.[1];
+  return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+}
+
 interface Course {
   id: string;
   type: string;
@@ -111,13 +149,16 @@ function LessonPlayer({
       resources: lesson.resources,
     })),
   );
-  const modules = databaseLessons.length ? databaseLessons : (course.curriculum || []);
+  const driveLessons = course.id === "project-banking" ? BANKING_DRIVE_LESSONS : [];
+  const modules = driveLessons.length ? driveLessons : databaseLessons.length ? databaseLessons : (course.curriculum || []);
   const [moduleIndex, setModuleIndex] = useState(() => {
     const saved = Number(localStorage.getItem(resumeKey));
     return Number.isInteger(saved) && saved >= 0 && saved < modules.length ? saved : 0;
   });
   const module = modules[moduleIndex];
   const isComplete = completedModules.includes(moduleIndex);
+  const lessonVideoUrl = "videoUrl" in (module || {}) ? module.videoUrl : "";
+  const embeddedDriveUrl = drivePreviewUrl(lessonVideoUrl);
 
   const selectModule = (index: number) => {
     setModuleIndex(index);
@@ -178,8 +219,8 @@ function LessonPlayer({
           </header>
 
           <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-            <div className="flex aspect-video items-center justify-center rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_center,rgba(24,194,156,0.14),transparent_55%),#030811] shadow-2xl">
-              <div className="max-w-md px-6 text-center">
+            <div className="flex aspect-video items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.14),transparent_55%),#030811] shadow-2xl">
+              {embeddedDriveUrl ? <iframe src={embeddedDriveUrl} title={module?.module || "Lesson video"} allow="autoplay; encrypted-media" allowFullScreen className="h-full w-full border-0" /> : <div className="max-w-md px-6 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#3b82f6]/15 ring-1 ring-[#3b82f6]/30">
                   <Play className="h-7 w-7 fill-[#93c5fd] text-[#93c5fd]" />
                 </div>
@@ -187,8 +228,8 @@ function LessonPlayer({
                 <p className="mt-2 text-sm text-slate-400">
                   The lesson video will appear here when it is published by your instructor.
                 </p>
-                {"videoUrl" in (module || {}) && module.videoUrl ? <a href={module.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff]">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff]">Open course recordings</a>}
-              </div>
+                 {lessonVideoUrl ? <a href={lessonVideoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open course recordings</a>}
+              </div>}
             </div>
 
             <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
