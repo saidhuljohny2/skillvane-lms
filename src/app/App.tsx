@@ -2507,11 +2507,11 @@ function CourseCard({
   const isFeaturedLiveBatch = isLiveBatch;
   const moduleCount = course.curriculum.length;
   const curriculumHref = isLiveBatch ? course.curriculumDownload : undefined;
-  const cardHighlights = course.highlights.slice(0, 3);
+  const cardHighlights = course.highlights.slice(0, 2);
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex h-full min-h-[500px] flex-col overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#0d131e] shadow-[0_22px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#101827] ${
+      className={`group course-card-3d relative flex h-full min-h-[440px] flex-col overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#0d131e] shadow-[0_22px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#101827] ${
         isFeaturedLiveBatch
           ? "border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
           : ""
@@ -2539,7 +2539,7 @@ function CourseCard({
         {CATEGORY_LABELS[category]}
       </div>
 
-      <div className="relative z-10 flex h-24 items-end overflow-hidden border-b border-white/[0.07] px-5 pb-4">
+      <div className="relative z-10 flex h-20 items-end overflow-hidden border-b border-white/[0.07] px-5 pb-3">
         <div className="absolute inset-0 opacity-60" style={{ background: `radial-gradient(circle at 82% 20%, ${course.accentFrom}55, transparent 35%), linear-gradient(120deg, ${course.accentFrom}16, ${course.accentTo}08)` }} />
         <div className="absolute -right-6 -top-10 h-32 w-32 rounded-full border border-white/10" />
         <div className="absolute right-8 top-5 h-12 w-12 rounded-full border border-white/10" />
@@ -2560,7 +2560,7 @@ function CourseCard({
 
       <div
         className={`flex h-full flex-1 flex-col ${
-          isFeaturedLiveBatch ? "p-4 sm:p-6" : "p-3.5 sm:p-4"
+          isFeaturedLiveBatch ? "p-4 sm:p-5" : "p-3.5 sm:p-4"
         }`}
       >
         {/* Icon + badge */}
@@ -2606,7 +2606,7 @@ function CourseCard({
         </p>
 
         {isFeaturedLiveBatch && (
-          <div className="relative z-10 mb-4 grid gap-2 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.04] p-3 sm:grid-cols-3">
+          <div className="relative z-10 mb-3 grid gap-2 rounded-xl border border-[#f2b84b]/25 bg-gradient-to-r from-[#f2b84b]/12 to-white/[0.04] p-3 sm:grid-cols-3">
             {[
               { label: "Duration", value: course.duration },
               { label: "Timings", value: course.timings },
@@ -2665,7 +2665,7 @@ function CourseCard({
             <CheckCircle2 className="h-3.5 w-3.5" />
             What's included
           </div>
-          <ul className={`grid ${isFeaturedLiveBatch ? "gap-2 sm:grid-cols-2" : "gap-1.5"}`}>
+          <ul className="grid gap-1.5 sm:grid-cols-2">
             {cardHighlights.map((h) => (
               <li
                 key={h}
@@ -3281,7 +3281,7 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 lg:gap-6">
+          <div className="mx-auto grid max-w-6xl auto-rows-fr grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6">
             {visibleCourses.map((course, index) => (
               <Reveal
                 key={course.id}
