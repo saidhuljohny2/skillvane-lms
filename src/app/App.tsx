@@ -2507,7 +2507,7 @@ function CourseCard({
   const isFeaturedLiveBatch = isLiveBatch;
   const moduleCount = course.curriculum.length;
   const curriculumHref = isLiveBatch ? course.curriculumDownload : undefined;
-  const cardHighlights = course.highlights.slice(0, 2);
+  const cardHighlights = course.highlights.slice(0, 4);
 
   return (
     <motion.div
@@ -2671,7 +2671,7 @@ function CourseCard({
                 key={h}
                 className={`flex items-start gap-2.5 rounded-lg bg-white/[0.035] text-slate-200 ${isFeaturedLiveBatch ? "px-3 py-2 text-xs leading-relaxed" : "px-2.5 py-1.5 text-[11px] leading-snug"}`}
               >
-                <Check className="w-3.5 h-3.5 text-emerald-300 mt-0.5 flex-shrink-0 drop-shadow-[0_0_8px_rgba(110,231,183,0.35)]" />
+                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#60a5fa] shadow-[0_0_8px_rgba(96,165,250,.55)]" />
                 {h}
               </li>
             ))}
