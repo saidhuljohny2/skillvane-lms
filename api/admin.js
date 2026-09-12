@@ -27,6 +27,17 @@ export default async function handler(request, response) {
 
     if (request.method === "POST") {
       const { entity, values } = request.body || {};
+      if (entity === "enrollment") {
+        const studentId = String(values?.student_id || "").trim();
+        const courseId = String(values?.course_id || "").trim();
+        if (!studentId || !courseId) return response.status(400).json({ error: "Student and course are required." });
+        const rows = await supabaseServiceRequest("/rest/v1/enrollments?on_conflict=student_id,course_id", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+          body: JSON.stringify({ student_id: studentId, course_id: courseId, amount_paid_paise: 0 }),
+        });
+        return response.status(201).json({ item: rows[0] });
+      }
       const tables = { module: "course_modules", lesson: "course_lessons", resource: "lesson_resources" };
       const table = tables[entity];
       if (!table || !values || typeof values !== "object") return response.status(400).json({ error: "Valid content is required." });

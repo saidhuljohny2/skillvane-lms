@@ -31,6 +31,7 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
   const [newModule, setNewModule] = useState("");
   const [lessonDraft, setLessonDraft] = useState({ moduleId: "", title: "", description: "", videoUrl: "", duration: 0, preview: false });
   const [resourceDraft, setResourceDraft] = useState({ lessonId: "", title: "", url: "", type: "link" });
+  const [grantCourse, setGrantCourse] = useState<Record<string, string>>({});
 
   const load = async () => {
     setLoading(true);
@@ -93,6 +94,21 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
     await adminRequest("", { method: "DELETE", body: JSON.stringify({ entity, id }) }); await load();
   };
 
+  const grantEnrollment = async (studentId: string) => {
+    const courseId = grantCourse[studentId];
+    if (!courseId) { setMessage("Choose a course to grant."); return; }
+    setLoading(true); setMessage("");
+    try {
+      await adminRequest("", { method: "POST", body: JSON.stringify({ entity: "enrollment", values: { student_id: studentId, course_id: courseId } }) });
+      await load();
+      setGrantCourse((current) => ({ ...current, [studentId]: "" }));
+      setMessage("Course access granted. Ask the student to sign out and sign in again.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not grant course access.");
+      setLoading(false);
+    }
+  };
+
   const courseNames = useMemo(() => new Map(storefront.map((course) => [course.id, course.title])), [storefront]);
   const filtered = data.profiles.filter((profile) => { const term = search.toLowerCase().trim(); return !term || profile.full_name.toLowerCase().includes(term) || profile.email.toLowerCase().includes(term) || profile.phone.includes(term); });
   const revenue = data.payments.filter((p) => p.status === "paid").reduce((sum, p) => sum + p.amount_paise, 0) / 100;
@@ -124,7 +140,7 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
           {message && <p className="mb-4 rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/10 px-4 py-2 text-sm text-[#ffe4a3]">{message}</p>}
           {loading ? <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-[#3b82f6]" /></div> : tab === "students" ? <section>
             <div className="mb-4 flex items-center justify-between gap-3"><h3 className="text-lg font-black text-white">Students and progress</h3><label className="relative"><Search className="absolute left-3 top-3 h-4 w-4 text-slate-500" /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search" className={`${field} pl-9`} /></label></div>
-            <div className="space-y-3">{filtered.map((profile) => { const enrolled = data.enrollments.filter((e) => e.student_id === profile.id); const done = data.progress.filter((p) => p.student_id === profile.id); return <article key={profile.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><div className="flex flex-col justify-between gap-3 sm:flex-row"><div><h4 className="font-black text-white">{profile.full_name || "Student"}</h4><p className="text-sm text-slate-400">{profile.email} · {profile.phone || "No phone"}</p></div><div className="text-sm text-slate-300"><b className="text-[#bfdbfe]">{enrolled.length}</b> courses · <b className="text-[#bfdbfe]">{done.length}</b> modules done</div></div><div className="mt-3 flex flex-wrap gap-2">{enrolled.map((e) => <span key={e.course_id} className="rounded-full bg-[#3b82f6]/10 px-3 py-1 text-xs text-[#bfdbfe]">{courseNames.get(e.course_id) || e.course_id}</span>)}</div></article>; })}</div>
+            <div className="space-y-3">{filtered.map((profile) => { const enrolled = data.enrollments.filter((e) => e.student_id === profile.id); const done = data.progress.filter((p) => p.student_id === profile.id); const enrolledIds = new Set(enrolled.map((e) => e.course_id)); return <article key={profile.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><div className="flex flex-col justify-between gap-3 sm:flex-row"><div><h4 className="font-black text-white">{profile.full_name || "Student"}</h4><p className="text-sm text-slate-400">{profile.email} · {profile.phone || "No phone"}</p></div><div className="text-sm text-slate-300"><b className="text-[#bfdbfe]">{enrolled.length}</b> courses · <b className="text-[#bfdbfe]">{done.length}</b> modules done</div></div><div className="mt-3 flex flex-wrap gap-2">{enrolled.map((e) => <span key={e.course_id} className="rounded-full bg-[#3b82f6]/10 px-3 py-1 text-xs text-[#bfdbfe]">{courseNames.get(e.course_id) || e.course_id}</span>)}</div><div className="mt-4 flex flex-col gap-2 sm:flex-row"><select value={grantCourse[profile.id] || ""} onChange={(e) => setGrantCourse((current) => ({ ...current, [profile.id]: e.target.value }))} className={`${field} sm:max-w-sm`}><option value="">Grant another course</option>{storefront.filter((course) => !enrolledIds.has(course.id)).map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}</select><button type="button" disabled={!grantCourse[profile.id] || loading} onClick={() => void grantEnrollment(profile.id)} className="rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white disabled:opacity-40">Grant access</button></div></article>; })}</div>
           </section> : tab === "payments" ? <section><h3 className="mb-4 text-lg font-black text-white">Payment history</h3><div className="space-y-2">{data.payments.map((payment) => <article key={payment.order_id} className="grid gap-2 rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:grid-cols-[1fr_auto]"><div><p className="font-bold text-white">{payment.student_email}</p><p className="text-xs text-slate-500">{payment.course_ids.map((id) => courseNames.get(id) || id).join(", ")}</p><p className="mt-1 text-[11px] text-slate-600">{new Date(payment.created_at).toLocaleString("en-IN")} · {payment.payment_id || payment.order_id}</p></div><div className="sm:text-right"><p className="font-black text-white">₹{(payment.amount_paise / 100).toLocaleString("en-IN")}</p><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${payment.status === "paid" ? "bg-[#3b82f6]/15 text-[#bfdbfe]" : "bg-white/5 text-slate-400"}`}>{payment.status}</span></div></article>)}</div></section> : <section>
             <h3 className="mb-1 text-lg font-black text-white">Course publishing</h3><p className="mb-4 text-sm text-slate-400">Edit catalog details and build course content.</p><div className="grid gap-3 md:grid-cols-2">{data.courses.map((course) => <article key={course.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><p className="text-[10px] font-black uppercase text-[#93c5fd]">{course.id}</p><h4 className="font-black text-white">{course.title}</h4><p className="text-sm text-slate-500">{course.subtitle}</p><div className="mt-4 flex items-center justify-between"><span className="text-xs font-black uppercase text-[#bfdbfe]">{course.status}</span><div className="flex gap-2"><button onClick={() => setContentCourse(course)} className="rounded-xl bg-[#3b82f6]/15 px-4 py-2 text-xs font-bold text-[#bfdbfe]">Content</button><button onClick={() => setEditing({ ...course })} className="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300">Edit</button></div></div></article>)}</div>
           </section>}

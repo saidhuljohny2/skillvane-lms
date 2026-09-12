@@ -3031,6 +3031,7 @@ export default function App() {
             : `${courses.length} SkillVane courses`,
         image: "", // Optional: Add your logo URL
         handler: async (response: any) => {
+          let verification: { verified?: boolean; courseIds?: string[]; error?: string };
           try {
             const verificationResponse = await fetch("/api/verify-payment", {
               method: "POST",
@@ -3044,7 +3045,7 @@ export default function App() {
                 razorpaySignature: response.razorpay_signature,
               }),
             });
-            const verification = await verificationResponse.json();
+            verification = await verificationResponse.json();
             if (!verificationResponse.ok || !verification.verified) {
               throw new Error(
                 verification.error || "Payment verification failed. Please contact support.",
