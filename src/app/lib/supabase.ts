@@ -170,21 +170,26 @@ export async function loadPublishedCourseContent(courseId: string): Promise<Publ
 }
 
 export async function sendPasswordReset(email: string) {
-  await request("/auth/v1/recover", {
+  const returnUrl = `${window.location.origin}/?password-recovery=1`;
+  await request(`/auth/v1/recover?redirect_to=${encodeURIComponent(returnUrl)}`, {
     method: "POST",
-    body: JSON.stringify({ email, redirect_to: `${window.location.origin}/` }),
+    body: JSON.stringify({ email }),
   });
 }
 
 export function hasPasswordRecoveryToken() {
-  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  return params.get("type") === "recovery" && Boolean(params.get("access_token"));
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const query = new URLSearchParams(window.location.search);
+  return Boolean(
+    hash.get("access_token") && (hash.get("type") === "recovery" || query.get("password-recovery") === "1"),
+  );
 }
 
 export async function completePasswordRecovery(password: string) {
-  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const accessToken = params.get("access_token");
-  if (!accessToken || params.get("type") !== "recovery") {
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const query = new URLSearchParams(window.location.search);
+  const accessToken = hash.get("access_token") || query.get("access_token");
+  if (!accessToken) {
     throw new Error("This password recovery link is invalid or has expired.");
   }
   await request("/auth/v1/user", {
