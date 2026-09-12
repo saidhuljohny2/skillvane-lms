@@ -354,9 +354,9 @@ const COURSES: Course[] = [
       },
     ],
     driveLink:
-      "https://drive.google.com/drive/folders/1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E?usp=sharing", // Replace with Healthcare project Google Drive folder link
+      "https://drive.google.com/drive/folders/1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E",
     notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_HEALTHCARE_NOTES_LINK", // Replace with Healthcare notes link
+      "https://drive.google.com/drive/folders/1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E",
   },
 
   // â”€â”€ Course 5 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -415,9 +415,9 @@ const COURSES: Course[] = [
       },
     ],
     driveLink:
-      "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR?usp=sharing", // Replace with Retailer project Google Drive folder link
+      "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR",
     notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_RETAILER_NOTES_LINK", // Replace with Retailer notes link
+      "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR",
   },
 
   // â”€â”€ Course 6 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -486,6 +486,57 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/1JFILNA36Um1SgUKc9jzjFUhm8PnVzgJX",
     notesLink:
       "https://docs.google.com/spreadsheets/d/1yqLvpr-Q2hwvrJRbgWgWjdNwssAI6UBgQDDqa1oqR8k/edit",
+  },
+
+  {
+    id: "project-traffic",
+    type: "project",
+    badge: "GCP + DATABRICKS",
+    icon: TrendingUp,
+    accentFrom: "#2563eb",
+    accentTo: "#8b5cf6",
+    title: "Traffic GCP + Databricks",
+    subtitle: "Data Engineering Project",
+    price: 899,
+    originalPrice: 3000,
+    highlights: [
+      "End-to-end traffic data lakehouse project",
+      "GCP Storage with Databricks and Unity Catalog",
+      "Bronze, Silver and Gold transformation layers",
+      "Development, UAT and production environments",
+      "GitHub workflow, pull requests and CI/CD",
+      "Portfolio-ready code, sample data and architecture",
+    ],
+    curriculum: [
+      {
+        module: "Architecture & Environment Setup",
+        topics: [
+          "Project introduction and architecture",
+          "Traffic dataset walkthrough",
+          "GCP and Databricks account setup",
+        ],
+      },
+      {
+        module: "Lakehouse Engineering",
+        topics: [
+          "Workspace, metastore and external locations",
+          "Dynamic schemas and Bronze tables",
+          "Silver and Gold transformations",
+        ],
+      },
+      {
+        module: "Orchestration & Delivery",
+        topics: [
+          "Databricks workflow orchestration",
+          "GitHub integration and UAT promotion",
+          "Production setup assignment and closure",
+        ],
+      },
+    ],
+    driveLink:
+      "https://drive.google.com/drive/folders/19yHS4lPRjX7B7jQdc0O5YUrD2XxrQBHv",
+    notesLink:
+      "https://drive.google.com/drive/folders/19yHS4lPRjX7B7jQdc0O5YUrD2XxrQBHv",
   },
 
   // â”€â”€ ADD A NEW COURSE HERE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

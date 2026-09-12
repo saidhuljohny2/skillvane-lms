@@ -65,10 +65,29 @@ const BANKING_DRIVE_LESSONS = [
   resources: [],
 }));
 
+const PROJECT_DRIVE_LIBRARIES: Record<string, { title: string; folderId: string }> = {
+  "project-healthcare": {
+    title: "Healthcare Project · 8 video sessions",
+    folderId: "1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E",
+  },
+  "project-retail": {
+    title: "Retailer Project · introduction + 11 video sessions",
+    folderId: "1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR",
+  },
+  "project-traffic": {
+    title: "Traffic Project · 18 numbered video sessions",
+    folderId: "19yHS4lPRjX7B7jQdc0O5YUrD2XxrQBHv",
+  },
+};
+
 function drivePreviewUrl(url?: string) {
   if (!url) return null;
   const fileId = url.match(/\/file\/d\/([^/]+)/)?.[1] || url.match(/[?&]id=([^&]+)/)?.[1];
   return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+}
+
+function driveFolderPreviewUrl(folderId?: string) {
+  return folderId ? `https://drive.google.com/embeddedfolderview?id=${folderId}#list` : null;
 }
 
 interface Course {
@@ -150,7 +169,9 @@ function LessonPlayer({
     })),
   );
   const driveLessons = course.id === "project-banking" ? BANKING_DRIVE_LESSONS : [];
-  const modules = driveLessons.length ? driveLessons : databaseLessons.length ? databaseLessons : (course.curriculum || []);
+  const driveLibrary = PROJECT_DRIVE_LIBRARIES[course.id];
+  const libraryLessons = driveLibrary ? [{ module: driveLibrary.title, topics: ["Select any numbered recording from the secure course library."], videoUrl: course.driveLink || "", resources: [] }] : [];
+  const modules = driveLessons.length ? driveLessons : libraryLessons.length ? libraryLessons : databaseLessons.length ? databaseLessons : (course.curriculum || []);
   const [moduleIndex, setModuleIndex] = useState(() => {
     const saved = Number(localStorage.getItem(resumeKey));
     return Number.isInteger(saved) && saved >= 0 && saved < modules.length ? saved : 0;
@@ -158,7 +179,7 @@ function LessonPlayer({
   const module = modules[moduleIndex];
   const isComplete = completedModules.includes(moduleIndex);
   const lessonVideoUrl = "videoUrl" in (module || {}) ? module.videoUrl : "";
-  const embeddedDriveUrl = drivePreviewUrl(lessonVideoUrl);
+  const embeddedDriveUrl = drivePreviewUrl(lessonVideoUrl) || driveFolderPreviewUrl(driveLibrary?.folderId);
 
   const selectModule = (index: number) => {
     setModuleIndex(index);
