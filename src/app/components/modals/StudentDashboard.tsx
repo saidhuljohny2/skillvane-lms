@@ -66,6 +66,14 @@ const BANKING_DRIVE_LESSONS = [
 }));
 
 const PROJECT_DRIVE_LIBRARIES: Record<string, { title: string; folderId: string }> = {
+  "gcp-recordings": {
+    title: "GCP Data Engineering · complete self-paced library",
+    folderId: "1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h",
+  },
+  "python-de": {
+    title: "Python for Data Engineers · Sessions 21–26",
+    folderId: "1Y2XuyAX42D6NEo5bQyD_K2ut2uZmdACk",
+  },
   "project-healthcare": {
     title: "Healthcare Project · 8 video sessions",
     folderId: "1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E",
