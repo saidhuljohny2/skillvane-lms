@@ -36,6 +36,19 @@ export async function requireSupabaseUser(request) {
   return response.json();
 }
 
+export async function requireSupabaseAdmin(request) {
+  const user = await requireSupabaseUser(request);
+  const rows = await supabaseServiceRequest(
+    `/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`,
+  );
+  if (rows[0]?.role !== "admin") {
+    const error = new Error("Administrator access is required.");
+    error.statusCode = 403;
+    throw error;
+  }
+  return user;
+}
+
 export async function supabaseServiceRequest(path, init = {}) {
   const { url, serviceKey } = getConfig();
   const response = await fetch(`${url}${path}`, {

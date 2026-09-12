@@ -23,6 +23,11 @@ export interface AuthenticatedStudent {
   enrolledCourses: string[];
 }
 
+export interface AdminSession {
+  email: string;
+  name: string;
+}
+
 export const isSupabaseConfigured = Boolean(supabaseUrl && anonKey);
 
 function authHeaders(accessToken?: string) {
@@ -73,6 +78,54 @@ export async function signInStudent(email: string, password: string) {
   }));
   persistSession(session);
   return loadAuthenticatedStudent(session);
+}
+
+export async function signInAdmin(email: string, password: string): Promise<AdminSession> {
+  const session = normalizeSession(await request<SupabaseSession>("/auth/v1/token?grant_type=password", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  }));
+  const profiles = await request<Array<{ email: string; full_name: string; role: string }>>(
+    `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=email,full_name,role`,
+    {},
+    session.access_token,
+  );
+  if (profiles[0]?.role !== "admin") {
+    throw new Error("This account does not have administrator access.");
+  }
+  persistSession(session);
+  return { email: profiles[0].email, name: profiles[0].full_name || "Administrator" };
+}
+
+export async function restoreAdminSession(): Promise<AdminSession | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const session = await getValidSession();
+    const profiles = await request<Array<{ email: string; full_name: string; role: string }>>(
+      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=email,full_name,role`,
+      {},
+      session.access_token,
+    );
+    if (profiles[0]?.role !== "admin") return null;
+    return { email: profiles[0].email, name: profiles[0].full_name || "Administrator" };
+  } catch {
+    return null;
+  }
+}
+
+export async function adminRequest<T>(path: string, init: RequestInit = {}) {
+  const accessToken = await getValidAccessToken();
+  const response = await fetch(`/api/admin${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      ...(init.headers || {}),
+    },
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload?.error || "Admin request failed.");
+  return payload as T;
 }
 
 export async function sendPasswordReset(email: string) {
