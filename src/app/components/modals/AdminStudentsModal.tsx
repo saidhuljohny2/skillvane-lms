@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, CreditCard, Loader2, Lock, Save, Search, Shield, Users, X } from "lucide-react";
+import { BookOpen, CreditCard, Loader2, Lock, MonitorPlay, Save, Search, Shield, Users, X } from "lucide-react";
 import { motion } from "motion/react";
 import { adminRequest, restoreAdminSession, sendPasswordReset, signInAdmin, signOutStudent, type AdminSession } from "@/app/lib/supabase";
 
@@ -18,7 +18,7 @@ type Tab = "students" | "payments" | "courses";
 const emptyData: DashboardData = { profiles: [], enrollments: [], progress: [], payments: [], courses: [], modules: [], lessons: [], resources: [] };
 const field = "w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#3b82f6]/50";
 
-export function AdminStudentsModal({ courses: storefront, onClose }: { courses: Course[]; onClose: () => void }) {
+export function AdminStudentsModal({ courses: storefront, onClose, onAccessCourses }: { courses: Course[]; onClose: () => void; onAccessCourses: (admin: AdminSession) => void }) {
   const [admin, setAdmin] = useState<AdminSession | null>(null);
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [data, setData] = useState<DashboardData>(emptyData);
@@ -115,6 +115,7 @@ export function AdminStudentsModal({ courses: storefront, onClose }: { courses: 
       </form> : <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <aside className="border-b border-white/10 bg-[#07111d] p-3 lg:w-60 lg:border-b-0 lg:border-r lg:p-4">
           <div className="mb-3 rounded-xl border border-[#3b82f6]/20 bg-[#3b82f6]/8 p-3"><p className="text-xs font-black text-white">{admin.name}</p><p className="truncate text-[11px] text-slate-400">{admin.email}</p></div>
+          <button onClick={() => onAccessCourses(admin)} className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] px-3 py-2.5 text-sm font-black text-white lg:justify-start"><MonitorPlay className="h-4 w-4" />Access all courses</button>
           <nav className="flex gap-2 lg:flex-col">{([{ id: "students", label: "Students", icon: Users }, { id: "payments", label: "Payments", icon: CreditCard }, { id: "courses", label: "Courses", icon: BookOpen }] as const).map(({ id, label, icon: Icon }) => <button key={id} onClick={() => setTab(id)} className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold lg:justify-start ${tab === id ? "bg-[#3b82f6]/15 text-[#bfdbfe]" : "text-slate-400 hover:bg-white/5"}`}><Icon className="h-4 w-4" />{label}</button>)}</nav>
           <button onClick={async () => { await signOutStudent(); setAdmin(null); setData(emptyData); }} className="mt-3 w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400">Sign out</button>
         </aside>

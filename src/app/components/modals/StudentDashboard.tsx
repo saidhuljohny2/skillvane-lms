@@ -275,12 +275,14 @@ export function StudentDashboard({
   onLogout,
   onClose,
   onEnroll,
+  adminMode = false,
 }: {
   student: LoggedInStudent;
   courses: Course[];
   onLogout: () => void;
   onClose: () => void;
   onEnroll: (course: Course) => void;
+  adminMode?: boolean;
 }) {
   const [tab, setTab] = useState<DashTab>("overview");
   const [certificateCourse, setCertificateCourse] = useState<Course | null>(null);
@@ -290,10 +292,10 @@ export function StudentDashboard({
     completionDate: new Date().toISOString().slice(0, 10),
   });
   const [certificateMessage, setCertificateMessage] = useState("");
-  const enrolledCourses = courses.filter((c) =>
+  const enrolledCourses = adminMode ? courses : courses.filter((c) =>
     student.enrolledCourses.includes(c.id),
   );
-  const availableCourses = courses.filter(
+  const availableCourses = adminMode ? [] : courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
   const accessStorageKey = `skillvane_drive_access_confirmed_${student.email}`;
@@ -321,7 +323,10 @@ export function StudentDashboard({
   );
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured || adminMode) {
+      setProgressSync("local");
+      return;
+    }
     let active = true;
     setProgressSync("syncing");
     loadLearningProgress()
@@ -354,7 +359,7 @@ export function StudentDashboard({
     return () => {
       active = false;
     };
-  }, [progressStorageKey, student.email]);
+  }, [adminMode, progressStorageKey, student.email]);
 
   const confirmAccess = (courseId: string) => {
     const next = { ...confirmedAccess, [courseId]: true };
@@ -373,7 +378,7 @@ export function StudentDashboard({
     };
     setCompletedModules(next);
     localStorage.setItem(progressStorageKey, JSON.stringify(next));
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured && !adminMode) {
       setProgressSync("syncing");
       void setLearningModuleComplete(courseId, moduleIndex, willComplete)
         .then(() => setProgressSync("synced"))
@@ -463,7 +468,7 @@ export function StudentDashboard({
             </div>
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#93c5fd]">
-                Student Portal
+                {adminMode ? "Administrator course access" : "Student Portal"}
               </p>
               <h2 className="truncate text-lg font-black text-white sm:text-xl">
                 Hi, {student.name.split(" ")[0]}
@@ -477,7 +482,7 @@ export function StudentDashboard({
               className="hidden items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-300 hover:text-white sm:flex"
             >
               <LogOut className="h-4 w-4" />
-              Logout
+              {adminMode ? "Back to Admin" : "Logout"}
             </button>
             <button
               type="button"

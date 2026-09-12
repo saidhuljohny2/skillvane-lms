@@ -60,6 +60,7 @@ import {
   restoreStudentSession,
   signOutStudent,
   hasPasswordRecoveryToken,
+  type AdminSession,
 } from "@/app/lib/supabase";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
 import { FinalCTA } from "@/app/components/landing/FinalCTA";
@@ -2796,6 +2797,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [adminCourseAccess, setAdminCourseAccess] = useState<AdminSession | null>(null);
 
   // Restore the server-backed student session. Keep the legacy session only
   // when Supabase has not been configured yet.
@@ -2848,7 +2850,8 @@ export default function App() {
       invoice ||
       showLogin ||
       showAdmin ||
-      showDashboard
+      showDashboard ||
+      adminCourseAccess
     );
     document.body.style.overflow = anyOpen ? "hidden" : "";
     return () => {
@@ -2862,6 +2865,7 @@ export default function App() {
     showLogin,
     showAdmin,
     showDashboard,
+    adminCourseAccess,
   ]);
 
   const scrollTo = (id: string) => {
@@ -3633,6 +3637,29 @@ export default function App() {
         <AdminStudentsModal
           courses={COURSES}
           onClose={() => setShowAdmin(false)}
+          onAccessCourses={(admin) => {
+            setShowAdmin(false);
+            setAdminCourseAccess(admin);
+          }}
+        />
+      )}
+
+      {adminCourseAccess && (
+        <StudentDashboard
+          adminMode
+          student={{
+            name: adminCourseAccess.name,
+            email: adminCourseAccess.email,
+            phone: "",
+            enrolledCourses: COURSES.map((course) => course.id),
+          }}
+          courses={COURSES}
+          onLogout={() => {
+            setAdminCourseAccess(null);
+            setShowAdmin(true);
+          }}
+          onClose={() => setAdminCourseAccess(null)}
+          onEnroll={() => undefined}
         />
       )}
 
