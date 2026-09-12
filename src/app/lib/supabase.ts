@@ -107,6 +107,15 @@ async function refreshSession(session: SupabaseSession) {
   return refreshed;
 }
 
+export async function getValidAccessToken() {
+  let session = readStoredSession();
+  if (!session) throw new Error("Please sign in before enrolling.");
+  if (!session.expires_at || session.expires_at <= Math.floor(Date.now() / 1000) + 60) {
+    session = await refreshSession(session);
+  }
+  return session.access_token;
+}
+
 async function loadAuthenticatedStudent(session: SupabaseSession): Promise<AuthenticatedStudent> {
   const userId = encodeURIComponent(session.user.id);
   const [profiles, enrollments] = await Promise.all([

@@ -1,4 +1,5 @@
 import { calculateOrderAmount } from "../server/payment-pricing.js";
+import { requireSupabaseUser, supabaseServiceRequest } from "../server/supabase.js";
 
 export default async function handler(request, response) {
   if (request.method !== "POST") {
@@ -13,8 +14,10 @@ export default async function handler(request, response) {
   }
 
   try {
+    const user = await requireSupabaseUser(request);
+    const courseIds = request.body?.courseIds;
     const amountInRupees = calculateOrderAmount(
-      request.body?.courseIds,
+      courseIds,
       request.body?.couponCode,
     );
     const receipt = `skillvane_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
@@ -36,6 +39,18 @@ export default async function handler(request, response) {
       return response.status(502).json({ error: "Could not start payment. Please try again." });
     }
 
+    await supabaseServiceRequest("/rest/v1/payment_orders", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        order_id: order.id,
+        student_id: user.id,
+        student_email: user.email,
+        course_ids: courseIds,
+        amount_paise: order.amount,
+      }),
+    });
+
     return response.status(200).json({
       orderId: order.id,
       amount: order.amount,
@@ -43,7 +58,7 @@ export default async function handler(request, response) {
       keyId,
     });
   } catch (error) {
-    return response.status(400).json({
+    return response.status(error?.statusCode || 400).json({
       error: error instanceof Error ? error.message : "Invalid payment request.",
     });
   }

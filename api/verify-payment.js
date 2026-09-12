@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { requireSupabaseUser, supabaseServiceRequest } from "../server/supabase.js";
 
 export default async function handler(request, response) {
   if (request.method !== "POST") {
@@ -20,6 +21,13 @@ export default async function handler(request, response) {
     return response.status(400).json({ error: "Incomplete payment response." });
   }
 
+  let user;
+  try {
+    user = await requireSupabaseUser(request);
+  } catch (error) {
+    return response.status(error?.statusCode || 401).json({ error: error.message });
+  }
+
   const expectedSignature = crypto
     .createHmac("sha256", keySecret)
     .update(`${razorpayOrderId}|${razorpayPaymentId}`)
@@ -33,5 +41,17 @@ export default async function handler(request, response) {
     return response.status(400).json({ error: "Payment signature is invalid." });
   }
 
-  return response.status(200).json({ verified: true });
+  try {
+    const courseIds = await supabaseServiceRequest("/rest/v1/rpc/complete_payment_enrollment", {
+      method: "POST",
+      body: JSON.stringify({
+        p_order_id: razorpayOrderId,
+        p_payment_id: razorpayPaymentId,
+        p_student_id: user.id,
+      }),
+    });
+    return response.status(200).json({ verified: true, courseIds });
+  } catch (error) {
+    return response.status(503).json({ error: error.message });
+  }
 }

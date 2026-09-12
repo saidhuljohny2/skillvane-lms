@@ -57,6 +57,7 @@ import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
 import { SupabaseLoginModal } from "@/app/components/modals/SupabaseLoginModal";
 import {
   isSupabaseConfigured,
+  getValidAccessToken,
   restoreStudentSession,
   signOutStudent,
 } from "@/app/lib/supabase";
@@ -945,7 +946,6 @@ interface StudentDetails {
   name: string;
   email: string;
   phone: string;
-  password: string;
 }
 
 interface LoggedInStudent {
@@ -1811,7 +1811,6 @@ function EnrollmentFormModal({
     name: "",
     email: "",
     phone: "",
-    password: "",
   });
   const [errors, setErrors] = useState<Partial<StudentDetails>>(
     {},
@@ -1829,8 +1828,6 @@ function EnrollmentFormModal({
       e.email = "Valid email is required";
     if (!/^[6-9]\d{9}$/.test(form.phone))
       e.phone = "Valid 10-digit mobile number required";
-    if (!form.password || form.password.length < 6)
-      e.password = "Password must be at least 6 characters";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1972,36 +1969,9 @@ function EnrollmentFormModal({
             )}
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1.5">
-              Create Login Password *{" "}
-              <span className="text-white/30 font-normal">
-                (minimum 6 characters)
-              </span>
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                type="password"
-                value={form.password}
-                onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
-                }
-                placeholder="Create a password"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
-              />
-            </div>
-            {errors.password && (
-              <p className="text-xs text-red-400 mt-1">
-                {errors.password}
-              </p>
-            )}
-          </div>
-
           <p className="text-xs text-white/30 leading-relaxed">
             Your details are used only for sending your course
-            access, invoice, and student login. We do not share your
+            access and invoice. We do not share your
             information.
           </p>
 
@@ -2919,6 +2889,9 @@ export default function App() {
   const getSavedStudentDetails = (
     student: LoggedInStudent,
   ): StudentDetails | null => {
+    if (/^[6-9]\d{9}$/.test(student.phone || "")) {
+      return { name: student.name, email: student.email, phone: student.phone! };
+    }
     try {
       const studentsData = localStorage.getItem("skillvane_students");
       const students: Record<string, any> = studentsData
@@ -2929,14 +2902,12 @@ export default function App() {
       if (
         saved?.name &&
         saved?.email &&
-        /^[6-9]\d{9}$/.test(saved.phone || "") &&
-        saved?.password
+        /^[6-9]\d{9}$/.test(saved.phone || "")
       ) {
         return {
           name: saved.name,
           email: saved.email,
           phone: saved.phone,
-          password: saved.password,
         };
       }
     } catch (err) {
@@ -2964,10 +2935,14 @@ export default function App() {
     try {
       // Load Razorpay SDK
       await loadRazorpay();
+      const accessToken = await getValidAccessToken();
 
       const orderResponse = await fetch("/api/create-order", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({
           courseIds: courses.map((course) => course.id),
           couponCode: pricing.couponCode || "",
@@ -2996,7 +2971,10 @@ export default function App() {
           try {
             const verificationResponse = await fetch("/api/verify-payment", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
               body: JSON.stringify({
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
@@ -3038,72 +3016,20 @@ export default function App() {
           };
           saveEnrollmentLedger(record);
 
-          // Auto-create/update student account and enroll in courses
-          try {
-            const studentsData = localStorage.getItem(
-              "skillvane_students",
-            );
-            const students: Record<string, any> = studentsData
-              ? JSON.parse(studentsData)
-              : {};
-            const courseIds = courses.map((c) => c.id);
-
-            if (!students[student.email]) {
-              students[student.email] = {
-                email: student.email,
-                name: student.name,
-                phone: student.phone,
-                password: student.password,
-                enrolledCourses: courseIds,
-                createdAt: new Date().toISOString(),
-              };
-            } else {
-              students[student.email].name = student.name;
-              students[student.email].phone = student.phone;
-              students[student.email].password = student.password;
-              if (!students[student.email].enrolledCourses) {
-                students[student.email].enrolledCourses = [];
-              }
-              courseIds.forEach((courseId) => {
-                if (
-                  !students[student.email].enrolledCourses.includes(
-                    courseId,
-                  )
-                ) {
-                  students[student.email].enrolledCourses.push(
-                    courseId,
-                  );
+          const enrolledCourseIds = Array.isArray(verification.courseIds)
+            ? verification.courseIds
+            : courses.map((course) => course.id);
+          setCurrentStudent((existing) =>
+            existing
+              ? {
+                  ...existing,
+                  enrolledCourses: Array.from(
+                    new Set([...existing.enrolledCourses, ...enrolledCourseIds]),
+                  ),
                 }
-              });
-            }
-
-            localStorage.setItem(
-              "skillvane_students",
-              JSON.stringify(students),
-            );
-
-            // Auto-login the student
-            const loggedStudent: LoggedInStudent = {
-              email: student.email,
-              name: student.name,
-              enrolledCourses:
-                students[student.email].enrolledCourses,
-            };
-            localStorage.setItem(
-              "skillvane_current_student",
-              JSON.stringify(loggedStudent),
-            );
-            setCurrentStudent(loggedStudent);
-
-            setInvoice(record);
-          } catch (err) {
-            console.error("Error saving enrollment:", err);
-            setPayError(
-              "Payment successful but enrollment failed. Please contact support with payment ID: " +
-                response.razorpay_payment_id,
-            );
-            setTimeout(() => setPayError(null), 10000);
-          }
+              : existing,
+          );
+          setInvoice(record);
         },
         prefill: {
           name: student.name,
@@ -3173,6 +3099,13 @@ export default function App() {
 
   const handleEnroll = (course: Course) => {
     setModalCourse(null);
+
+    if (!currentStudent) {
+      setShowLogin(true);
+      setPayError("Sign in or create an account before enrolling.");
+      setTimeout(() => setPayError(null), 5000);
+      return;
+    }
 
     if (currentStudent?.enrolledCourses.includes(course.id)) {
       setShowDashboard(true);
