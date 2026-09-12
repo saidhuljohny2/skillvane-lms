@@ -54,6 +54,12 @@ import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { AdminStudentsModal } from "@/app/components/modals/AdminStudentsModal";
 import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
+import { SupabaseLoginModal } from "@/app/components/modals/SupabaseLoginModal";
+import {
+  isSupabaseConfigured,
+  restoreStudentSession,
+  signOutStudent,
+} from "@/app/lib/supabase";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
 import { FinalCTA } from "@/app/components/landing/FinalCTA";
 import { BackToTop } from "@/app/components/landing/BackToTop";
@@ -945,6 +951,7 @@ interface StudentDetails {
 interface LoggedInStudent {
   email: string;
   name: string;
+  phone?: string;
   enrolledCourses: string[]; // Array of course IDs
 }
 
@@ -2812,8 +2819,15 @@ export default function App() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
 
-  // Check if user is logged in on mount
+  // Restore the server-backed student session. Keep the legacy session only
+  // when Supabase has not been configured yet.
   useEffect(() => {
+    if (isSupabaseConfigured) {
+      restoreStudentSession().then((student) => {
+        if (student) setCurrentStudent(student);
+      });
+      return;
+    }
     const studentData = localStorage.getItem(
       "skillvane_current_student",
     );
@@ -2896,6 +2910,7 @@ export default function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("skillvane_current_student");
+    void signOutStudent();
     setCurrentStudent(null);
     setShowDashboard(false);
   };
@@ -3666,7 +3681,7 @@ export default function App() {
 
       {/* â”€â”€ Login Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showLogin && (
-        <LoginModal
+        <SupabaseLoginModal
           onClose={() => setShowLogin(false)}
           onLogin={handleLogin}
         />
