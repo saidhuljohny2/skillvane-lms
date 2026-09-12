@@ -49,14 +49,14 @@ export function SimpleChatbot({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-[#2dd4a6]/20 bg-[#0b1522]/95 px-3 py-3 text-left shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-transform hover:-translate-y-0.5"
+        className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-[#3b82f6]/20 bg-[#0b1522]/95 px-3 py-3 text-left shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-transform hover:-translate-y-0.5"
         aria-label="Open SkillVane chatbot"
       >
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#2dd4a6] shadow-lg shadow-[#2dd4a6]/10">
-          <Bot className="h-5 w-5 text-[#04110d]" />
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#3b82f6] shadow-lg shadow-[#3b82f6]/10">
+          <Bot className="h-5 w-5 text-[#ffffff]" />
         </span>
         <span className="hidden sm:block">
-          <span className="block text-[10px] font-black uppercase tracking-[0.18em] text-[#8bedd0]">
+          <span className="block text-[10px] font-black uppercase tracking-[0.18em] text-[#93c5fd]">
             Ask SkillVane
           </span>
           <span className="mt-0.5 block text-sm font-bold text-white">
@@ -71,11 +71,11 @@ export function SimpleChatbot({
     <div className="fixed bottom-4 right-3 z-50 w-[min(calc(100vw-1.5rem),360px)] overflow-hidden rounded-2xl border border-white/[0.09] bg-[#08121f] shadow-[0_24px_65px_rgba(0,0,0,0.42)] sm:bottom-5 sm:right-5">
       <div className="flex items-center justify-between border-b border-white/[0.08] bg-[#0c1827] px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#2dd4a6]">
-            <Bot className="h-5 w-5 text-[#04110d]" />
+          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#3b82f6]">
+            <Bot className="h-5 w-5 text-[#ffffff]" />
           </span>
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#8bedd0]">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#93c5fd]">
               SkillVane Assistant
             </p>
             <p className="truncate text-sm font-bold text-white">
@@ -110,7 +110,7 @@ export function SimpleChatbot({
               onClick={() => setActive(option)}
               className={`rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-colors ${
                 active.label === option.label
-                  ? "border-[#2dd4a6]/35 bg-[#2dd4a6]/10 text-[#8bedd0]"
+                  ? "border-[#3b82f6]/35 bg-[#3b82f6]/10 text-[#93c5fd]"
                   : "border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#7cc7ff]/30 hover:text-white"
               }`}
             >

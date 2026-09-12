@@ -20,7 +20,7 @@ const CLOUD_SERVICES: {
   angle: number;
 }[] = [
   { name: "BigQuery", icon: Database, color: "#4285F4", angle: 0 },
-  { name: "Dataflow", icon: Workflow, color: "#18c29c", angle: 40 },
+  { name: "Dataflow", icon: Workflow, color: "#3b82f6", angle: 40 },
   { name: "ADF", icon: GitBranch, color: "#38bdf8", angle: 80 },
   { name: "Synapse", icon: Layers, color: "#60a5fa", angle: 120 },
   { name: "Databricks", icon: Server, color: "#f97316", angle: 160 },

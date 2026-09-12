@@ -129,7 +129,7 @@ function LessonPlayer({
       <div className="flex w-full flex-col lg:grid lg:grid-cols-[20rem_1fr]">
         <aside className="order-2 max-h-[42vh] overflow-y-auto border-t border-white/10 bg-[#07111d] lg:order-1 lg:max-h-none lg:border-r lg:border-t-0">
           <div className="sticky top-0 z-10 border-b border-white/10 bg-[#07111d]/95 p-4 backdrop-blur">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8df5d7]">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#93c5fd]">
               Course content
             </p>
             <h3 className="mt-1 text-sm font-black text-white">{course.title}</h3>
@@ -147,11 +147,11 @@ function LessonPlayer({
                   onClick={() => selectModule(index)}
                   className={`flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition ${
                     index === moduleIndex
-                      ? "bg-[#18c29c]/12 text-white ring-1 ring-[#18c29c]/25"
+                      ? "bg-[#3b82f6]/12 text-white ring-1 ring-[#3b82f6]/25"
                       : "text-slate-400 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <CheckCircle2 className={`mt-0.5 h-4 w-4 flex-none ${complete ? "text-[#18c29c]" : "text-slate-600"}`} />
+                  <CheckCircle2 className={`mt-0.5 h-4 w-4 flex-none ${complete ? "text-[#3b82f6]" : "text-slate-600"}`} />
                   <span>
                     <span className="block text-[10px] font-black uppercase tracking-wider text-slate-500">
                       Module {index + 1}
@@ -167,7 +167,7 @@ function LessonPlayer({
         <main className="order-1 min-h-0 flex-1 overflow-y-auto lg:order-2">
           <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[#08121f]/95 px-4 py-3 backdrop-blur sm:px-6">
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-wider text-[#8df5d7]">
+              <p className="text-[10px] font-black uppercase tracking-wider text-[#93c5fd]">
                 Module {moduleIndex + 1} of {modules.length}
               </p>
               <h2 className="truncate font-black text-white">{module?.module}</h2>
@@ -180,14 +180,14 @@ function LessonPlayer({
           <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
             <div className="flex aspect-video items-center justify-center rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_center,rgba(24,194,156,0.14),transparent_55%),#030811] shadow-2xl">
               <div className="max-w-md px-6 text-center">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#18c29c]/15 ring-1 ring-[#18c29c]/30">
-                  <Play className="h-7 w-7 fill-[#8df5d7] text-[#8df5d7]" />
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#3b82f6]/15 ring-1 ring-[#3b82f6]/30">
+                  <Play className="h-7 w-7 fill-[#93c5fd] text-[#93c5fd]" />
                 </div>
                 <h3 className="mt-4 text-lg font-black text-white">Lesson workspace ready</h3>
                 <p className="mt-2 text-sm text-slate-400">
                   The lesson video will appear here when it is published by your instructor.
                 </p>
-                {"videoUrl" in (module || {}) && module.videoUrl ? <a href={module.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#18c29c] px-5 py-2.5 text-sm font-black text-[#04110d]">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#18c29c] px-5 py-2.5 text-sm font-black text-[#04110d]">Open course recordings</a>}
+                {"videoUrl" in (module || {}) && module.videoUrl ? <a href={module.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff]">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff]">Open course recordings</a>}
               </div>
             </div>
 
@@ -197,24 +197,24 @@ function LessonPlayer({
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {module?.topics.map((topic) => (
                   <div key={topic} className="flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 text-sm text-slate-300">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none text-[#18c29c]" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none text-[#3b82f6]" />
                     {topic}
                   </div>
                 ))}
               </div>
               {usableResource(course.notesLink) && (
-                <a href={course.notesLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#8df5d7]">
+                <a href={course.notesLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#93c5fd]">
                   <Download className="h-4 w-4" /> Download lesson resources
                 </a>
               )}
-              {"resources" in (module || {}) && module.resources?.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{module.resources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-2 text-xs font-bold text-[#9cf8dd]"><Download className="mr-1 inline h-3 w-3" />{resource.title}</a>)}</div>}
+              {"resources" in (module || {}) && module.resources?.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{module.resources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-[#3b82f6]/25 bg-[#3b82f6]/10 px-3 py-2 text-xs font-bold text-[#bfdbfe]"><Download className="mr-1 inline h-3 w-3" />{resource.title}</a>)}</div>}
             </section>
 
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#08121f] p-4 sm:flex-row sm:items-center sm:justify-between">
               <button type="button" disabled={moduleIndex === 0} onClick={() => selectModule(moduleIndex - 1)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-bold text-slate-300 disabled:opacity-35">
                 <ChevronLeft className="h-4 w-4" /> Previous
               </button>
-              <button type="button" onClick={() => onToggleComplete(moduleIndex)} className={`inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-black ${isComplete ? "border border-[#18c29c]/30 bg-[#18c29c]/10 text-[#9cf8dd]" : "bg-[#18c29c] text-[#04110d]"}`}>
+              <button type="button" onClick={() => onToggleComplete(moduleIndex)} className={`inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-black ${isComplete ? "border border-[#3b82f6]/30 bg-[#3b82f6]/10 text-[#bfdbfe]" : "bg-[#3b82f6] text-[#ffffff]"}`}>
                 <CheckCircle2 className="h-4 w-4" /> {isComplete ? "Completed" : "Mark complete"}
               </button>
               <button type="button" disabled={moduleIndex >= modules.length - 1} onClick={() => selectModule(moduleIndex + 1)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-bold text-slate-300 disabled:opacity-35">
@@ -417,11 +417,11 @@ export function StudentDashboard({
         {/* Header */}
         <header className="relative flex items-center justify-between border-b border-white/[0.08] bg-[#0b1522]/70 px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#2dd4a6] shadow-lg shadow-[#2dd4a6]/10">
-              <GraduationCap className="h-5 w-5 text-[#04110d]" />
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] shadow-lg shadow-[#3b82f6]/10">
+              <GraduationCap className="h-5 w-5 text-[#ffffff]" />
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8bedd0]">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#93c5fd]">
                 Student Portal
               </p>
               <h2 className="truncate text-lg font-black text-white sm:text-xl">
@@ -458,7 +458,7 @@ export function StudentDashboard({
                 onClick={() => setTab(id)}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition-all lg:justify-start lg:px-4 ${
                   tab === id
-                    ? "bg-[#2dd4a6]/10 text-[#8bedd0] ring-1 ring-[#2dd4a6]/20"
+                    ? "bg-[#3b82f6]/10 text-[#93c5fd] ring-1 ring-[#3b82f6]/20"
                     : "text-slate-400 hover:bg-white/5 hover:text-white"
                 }`}
               >
@@ -479,7 +479,7 @@ export function StudentDashboard({
                   exit={{ opacity: 0 }}
                   className="space-y-4"
                 >
-                  <div className="dashboard-hero rounded-2xl border border-[#18c29c]/20 bg-gradient-to-br from-[#18c29c]/10 via-[#07111f] to-[#2f80ed]/10 p-5 sm:p-6">
+                  <div className="dashboard-hero rounded-2xl border border-[#3b82f6]/20 bg-gradient-to-br from-[#3b82f6]/10 via-[#07111f] to-[#2f80ed]/10 p-5 sm:p-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#ffe4a3]">
@@ -493,7 +493,7 @@ export function StudentDashboard({
                           Complete each curriculum module as you learn. Your
                           progress follows you across devices.
                         </p>
-                        <p className="mt-2 text-xs font-bold text-[#8bedd0]">
+                        <p className="mt-2 text-xs font-bold text-[#93c5fd]">
                           {progressSync === "synced"
                             ? "Cloud progress synced"
                             : progressSync === "syncing"
@@ -505,7 +505,7 @@ export function StudentDashboard({
                         <div
                           className="relative flex h-24 w-24 items-center justify-center rounded-full"
                           style={{
-                            background: `conic-gradient(#18c29c ${progress}%, rgba(255,255,255,0.08) 0)`,
+                            background: `conic-gradient(#3b82f6 ${progress}%, rgba(255,255,255,0.08) 0)`,
                           }}
                         >
                           <div className="flex h-[4.5rem] w-[4.5rem] flex-col items-center justify-center rounded-full bg-[#07111f]">
@@ -592,7 +592,7 @@ export function StudentDashboard({
                       <button
                         type="button"
                         onClick={() => setTab("explore")}
-                        className="mt-3 text-sm font-bold text-[#8df5d7] hover:text-white"
+                        className="mt-3 text-sm font-bold text-[#93c5fd] hover:text-white"
                       >
                         Browse programs →
                       </button>
@@ -608,7 +608,7 @@ export function StudentDashboard({
                         return (
                           <div
                             key={course.id}
-                            className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-[#18c29c]/25"
+                            className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-[#3b82f6]/25"
                           >
                             <div className="flex gap-3">
                               <div
@@ -621,7 +621,7 @@ export function StudentDashboard({
                                 <Icon className="h-5 w-5" style={{ color: course.accentFrom }} />
                               </div>
                               <div>
-                                <span className="text-[9px] font-black uppercase tracking-wider text-[#8df5d7]">
+                                <span className="text-[9px] font-black uppercase tracking-wider text-[#93c5fd]">
                                   {course.badge}
                                 </span>
                                 <h4 className="font-black text-white">{course.title}</h4>
@@ -633,7 +633,7 @@ export function StudentDashboard({
                                 <span className="font-bold text-slate-300">
                                   Course progress
                                 </span>
-                                <span className="font-black text-[#8df5d7]">
+                                <span className="font-black text-[#93c5fd]">
                                   {courseProgress}%
                                 </span>
                              </div>
@@ -641,7 +641,7 @@ export function StudentDashboard({
                               <button
                                 type="button"
                                 onClick={() => setPlayerCourse(course)}
-                                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-black text-white"
+                                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] py-3 text-sm font-black text-white"
                               >
                                 <Play className="h-4 w-4 fill-white" />
                                 {courseProgress > 0 ? "Continue Learning" : "Start Learning"}
@@ -649,14 +649,14 @@ export function StudentDashboard({
                             )}
                               <div className="h-2 overflow-hidden rounded-full bg-white/[0.07]">
                                 <div
-                                  className="h-full rounded-full bg-gradient-to-r from-[#18c29c] to-[#2f80ed] transition-[width] duration-500"
+                                  className="h-full rounded-full bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] transition-[width] duration-500"
                                   style={{ width: `${courseProgress}%` }}
                                 />
                               </div>
                             </div>
                             {course.curriculum && course.curriculum.length > 0 && (
                               <details className="mt-3 rounded-xl border border-white/[0.08] bg-black/10">
-                                <summary className="cursor-pointer px-3 py-2.5 text-xs font-black text-slate-200 marker:text-[#18c29c]">
+                                <summary className="cursor-pointer px-3 py-2.5 text-xs font-black text-slate-200 marker:text-[#3b82f6]">
                                   Track curriculum ({completedModules[course.id]?.length || 0}/
                                   {course.curriculum.length} modules)
                                 </summary>
@@ -674,13 +674,13 @@ export function StudentDashboard({
                                         }
                                         className={`flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${
                                           isComplete
-                                            ? "bg-[#18c29c]/10 text-[#9cf8dd]"
+                                            ? "bg-[#3b82f6]/10 text-[#bfdbfe]"
                                             : "text-slate-300 hover:bg-white/5"
                                         }`}
                                       >
                                         <CheckCircle2
                                           className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
-                                            isComplete ? "fill-[#18c29c]/20" : "text-slate-600"
+                                            isComplete ? "fill-[#3b82f6]/20" : "text-slate-600"
                                           }`}
                                         />
                                         <span>
@@ -703,7 +703,7 @@ export function StudentDashboard({
                                   href={access.href}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 py-2.5 text-sm font-black text-[#9cf8dd]"
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#3b82f6]/30 bg-[#3b82f6]/10 py-2.5 text-sm font-black text-[#bfdbfe]"
                                 >
                                   <access.icon className="h-4 w-4" />
                                   {access.label}
@@ -720,7 +720,7 @@ export function StudentDashboard({
                               </div>
                             ) : confirmed ? (
                               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                                <div className="flex items-center gap-2 rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-2.5 text-xs font-bold text-[#9cf8dd]">
+                                <div className="flex items-center gap-2 rounded-xl border border-[#3b82f6]/25 bg-[#3b82f6]/10 px-3 py-2.5 text-xs font-bold text-[#bfdbfe]">
                                   <CheckCircle2 className="h-4 w-4" />
                                   Access confirmed
                                 </div>
@@ -740,7 +740,7 @@ export function StudentDashboard({
                                   href={driveHref}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-2.5 text-sm font-black text-white"
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] py-2.5 text-sm font-black text-white"
                                 >
                                   <Mail className="h-4 w-4" />
                                   Request Drive Access
@@ -825,7 +825,7 @@ export function StudentDashboard({
                               <button
                                 type="button"
                                 onClick={() => onEnroll(course)}
-                                className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-4 py-2 text-sm font-black text-white"
+                                className="rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] px-4 py-2 text-sm font-black text-white"
                               >
                                 Enroll
                               </button>
@@ -899,7 +899,7 @@ export function StudentDashboard({
                         studentName: e.target.value,
                       })
                     }
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-[#18c29c]/50"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-[#3b82f6]/50"
                     placeholder="Student full name"
                   />
                 </label>
@@ -919,7 +919,7 @@ export function StudentDashboard({
                           completionDate: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-[#18c29c]/50"
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-[#3b82f6]/50"
                     />
                   </div>
                 </label>

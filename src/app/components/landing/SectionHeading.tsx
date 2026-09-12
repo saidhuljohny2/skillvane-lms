@@ -15,7 +15,7 @@ export function SectionHeading({
   accent?: "teal" | "gold" | "red";
 }) {
   const accentStyles = {
-    teal: "border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.07] text-[#8bedd0]",
+    teal: "border-[#3b82f6]/20 bg-[#3b82f6]/[0.07] text-[#93c5fd]",
     gold: "border-[#eab96e]/20 bg-[#eab96e]/[0.07] text-[#f2d29f]",
     red: "border-red-400/20 bg-red-500/[0.07] text-red-200",
   };

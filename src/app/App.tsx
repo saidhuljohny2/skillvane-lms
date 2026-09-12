@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
@@ -911,7 +911,7 @@ function CourseModal({
               href={demoAccess.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-[#18c29c]/15 to-[#2f80ed]/15 border border-[#18c29c]/35 text-[#8df5d7] hover:from-[#18c29c]/25 hover:to-[#2f80ed]/25 hover:border-[#18c29c]/60 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-[#3b82f6]/15 to-[#2f80ed]/15 border border-[#3b82f6]/35 text-[#93c5fd] hover:from-[#3b82f6]/25 hover:to-[#2f80ed]/25 hover:border-[#3b82f6]/60 transition-all"
             >
               <demoAccess.icon className="w-4 h-4" />
               {demoAccess.longLabel}
@@ -1532,8 +1532,8 @@ function LoginModal({
         {/* Header */}
         <div className="relative px-5 py-4 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#2dd4a6] shadow-lg shadow-[#2dd4a6]/10">
-              <Lock className="h-5 w-5 text-[#04110d]" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#3b82f6] shadow-lg shadow-[#3b82f6]/10">
+              <Lock className="h-5 w-5 text-[#ffffff]" />
             </div>
             <div>
             <h2
@@ -1574,7 +1574,7 @@ function LoginModal({
             <div
               className={`p-3 rounded-lg border text-sm ${
                 /sent|verified|successful/i.test(errors.general)
-                  ? "bg-[#18c29c]/10 border-[#18c29c]/30 text-[#9cf8dd]"
+                  ? "bg-[#3b82f6]/10 border-[#3b82f6]/30 text-[#bfdbfe]"
                   : "bg-red-500/10 border-red-500/30 text-red-300"
               }`}
             >
@@ -1593,7 +1593,7 @@ function LoginModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
               />
               {errors.name && (
                 <p className="text-xs text-red-300 mt-1">
@@ -1616,7 +1616,7 @@ function LoginModal({
                 setOtpInput("");
               }}
               placeholder="your.email@example.com"
-              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
+              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
             />
             {errors.email && (
               <p className="text-xs text-red-300 mt-1">
@@ -1637,7 +1637,7 @@ function LoginModal({
                   setForm({ ...form, phone: e.target.value })
                 }
                 placeholder="10-digit mobile number"
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
+                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
               />
               {errors.phone && (
                 <p className="text-xs text-red-300 mt-1">
@@ -1671,12 +1671,12 @@ function LoginModal({
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value)}
                       placeholder="6-digit OTP"
-                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#2dd4a6]/40 focus:outline-none focus:ring-2 focus:ring-[#2dd4a6]/10"
+                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
                     />
                     <button
                       type="button"
                       onClick={verifyStudentLoginOtp}
-                      className="rounded-xl bg-[#2dd4a6] px-4 py-3 text-sm font-black text-[#04110d]"
+                      className="rounded-xl bg-[#3b82f6] px-4 py-3 text-sm font-black text-[#ffffff]"
                     >
                       Verify
                     </button>
@@ -1708,7 +1708,7 @@ function LoginModal({
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value)}
                       placeholder="6-digit OTP"
-                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#3b82f6]/60 transition-all"
                     />
                     <button
                       type="button"
@@ -1739,7 +1739,7 @@ function LoginModal({
                   ? "Enter your password"
                   : "Create a password (min 6 chars)"
               }
-              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#18c29c]/60 transition-all"
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#3b82f6]/60 transition-all"
             />
             {errors.password && (
               <p className="text-xs text-red-300 mt-1">
@@ -1753,7 +1753,7 @@ function LoginModal({
             <button
               type="submit"
               disabled={loading || (mode === "reset" && !otpState?.verified)}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#18c29c]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#3b82f6]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {loading
                 ? "Please wait..."
@@ -1772,7 +1772,7 @@ function LoginModal({
                 setOtpState(null);
                 setOtpInput("");
               }}
-              className="text-sm text-slate-400 hover:text-[#8df5d7] transition-colors"
+              className="text-sm text-slate-400 hover:text-[#93c5fd] transition-colors"
             >
               {mode === "login"
                 ? "Don't have an account? Sign up"
@@ -1889,7 +1889,7 @@ function EnrollmentFormModal({
                   setForm({ ...form, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#3b82f6]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.name && (
@@ -1916,7 +1916,7 @@ function EnrollmentFormModal({
                   setForm({ ...form, email: e.target.value })
                 }
                 placeholder="you@example.com"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#3b82f6]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.email && (
@@ -1951,7 +1951,7 @@ function EnrollmentFormModal({
                   })
                 }
                 placeholder="9876543210"
-                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#18c29c]/60 focus:bg-white/[0.08] transition-all"
+                className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-20 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#3b82f6]/60 focus:bg-white/[0.08] transition-all"
               />
             </div>
             {errors.phone && (
@@ -2093,14 +2093,14 @@ function PaymentReviewModal({
         </div>
 
         <div className="relative px-5 py-5 space-y-4 overflow-y-auto flex-1">
-          <div className="rounded-2xl border border-[#18c29c]/25 bg-[#18c29c]/[0.08] px-4 py-3">
-            <p className="text-xs font-black uppercase tracking-wider text-[#8df5d7]">
+          <div className="rounded-2xl border border-[#3b82f6]/25 bg-[#3b82f6]/[0.08] px-4 py-3">
+            <p className="text-xs font-black uppercase tracking-wider text-[#93c5fd]">
               Bundle offer
             </p>
             <p className="mt-1 text-sm text-white/75">
               Add {MULTI_COURSE_MIN_COUNT} or more courses in one checkout and
               get an extra{" "}
-              <span className="font-bold text-[#9cf8dd]">
+              <span className="font-bold text-[#bfdbfe]">
                 {MULTI_COURSE_DISCOUNT_PERCENT}% off
               </span>{" "}
               the combined total.
@@ -2110,7 +2110,7 @@ function PaymentReviewModal({
           <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8df5d7]">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#93c5fd]">
                   Selected ({selectedCourses.length})
                 </p>
                 <div className="mt-2 space-y-2">
@@ -2150,7 +2150,7 @@ function PaymentReviewModal({
                       key={addOn.id}
                       className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
                         checked
-                          ? "border-[#18c29c]/40 bg-[#18c29c]/10"
+                          ? "border-[#3b82f6]/40 bg-[#3b82f6]/10"
                           : "border-white/10 bg-white/[0.03] hover:border-white/20"
                       }`}
                     >
@@ -2166,7 +2166,7 @@ function PaymentReviewModal({
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleAddOnCourse(addOn.id)}
-                        className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#18c29c]"
+                        className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#3b82f6]"
                       />
                     </label>
                   );
@@ -2269,7 +2269,7 @@ function PaymentReviewModal({
             <button
               type="button"
               onClick={() => onPay(pricing)}
-              className="rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f8cff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#18c29c]/20 transition-transform hover:-translate-y-0.5"
+              className="rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f8cff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#3b82f6]/20 transition-transform hover:-translate-y-0.5"
             >
               Proceed to Payment
             </button>
@@ -2319,12 +2319,12 @@ function InvoiceModal({
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#18c29c]/30 shadow-2xl overflow-hidden">
+      <div className="relative w-full sm:max-w-lg bg-[#07111f] rounded-t-2xl sm:rounded-2xl border border-[#3b82f6]/30 shadow-2xl overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(24,194,156,0.16),transparent_45%)]" />
         {/* Success header */}
-        <div className="relative px-5 pt-7 pb-5 text-center border-b border-white/10 bg-[#18c29c]/5">
-          <div className="w-14 h-14 rounded-xl bg-[#18c29c]/20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-[#8df5d7]" />
+        <div className="relative px-5 pt-7 pb-5 text-center border-b border-white/10 bg-[#3b82f6]/5">
+          <div className="w-14 h-14 rounded-xl bg-[#3b82f6]/20 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-[#93c5fd]" />
           </div>
           <h2
             className="text-xl font-black text-white mb-1"
@@ -2431,7 +2431,7 @@ function InvoiceModal({
                 {formatINR(record.amountPaid)} paid
               </p>
               {record.multiCourseDiscount ? (
-                <p className="text-[11px] text-[#8df5d7] mt-1">
+                <p className="text-[11px] text-[#93c5fd] mt-1">
                   Multi-course saved{" "}
                   {formatINR(record.multiCourseDiscount)}
                 </p>
@@ -2509,7 +2509,7 @@ function CourseCard({
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b1522] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[#2dd4a6]/25 hover:bg-[#0d1928] ${
+      className={`group course-card-3d relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b1522] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[#3b82f6]/25 hover:bg-[#0d1928] ${
         isFeaturedLiveBatch
           ? "border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
           : ""
@@ -2630,7 +2630,7 @@ function CourseCard({
             </span>
           )}
           {course.timings && (
-            <span className="flex items-center gap-1 text-xs text-[#b8fff0] bg-[#18c29c]/12 border border-[#18c29c]/28 px-2.5 py-1 rounded-full shadow-sm shadow-[#18c29c]/10">
+            <span className="flex items-center gap-1 text-xs text-[#b8fff0] bg-[#3b82f6]/12 border border-[#3b82f6]/28 px-2.5 py-1 rounded-full shadow-sm shadow-[#3b82f6]/10">
               <MonitorPlay className="w-3 h-3" />
               {course.timings}
             </span>
@@ -2652,7 +2652,7 @@ function CourseCard({
         </div>
 
         <div className={`relative z-10 rounded-xl border border-white/[0.07] bg-[#07111c]/80 ${isFeaturedLiveBatch ? "mb-4 p-3" : "mb-3 p-2.5"}`}>
-          <div className={`${isFeaturedLiveBatch ? "mb-3" : "mb-2"} flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#8bedd0]`}>
+          <div className={`${isFeaturedLiveBatch ? "mb-3" : "mb-2"} flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#93c5fd]`}>
             <CheckCircle2 className="h-3.5 w-3.5" />
             What's included
           </div>
@@ -2716,7 +2716,7 @@ function CourseCard({
                   href={demoAccess.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#3b82f6]/30 bg-[#3b82f6]/10 px-4 py-3 text-sm font-black text-[#bfdbfe] hover:border-[#3b82f6]/55 hover:bg-[#3b82f6]/16 transition-all"
                 >
                   <demoAccess.icon className="h-4 w-4" />
                   Join Demo
@@ -2729,7 +2729,7 @@ function CourseCard({
               href={demoAccess.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#18c29c]/30 bg-[#18c29c]/10 px-4 py-3 text-sm font-black text-[#9cf8dd] hover:border-[#18c29c]/55 hover:bg-[#18c29c]/16 transition-all"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#3b82f6]/30 bg-[#3b82f6]/10 px-4 py-3 text-sm font-black text-[#bfdbfe] hover:border-[#3b82f6]/55 hover:bg-[#3b82f6]/16 transition-all"
             >
               <demoAccess.icon className="h-4 w-4" />
               {demoAccess.longLabel}
@@ -3216,8 +3216,8 @@ export default function App() {
             accent="teal"
           />
 
-          <div className="mx-auto mb-8 max-w-3xl rounded-xl border border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.055] px-5 py-4 text-center">
-            <p className="text-sm font-bold text-[#8bedd0]">
+          <div className="mx-auto mb-8 max-w-3xl rounded-xl border border-[#3b82f6]/20 bg-[#3b82f6]/[0.055] px-5 py-4 text-center">
+            <p className="text-sm font-bold text-[#93c5fd]">
               Save an extra {MULTI_COURSE_DISCOUNT_PERCENT}% when you enroll in{" "}
               {MULTI_COURSE_MIN_COUNT} or more courses in one checkout
             </p>
@@ -3234,7 +3234,7 @@ export default function App() {
                 onClick={() => setActiveCategory(value)}
                 className={`relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-black transition-all ${
                   activeCategory === value
-                    ? "bg-[#2dd4a6] text-[#04110d] shadow-lg shadow-[#2dd4a6]/10"
+                    ? "bg-[#3b82f6] text-[#ffffff] shadow-lg shadow-[#3b82f6]/10"
                     : "border border-transparent text-slate-400 hover:bg-white/[0.045] hover:text-white"
                 }`}
               >
@@ -3361,7 +3361,7 @@ export default function App() {
 
           <div className="premium-surface flex flex-col items-center gap-7 rounded-[1.5rem] p-5 sm:p-7 md:flex-row md:items-start md:gap-10">
             <div className="flex-shrink-0 flex flex-col items-center gap-3">
-              <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#18c29c]/20 ring-1 ring-white/12">
+              <div className="premium-ring relative w-40 h-52 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-[#3b82f6]/20 ring-1 ring-white/12">
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy - GCP Data Engineering Instructor"
@@ -3387,7 +3387,7 @@ export default function App() {
               >
                 Shaik Saidhul
               </h3>
-              <p className="text-[#8df5d7] font-semibold text-sm mb-4">
+              <p className="text-[#93c5fd] font-semibold text-sm mb-4">
                 Solution Architect - SkillVane IT Academy
               </p>
               <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-xl">
@@ -3551,7 +3551,7 @@ export default function App() {
               href="https://t.me/gcpdataengineering"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#18c29c]/20 bg-[#18c29c]/10 px-3 py-1.5 text-[#9cf8dd] hover:border-[#18c29c]/45 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#3b82f6]/20 bg-[#3b82f6]/10 px-3 py-1.5 text-[#bfdbfe] hover:border-[#3b82f6]/45 hover:text-white transition-colors"
             >
               <Send className="h-3.5 w-3.5" />
               Telegram

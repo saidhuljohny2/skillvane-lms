@@ -20,11 +20,11 @@ export function CertificatePreview({
 
   return (
     <div className="cert-preview relative overflow-hidden rounded-2xl border-2 border-double border-[#c9a227]/60 bg-gradient-to-br from-[#fffef9] via-[#f8fbff] to-[#fffdf6] p-5 text-[#07111f] shadow-2xl shadow-black/25 sm:p-6">
-      <div className="pointer-events-none absolute -right-6 -top-4 rotate-[42deg] bg-gradient-to-r from-[#18c29c] to-[#2f80ed] px-8 py-1 text-[9px] font-black uppercase tracking-[0.2em] text-white shadow-lg">
+      <div className="pointer-events-none absolute -right-6 -top-4 rotate-[42deg] bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] px-8 py-1 text-[9px] font-black uppercase tracking-[0.2em] text-white shadow-lg">
         Official
       </div>
       <div
-        className="pointer-events-none absolute inset-4 rounded-xl border border-[#18c29c]/20"
+        className="pointer-events-none absolute inset-4 rounded-xl border border-[#3b82f6]/20"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='%23e2e8f0' stroke-width='0.5'/%3E%3C/svg%3E")`,
           opacity: 0.4,
@@ -57,7 +57,7 @@ export function CertificatePreview({
         <h4 className="mt-2 font-serif text-3xl font-bold italic text-[#07111f] sm:text-4xl">
           {courseName}
         </h4>
-        <div className="mx-auto my-4 h-1 w-20 rounded-full bg-gradient-to-r from-[#18c29c] via-[#2f80ed] to-[#f2b84b]" />
+        <div className="mx-auto my-4 h-1 w-20 rounded-full bg-gradient-to-r from-[#3b82f6] via-[#2f80ed] to-[#f2b84b]" />
         <p className="text-sm text-slate-500">This is to certify that</p>
         <p className="mx-auto mt-2 max-w-md border-b-2 border-[#c9a227] pb-2 font-serif text-3xl font-bold italic text-[#07111f]">
           {name}

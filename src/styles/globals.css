@@ -8,9 +8,9 @@ html {
 
 body {
   background:
-    radial-gradient(circle at 16% 4%, rgba(45, 212, 166, 0.075), transparent 30rem),
-    radial-gradient(circle at 88% 12%, rgba(234, 185, 110, 0.055), transparent 26rem),
-    linear-gradient(180deg, #060d17 0%, #050b13 100%);
+    radial-gradient(circle at 12% 4%, rgba(59, 130, 246, 0.12), transparent 32rem),
+    radial-gradient(circle at 90% 8%, rgba(245, 158, 11, 0.08), transparent 28rem),
+    linear-gradient(180deg, #090b12 0%, #070910 100%);
   color: #f6f8fb;
 }
 
@@ -34,7 +34,7 @@ body {
 
 /* Gradient text utility */
 .gradient-text {
-  background: linear-gradient(135deg, #65e5c1 0%, #8bc8ff 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #f8c875 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -42,9 +42,9 @@ body {
 
 /* Glass morphism effect */
 .glass {
-  background: rgba(11, 21, 34, 0.84);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(203, 213, 225, 0.1);
+  background: rgba(16, 20, 30, 0.78);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Glow effect for cards */
@@ -59,20 +59,20 @@ body {
 
 /* Modern button styles */
 .btn-primary {
-  background: #2dd4a6;
+  background: #3b82f6;
   border: none;
-  color: #04110d;
+  color: #ffffff;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 0.875rem;
   transition: all 0.2s ease;
-  box-shadow: 0 10px 30px rgba(45, 212, 166, 0.12);
+  box-shadow: 0 12px 34px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  background: #55dfb9;
-  box-shadow: 0 12px 34px rgba(45, 212, 166, 0.16);
+  background: #60a5fa;
+  box-shadow: 0 14px 38px rgba(37, 99, 235, 0.3);
 }
 
 .btn-primary:active {
@@ -118,7 +118,7 @@ body {
   border: 1px solid rgba(203, 213, 225, 0.09);
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    rgba(11, 21, 34, 0.92);
+    rgba(15, 19, 29, 0.92);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
     0 20px 55px rgba(0, 0, 0, 0.24);

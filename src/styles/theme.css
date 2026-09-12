@@ -2,15 +2,15 @@
 
 :root {
   --font-size: 16px;
-  --background: #060d17;
+  --background: #090b12;
   --foreground: #f6f8fb;
-  --card: #0b1522;
+  --card: #111621;
   --card-foreground: #f6f8fb;
   --popover: #0f1b2a;
   --popover-foreground: #f6f8fb;
-  --primary: #2dd4a6;
-  --primary-foreground: #04110d;
-  --secondary: #4c8dff;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #f59e0b;
   --secondary-foreground: #ffffff;
   --muted: #152234;
   --muted-foreground: #93a4b8;
@@ -24,8 +24,8 @@
   --switch-background: #26364a;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --ring: #2dd4a6;
-  --chart-1: #2dd4a6;
+  --ring: #3b82f6;
+  --chart-1: #3b82f6;
   --chart-2: #4c8dff;
   --chart-3: #eab96e;
   --chart-4: #10b981;
@@ -39,13 +39,13 @@
   --sidebar-accent-foreground: #f0f4ff;
   --sidebar-border: rgba(148, 163, 184, 0.12);
   --sidebar-ring: #2dd4a6;
-  --gradient-primary: linear-gradient(135deg, #2dd4a6 0%, #4c8dff 100%);
-  --gradient-accent: linear-gradient(135deg, #eab96e 0%, #8bc8ff 100%);
+  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #fb7185 100%);
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 30px rgba(45, 212, 166, 0.18);
+  --shadow-glow: 0 0 36px rgba(59, 130, 246, 0.22);
 }
 
 .dark {
@@ -55,8 +55,8 @@
   --card-foreground: #f6f8fb;
   --popover: #0f1b2a;
   --popover-foreground: #f6f8fb;
-  --primary: #2dd4a6;
-  --primary-foreground: #04110d;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
   --secondary: #4c8dff;
   --secondary-foreground: #ffffff;
   --muted: #152234;
@@ -67,7 +67,7 @@
   --destructive-foreground: #ffffff;
   --border: rgba(203, 213, 225, 0.11);
   --input: #142133;
-  --ring: #2dd4a6;
+  --ring: #3b82f6;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
   --chart-1: #2dd4a6;

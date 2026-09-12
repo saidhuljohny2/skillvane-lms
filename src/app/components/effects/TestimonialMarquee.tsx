@@ -26,7 +26,7 @@ const TESTIMONIALS = [
     name: "Sneha Patil",
     role: "ML Engineer at Flipkart",
     initials: "SP",
-    color: "from-[#2dd4a6] to-[#148b70]",
+    color: "from-[#3b82f6] to-[#148b70]",
     text: "The Retailer project course was worth every rupee. It bridged the gap between theory and production-grade engineering. I used the exact architecture in my current job.",
   },
 ];

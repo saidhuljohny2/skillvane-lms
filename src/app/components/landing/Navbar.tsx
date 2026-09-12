@@ -49,7 +49,7 @@ export function Navbar({
     <>
       <div className="fixed inset-x-0 top-0 z-[90] h-0.5 bg-[#060d17]">
         <motion.div
-          className="h-full origin-left rounded-r-full bg-gradient-to-r from-[#2dd4a6] via-[#76b4ff] to-[#eab96e]"
+          className="h-full origin-left rounded-r-full bg-gradient-to-r from-[#3b82f6] via-[#76b4ff] to-[#eab96e]"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
@@ -126,7 +126,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onDashboard}
-                  className="magnetic-button flex items-center gap-2 rounded-lg bg-[#2dd4a6] px-5 py-2.5 text-sm font-black text-[#04110d] shadow-lg shadow-[#2dd4a6]/10 hover:bg-[#55dfb9]"
+                  className="magnetic-button flex items-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff] shadow-lg shadow-[#3b82f6]/10 hover:bg-[#60a5fa]"
                 >
                   <GraduationCap className="h-4 w-4" />
                   Dashboard
@@ -137,7 +137,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onLogin}
-                  className="flex items-center gap-2 rounded-lg border border-white/[0.09] px-4 py-2 text-sm font-semibold text-slate-300 hover:border-[#2dd4a6]/30 hover:bg-white/[0.03] hover:text-white"
+                  className="flex items-center gap-2 rounded-lg border border-white/[0.09] px-4 py-2 text-sm font-semibold text-slate-300 hover:border-[#3b82f6]/30 hover:bg-white/[0.03] hover:text-white"
                 >
                   <LogIn className="h-4 w-4" />
                   Login
@@ -145,7 +145,7 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={() => scrollTo("courses")}
-                  className="magnetic-button group flex items-center gap-2 rounded-lg bg-[#2dd4a6] px-5 py-2.5 text-sm font-black text-[#04110d] shadow-lg shadow-[#2dd4a6]/10 hover:bg-[#55dfb9]"
+                  className="magnetic-button group flex items-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff] shadow-lg shadow-[#3b82f6]/10 hover:bg-[#60a5fa]"
                 >
                   View Courses
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -204,7 +204,7 @@ export function Navbar({
                       onDashboard();
                       setMobileOpen(false);
                     }}
-                    className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-bold text-white"
+                    className="w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] py-3 text-sm font-bold text-white"
                   >
                     My Dashboard
                   </button>
@@ -237,7 +237,7 @@ export function Navbar({
                       scrollTo("courses");
                       setMobileOpen(false);
                     }}
-                    className="w-full rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-bold text-white"
+                    className="w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] py-3 text-sm font-bold text-white"
                   >
                     View Courses
                   </button>

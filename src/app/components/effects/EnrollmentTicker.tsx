@@ -24,9 +24,9 @@ export function EnrollmentTicker() {
   }, []);
 
   return (
-    <div className="relative overflow-hidden border-b border-white/[0.07] bg-gradient-to-r from-[#2dd4a6]/[0.05] via-[#07111d] to-[#eab96e]/[0.04] py-2.5">
+    <div className="relative overflow-hidden border-b border-white/[0.07] bg-gradient-to-r from-[#3b82f6]/[0.05] via-[#07111d] to-[#eab96e]/[0.04] py-2.5">
       <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 text-sm">
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.07] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#8bedd0]">
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#3b82f6]/20 bg-[#3b82f6]/[0.07] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#93c5fd]">
           <Users className="h-3 w-3" />
           Live
         </span>
