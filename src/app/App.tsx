@@ -2511,10 +2511,10 @@ function CourseCard({
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex h-full min-h-[440px] flex-col overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#0d131e] shadow-[0_22px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#101827] ${
+      className={`group course-card-3d relative flex flex-col overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#0d131e] shadow-[0_22px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#101827] ${
         isFeaturedLiveBatch
-          ? "border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
-          : ""
+          ? "h-full min-h-[440px] border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
+          : "min-h-0 self-start"
       }`}
       whileHover={{ y: -3 }}
       transition={{ type: "spring", stiffness: 300, damping: 26 }}
@@ -3281,11 +3281,11 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="mx-auto grid max-w-6xl auto-rows-fr grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-5 md:grid-cols-2 lg:gap-6">
             {visibleCourses.map((course, index) => (
               <Reveal
                 key={course.id}
-                className="h-full"
+                className={course.type === "live" ? "h-full" : "self-start"}
                 delay={index * 0.08}
               >
                 <CourseCard
