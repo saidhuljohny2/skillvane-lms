@@ -250,7 +250,7 @@ const COURSES: Course[] = [
     accentTo: "#10b981",
     title: "Python for Data Engineering",
     subtitle: "Hands-On Foundation Course",
-    price: 599,
+    price: 1,
     originalPrice: 2000,
     highlights: [
       "Python fundamentals for data engineers",
