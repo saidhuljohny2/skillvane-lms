@@ -128,6 +128,47 @@ export async function adminRequest<T>(path: string, init: RequestInit = {}) {
   return payload as T;
 }
 
+export interface PublishedLesson {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  durationSeconds: number;
+  isPreview: boolean;
+  resources: Array<{ id: string; title: string; url: string; type: string }>;
+}
+
+export interface PublishedModule {
+  id: string;
+  title: string;
+  lessons: PublishedLesson[];
+}
+
+export async function loadPublishedCourseContent(courseId: string): Promise<PublishedModule[]> {
+  const session = await getValidSession();
+  const modules = await request<Array<{ id: string; title: string }>>(
+    `/rest/v1/course_modules?course_id=eq.${encodeURIComponent(courseId)}&select=id,title&order=position`, {}, session.access_token,
+  );
+  if (!modules.length) return [];
+  const moduleIds = modules.map((module) => module.id).join(",");
+  const lessons = await request<Array<{ id: string; module_id: string; title: string; description: string; video_url: string | null; duration_seconds: number; is_preview: boolean }>>(
+    `/rest/v1/course_lessons?module_id=in.(${moduleIds})&is_published=eq.true&select=id,module_id,title,description,video_url,duration_seconds,is_preview&order=position`, {}, session.access_token,
+  );
+  const lessonIds = lessons.map((lesson) => lesson.id).join(",");
+  const resources = lessonIds ? await request<Array<{ id: string; lesson_id: string; title: string; resource_url: string; resource_type: string }>>(
+    `/rest/v1/lesson_resources?lesson_id=in.(${lessonIds})&select=id,lesson_id,title,resource_url,resource_type&order=position`, {}, session.access_token,
+  ) : [];
+  return modules.map((module) => ({
+    id: module.id, title: module.title,
+    lessons: lessons.filter((lesson) => lesson.module_id === module.id).map((lesson) => ({
+      id: lesson.id, title: lesson.title, description: lesson.description,
+      videoUrl: lesson.video_url || "", durationSeconds: lesson.duration_seconds,
+      isPreview: lesson.is_preview,
+      resources: resources.filter((resource) => resource.lesson_id === lesson.id).map((resource) => ({ id: resource.id, title: resource.title, url: resource.resource_url, type: resource.resource_type })),
+    })),
+  })).filter((module) => module.lessons.length > 0);
+}
+
 export async function sendPasswordReset(email: string) {
   await request("/auth/v1/recover", {
     method: "POST",

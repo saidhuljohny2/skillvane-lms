@@ -23,7 +23,9 @@ import { openCertificatePrintWindow } from "@/app/lib/certificate";
 import {
   isSupabaseConfigured,
   loadLearningProgress,
+  loadPublishedCourseContent,
   setLearningModuleComplete,
+  type PublishedModule,
 } from "@/app/lib/supabase";
 import type { LoggedInStudent } from "@/app/types";
 import skillVaneLogo from "@/imports/logo1.png";
@@ -95,7 +97,21 @@ function LessonPlayer({
   onClose: () => void;
 }) {
   const resumeKey = `skillvane_last_lesson_${student.email}_${course.id}`;
-  const modules = course.curriculum || [];
+  const [publishedContent, setPublishedContent] = useState<PublishedModule[]>([]);
+  useEffect(() => {
+    if (isSupabaseConfigured) {
+      void loadPublishedCourseContent(course.id).then(setPublishedContent).catch(() => undefined);
+    }
+  }, [course.id]);
+  const databaseLessons = publishedContent.flatMap((contentModule) =>
+    contentModule.lessons.map((lesson) => ({
+      module: lesson.title,
+      topics: lesson.description ? [lesson.description] : [contentModule.title],
+      videoUrl: lesson.videoUrl,
+      resources: lesson.resources,
+    })),
+  );
+  const modules = databaseLessons.length ? databaseLessons : (course.curriculum || []);
   const [moduleIndex, setModuleIndex] = useState(() => {
     const saved = Number(localStorage.getItem(resumeKey));
     return Number.isInteger(saved) && saved >= 0 && saved < modules.length ? saved : 0;
@@ -171,11 +187,7 @@ function LessonPlayer({
                 <p className="mt-2 text-sm text-slate-400">
                   The lesson video will appear here when it is published by your instructor.
                 </p>
-                {usableResource(course.driveLink) && (
-                  <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#18c29c] px-5 py-2.5 text-sm font-black text-[#04110d]">
-                    Open course recordings
-                  </a>
-                )}
+                {"videoUrl" in (module || {}) && module.videoUrl ? <a href={module.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#18c29c] px-5 py-2.5 text-sm font-black text-[#04110d]">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#18c29c] px-5 py-2.5 text-sm font-black text-[#04110d]">Open course recordings</a>}
               </div>
             </div>
 
@@ -195,6 +207,7 @@ function LessonPlayer({
                   <Download className="h-4 w-4" /> Download lesson resources
                 </a>
               )}
+              {"resources" in (module || {}) && module.resources?.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{module.resources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-[#18c29c]/25 bg-[#18c29c]/10 px-3 py-2 text-xs font-bold text-[#9cf8dd]"><Download className="mr-1 inline h-3 w-3" />{resource.title}</a>)}</div>}
             </section>
 
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#08121f] p-4 sm:flex-row sm:items-center sm:justify-between">
