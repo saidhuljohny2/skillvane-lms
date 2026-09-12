@@ -12,7 +12,7 @@ export function FinalCTA({ scrollTo }: { scrollTo: (id: string) => void }) {
               Start your multi-cloud journey today
             </h2>
             <p className="mt-5 text-base leading-relaxed text-slate-400 sm:text-lg">
-              5 programs. Live batch, recordings, foundation & projects. Trusted
+              8 programs. Live batches, recordings, foundations and projects. Trusted
               by 2,500+ professionals across India.
             </p>
             <button

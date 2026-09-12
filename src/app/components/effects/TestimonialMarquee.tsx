@@ -37,7 +37,7 @@ function TestimonialCard({
   t: (typeof TESTIMONIALS)[0];
 }) {
   return (
-    <article className="testimonial-card w-[340px] flex-shrink-0 rounded-[1.25rem] border border-white/[0.08] bg-[#0b1522] p-6 shadow-[0_14px_40px_rgba(0,0,0,0.18)] sm:w-[380px]">
+    <article className="testimonial-card rounded-[1.25rem] border border-white/[0.08] bg-[#0b1522] p-5 shadow-[0_14px_40px_rgba(0,0,0,0.18)]">
       <div className="mb-3 flex gap-0.5">
         {[...Array(5)].map((_, i) => (
           <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
@@ -60,17 +60,11 @@ function TestimonialCard({
 }
 
 export function TestimonialMarquee() {
-  const row = [...TESTIMONIALS, ...TESTIMONIALS];
-
   return (
-    <div className="relative overflow-hidden py-2">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#060d17] to-transparent sm:w-28" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#060d17] to-transparent sm:w-28" />
-      <div className="marquee-track-slow flex w-max gap-4">
-        {row.map((t, i) => (
-          <TestimonialCard key={`${t.name}-${i}`} t={t} />
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {TESTIMONIALS.map((t) => (
+          <TestimonialCard key={t.name} t={t} />
         ))}
-      </div>
     </div>
   );
 }

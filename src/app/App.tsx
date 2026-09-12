@@ -49,8 +49,6 @@ import {
 import { motion } from "motion/react";
 import { Navbar } from "@/app/components/landing/Navbar";
 import { LandingHero } from "@/app/components/landing/LandingHero";
-import { EnrollmentTicker } from "@/app/components/effects/EnrollmentTicker";
-import { GcpTechMarquee } from "@/app/components/effects/GcpTechMarquee";
 import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { AdminStudentsModal } from "@/app/components/modals/AdminStudentsModal";
 import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
@@ -2513,11 +2511,11 @@ function CourseCard({
   const isFeaturedLiveBatch = isLiveBatch;
   const moduleCount = course.curriculum.length;
   const curriculumHref = isLiveBatch ? course.curriculumDownload : undefined;
-  const cardHighlights = course.highlights.slice(0, 4);
+  const cardHighlights = course.highlights.slice(0, 3);
 
   return (
     <motion.div
-      className={`group course-card-3d relative flex h-full min-h-[620px] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b1522] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[#2dd4a6]/25 hover:bg-[#0d1928] ${
+      className={`group course-card-3d relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b1522] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[#2dd4a6]/25 hover:bg-[#0d1928] ${
         isFeaturedLiveBatch
           ? "border-[#eab96e]/30 bg-[#0c1725] shadow-[0_22px_60px_rgba(0,0,0,0.28)]"
           : ""
@@ -3204,8 +3202,6 @@ export default function App() {
 
       {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <LandingHero scrollTo={scrollTo} />
-      <EnrollmentTicker />
-      <GcpTechMarquee />
 
       {/* Courses */}
       <section
@@ -3218,8 +3214,8 @@ export default function App() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <SectionHeading
             eyebrow="Premium Programs"
-            title="Pick your GCP learning path"
-            description="Choose the format that fits your schedule and career goals."
+            title="Choose your learning path"
+            description="Start with a live program, learn at your own pace, or build a focused project."
             accent="teal"
           />
 
@@ -3273,7 +3269,7 @@ export default function App() {
           )}
 
           {/* Course grid */}
-          <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
+          <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 lg:gap-6">
             {visibleCourses.map((course, index) => (
               <Reveal
                 key={course.id}

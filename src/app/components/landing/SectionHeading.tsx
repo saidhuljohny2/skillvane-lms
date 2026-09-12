@@ -22,15 +22,15 @@ export function SectionHeading({
 
   return (
     <Reveal
-      className={`mb-9 sm:mb-12 ${align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}`}
+      className={`mb-8 sm:mb-10 ${align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}`}
     >
       <span
-        className={`mb-5 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] sm:text-xs ${accentStyles[accent]}`}
+        className={`mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] ${accentStyles[accent]}`}
       >
         <span className="h-1.5 w-1.5 rounded-full bg-current" />
         {eyebrow}
       </span>
-      <h2 className="text-3xl font-black tracking-[-0.035em] text-white sm:text-5xl">{title}</h2>
+      <h2 className="text-3xl font-black tracking-[-0.035em] text-white sm:text-4xl">{title}</h2>
       {description && (
         <p className="mt-4 text-base leading-relaxed text-slate-400 sm:text-lg">
           {description}

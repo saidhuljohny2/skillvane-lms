@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { MultiCloudVisual } from "@/app/components/effects/GcpCloudVisual";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
-import { AnimatedCounter } from "@/app/components/effects/AnimatedCounter";
 import { Reveal, RevealStagger, RevealItem } from "@/app/components/effects/Reveal";
 
 const STATS = [
@@ -39,7 +38,7 @@ export function LandingHero({
         }}
       />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:min-h-[100svh] lg:grid-cols-[1.08fr_0.92fr] lg:gap-16 lg:pb-24 lg:pt-28">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:pb-20 lg:pt-32">
         <div className="relative z-10 order-1 lg:order-1">
           <Reveal>
             <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-[#2dd4a6]/20 bg-[#2dd4a6]/[0.07] px-3 py-2 sm:mb-7">
@@ -52,17 +51,17 @@ export function LandingHero({
 
           <Reveal delay={0.06}>
             <div>
-              <h1 className="max-w-2xl text-[2.5rem] font-black leading-[1.02] tracking-[-0.045em] text-white min-[390px]:text-[2.8rem] sm:text-6xl lg:text-[4rem]">
-                Master{" "}
+              <h1 className="max-w-2xl text-[2.5rem] font-black leading-[1.02] tracking-[-0.045em] text-white min-[390px]:text-[2.8rem] sm:text-6xl lg:text-[3.75rem]">
+                Build a career in{" "}
                 <span className="bg-gradient-to-r from-[#65e5c1] via-[#8bc8ff] to-[#eab96e] bg-clip-text text-transparent">
                   Multi-Cloud Data Engineering
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">
-                GCP + Azure in 4 months — BigQuery, Dataflow, ADF, Synapse,
-                Databricks &amp; more, taught live by{" "}
+                Learn GCP and Azure through guided classes, recordings, and
+                portfolio-ready projects, taught by{" "}
                 <span className="font-bold text-white">Shaik Saidhul</span>,
-                with case studies and career support.
+                with practical case studies and career guidance.
               </p>
 
               <button
@@ -106,9 +105,7 @@ export function LandingHero({
               <RevealItem key={sub}>
                 <div className="glass-stat rounded-xl p-3.5 text-center sm:p-4 sm:text-left">
                   <Icon className="mx-auto mb-2 h-4 w-4 text-[#8bc8ff] sm:mx-0" />
-                  <div className="text-xl font-black text-white sm:text-2xl">
-                    <AnimatedCounter value={val} />
-                  </div>
+                  <div className="text-xl font-black text-white sm:text-2xl">{val}</div>
                   <div className="text-[10px] font-semibold text-slate-400">
                     {sub}
                   </div>
@@ -119,7 +116,7 @@ export function LandingHero({
         </div>
 
         <Reveal delay={0.1} className="relative order-2 lg:order-2">
-          <div className="glass-panel glass-panel-glow mx-auto w-full max-w-[460px] rounded-[1.5rem] p-4 sm:max-w-none sm:rounded-[1.75rem] sm:p-6">
+          <div className="glass-panel glass-panel-glow mx-auto w-full max-w-[430px] rounded-[1.5rem] p-4 sm:rounded-[1.75rem] sm:p-5">
             <p className="mb-4 text-center text-[10px] font-black uppercase tracking-[0.24em] text-[#8bedd0]">
               Multi-cloud data platform
             </p>
