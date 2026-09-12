@@ -14,7 +14,7 @@ export default async function handler(request, response) {
     if (request.method === "GET") {
       const [profiles, enrollments, progress, payments, courses, modules, lessons, resources] = await Promise.all([
         supabaseServiceRequest("/rest/v1/profiles?select=id,email,full_name,phone,created_at&order=created_at.desc"),
-        supabaseServiceRequest("/rest/v1/enrollments?select=student_id,course_id,amount_paid_paise,enrolled_at&order=enrolled_at.desc"),
+        supabaseServiceRequest("/rest/v1/enrollments?select=student_id,course_id"),
         supabaseServiceRequest("/rest/v1/learning_progress?select=student_id,course_id,module_index"),
         supabaseServiceRequest("/rest/v1/payment_orders?select=order_id,student_email,course_ids,amount_paise,payment_id,status,created_at,verified_at&order=created_at.desc"),
         supabaseServiceRequest("/rest/v1/courses?select=id,title,subtitle,status,updated_at&order=title"),
@@ -34,7 +34,7 @@ export default async function handler(request, response) {
         const rows = await supabaseServiceRequest("/rest/v1/enrollments?on_conflict=student_id,course_id", {
           method: "POST",
           headers: { Prefer: "resolution=merge-duplicates,return=representation" },
-          body: JSON.stringify({ student_id: studentId, course_id: courseId, amount_paid_paise: 0 }),
+          body: JSON.stringify({ student_id: studentId, course_id: courseId }),
         });
         return response.status(201).json({ item: rows[0] });
       }
