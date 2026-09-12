@@ -3,6 +3,8 @@ import {
   Award,
   BookOpen,
   Calendar,
+  ChevronLeft,
+  ChevronRight,
   CheckCircle2,
   Download,
   GraduationCap,
@@ -42,6 +44,8 @@ interface Course {
   originalPrice?: number;
   duration?: string;
   zoomLink?: string;
+  driveLink?: string;
+  notesLink?: string;
   curriculum?: { module: string; topics: string[] }[];
 }
 
@@ -73,6 +77,144 @@ function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
 
 type DashTab = "overview" | "courses" | "explore";
 
+function usableResource(url?: string) {
+  return url && !url.includes("REPLACE_WITH") ? url : null;
+}
+
+function LessonPlayer({
+  student,
+  course,
+  completedModules,
+  onToggleComplete,
+  onClose,
+}: {
+  student: LoggedInStudent;
+  course: Course;
+  completedModules: number[];
+  onToggleComplete: (moduleIndex: number) => void;
+  onClose: () => void;
+}) {
+  const resumeKey = `skillvane_last_lesson_${student.email}_${course.id}`;
+  const modules = course.curriculum || [];
+  const [moduleIndex, setModuleIndex] = useState(() => {
+    const saved = Number(localStorage.getItem(resumeKey));
+    return Number.isInteger(saved) && saved >= 0 && saved < modules.length ? saved : 0;
+  });
+  const module = modules[moduleIndex];
+  const isComplete = completedModules.includes(moduleIndex);
+
+  const selectModule = (index: number) => {
+    setModuleIndex(index);
+    localStorage.setItem(resumeKey, String(index));
+  };
+
+  return (
+    <div className="fixed inset-0 z-[135] flex bg-[#050b14]">
+      <div className="flex w-full flex-col lg:grid lg:grid-cols-[20rem_1fr]">
+        <aside className="order-2 max-h-[42vh] overflow-y-auto border-t border-white/10 bg-[#07111d] lg:order-1 lg:max-h-none lg:border-r lg:border-t-0">
+          <div className="sticky top-0 z-10 border-b border-white/10 bg-[#07111d]/95 p-4 backdrop-blur">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8df5d7]">
+              Course content
+            </p>
+            <h3 className="mt-1 text-sm font-black text-white">{course.title}</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              {completedModules.length}/{modules.length} modules complete
+            </p>
+          </div>
+          <div className="space-y-1 p-2">
+            {modules.map((item, index) => {
+              const complete = completedModules.includes(index);
+              return (
+                <button
+                  key={`${course.id}-lesson-${index}`}
+                  type="button"
+                  onClick={() => selectModule(index)}
+                  className={`flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition ${
+                    index === moduleIndex
+                      ? "bg-[#18c29c]/12 text-white ring-1 ring-[#18c29c]/25"
+                      : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <CheckCircle2 className={`mt-0.5 h-4 w-4 flex-none ${complete ? "text-[#18c29c]" : "text-slate-600"}`} />
+                  <span>
+                    <span className="block text-[10px] font-black uppercase tracking-wider text-slate-500">
+                      Module {index + 1}
+                    </span>
+                    <span className="block text-xs font-bold leading-snug">{item.module}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        <main className="order-1 min-h-0 flex-1 overflow-y-auto lg:order-2">
+          <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[#08121f]/95 px-4 py-3 backdrop-blur sm:px-6">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-wider text-[#8df5d7]">
+                Module {moduleIndex + 1} of {modules.length}
+              </p>
+              <h2 className="truncate font-black text-white">{module?.module}</h2>
+            </div>
+            <button type="button" onClick={onClose} className="rounded-xl border border-white/10 p-2 text-slate-400 hover:text-white">
+              <X className="h-5 w-5" />
+            </button>
+          </header>
+
+          <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
+            <div className="flex aspect-video items-center justify-center rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_center,rgba(24,194,156,0.14),transparent_55%),#030811] shadow-2xl">
+              <div className="max-w-md px-6 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#18c29c]/15 ring-1 ring-[#18c29c]/30">
+                  <Play className="h-7 w-7 fill-[#8df5d7] text-[#8df5d7]" />
+                </div>
+                <h3 className="mt-4 text-lg font-black text-white">Lesson workspace ready</h3>
+                <p className="mt-2 text-sm text-slate-400">
+                  The lesson video will appear here when it is published by your instructor.
+                </p>
+                {usableResource(course.driveLink) && (
+                  <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#18c29c] px-5 py-2.5 text-sm font-black text-[#04110d]">
+                    Open course recordings
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f2b84b]">What you will learn</p>
+              <h3 className="mt-2 text-xl font-black text-white">{module?.module}</h3>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {module?.topics.map((topic) => (
+                  <div key={topic} className="flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 text-sm text-slate-300">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none text-[#18c29c]" />
+                    {topic}
+                  </div>
+                ))}
+              </div>
+              {usableResource(course.notesLink) && (
+                <a href={course.notesLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#8df5d7]">
+                  <Download className="h-4 w-4" /> Download lesson resources
+                </a>
+              )}
+            </section>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#08121f] p-4 sm:flex-row sm:items-center sm:justify-between">
+              <button type="button" disabled={moduleIndex === 0} onClick={() => selectModule(moduleIndex - 1)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-bold text-slate-300 disabled:opacity-35">
+                <ChevronLeft className="h-4 w-4" /> Previous
+              </button>
+              <button type="button" onClick={() => onToggleComplete(moduleIndex)} className={`inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-black ${isComplete ? "border border-[#18c29c]/30 bg-[#18c29c]/10 text-[#9cf8dd]" : "bg-[#18c29c] text-[#04110d]"}`}>
+                <CheckCircle2 className="h-4 w-4" /> {isComplete ? "Completed" : "Mark complete"}
+              </button>
+              <button type="button" disabled={moduleIndex >= modules.length - 1} onClick={() => selectModule(moduleIndex + 1)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-bold text-slate-300 disabled:opacity-35">
+                Next <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
 export function StudentDashboard({
   student,
   courses,
@@ -88,6 +230,7 @@ export function StudentDashboard({
 }) {
   const [tab, setTab] = useState<DashTab>("overview");
   const [certificateCourse, setCertificateCourse] = useState<Course | null>(null);
+  const [playerCourse, setPlayerCourse] = useState<Course | null>(null);
   const [certificateForm, setCertificateForm] = useState({
     studentName: student.name,
     completionDate: new Date().toISOString().slice(0, 10),
@@ -472,7 +615,7 @@ export function StudentDashboard({
                                 <p className="text-xs text-slate-500">{course.subtitle}</p>
                               </div>
                              </div>
-                            <div className="mt-4">
+                             <div className="mt-4">
                               <div className="mb-2 flex items-center justify-between text-xs">
                                 <span className="font-bold text-slate-300">
                                   Course progress
@@ -480,7 +623,17 @@ export function StudentDashboard({
                                 <span className="font-black text-[#8df5d7]">
                                   {courseProgress}%
                                 </span>
-                              </div>
+                             </div>
+                            {course.curriculum && course.curriculum.length > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => setPlayerCourse(course)}
+                                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#18c29c] to-[#2f80ed] py-3 text-sm font-black text-white"
+                              >
+                                <Play className="h-4 w-4 fill-white" />
+                                {courseProgress > 0 ? "Continue Learning" : "Start Learning"}
+                              </button>
+                            )}
                               <div className="h-2 overflow-hidden rounded-full bg-white/[0.07]">
                                 <div
                                   className="h-full rounded-full bg-gradient-to-r from-[#18c29c] to-[#2f80ed] transition-[width] duration-500"
@@ -545,10 +698,11 @@ export function StudentDashboard({
                                 <button
                                   type="button"
                                   onClick={() => openCertificate(course)}
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3]"
+                                  disabled={courseProgress < 100}
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                   <Award className="h-4 w-4" />
-                                  Certificate
+                                   {courseProgress === 100 ? "Certificate" : "Certificate at 100%"}
                                 </button>
                               </div>
                             ) : confirmed ? (
@@ -560,10 +714,11 @@ export function StudentDashboard({
                                 <button
                                   type="button"
                                   onClick={() => openCertificate(course)}
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3]"
+                                  disabled={courseProgress < 100}
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                   <Award className="h-4 w-4" />
-                                  Certificate
+                                   {courseProgress === 100 ? "Certificate" : "Certificate at 100%"}
                                 </button>
                               </div>
                             ) : (
@@ -587,10 +742,11 @@ export function StudentDashboard({
                                 <button
                                   type="button"
                                   onClick={() => openCertificate(course)}
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3]"
+                                  disabled={courseProgress < 100}
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                   <Award className="h-4 w-4" />
-                                  Generate Certificate
+                                   {courseProgress === 100 ? "Generate Certificate" : "Certificate at 100%"}
                                 </button>
                               </div>
                             )}
@@ -779,6 +935,17 @@ export function StudentDashboard({
             </div>
           </motion.div>
         </div>
+      )}
+      {playerCourse && (
+        <LessonPlayer
+          student={student}
+          course={playerCourse}
+          completedModules={completedModules[playerCourse.id] || []}
+          onToggleComplete={(moduleIndex) =>
+            toggleModuleComplete(playerCourse.id, moduleIndex)
+          }
+          onClose={() => setPlayerCourse(null)}
+        />
       )}
     </div>
   );
