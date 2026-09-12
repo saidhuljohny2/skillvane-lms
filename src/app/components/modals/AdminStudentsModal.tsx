@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CreditCard, Loader2, Lock, Save, Search, Shield, Users, X } from "lucide-react";
 import { motion } from "motion/react";
-import { adminRequest, restoreAdminSession, signInAdmin, signOutStudent, type AdminSession } from "@/app/lib/supabase";
+import { adminRequest, restoreAdminSession, sendPasswordReset, signInAdmin, signOutStudent, type AdminSession } from "@/app/lib/supabase";
 
 interface Course { id: string; title: string }
 interface CatalogCourse { id: string; title: string; subtitle: string; status: "draft" | "published"; updated_at: string }
@@ -45,6 +45,15 @@ export function AdminStudentsModal({ courses: storefront, onClose }: { courses: 
     event.preventDefault(); setLoading(true); setMessage("");
     try { const session = await signInAdmin(credentials.email.trim().toLowerCase(), credentials.password); setAdmin(session); setData(await adminRequest<DashboardData>("")); }
     catch (error) { setMessage(error instanceof Error ? error.message : "Admin login failed."); }
+    finally { setLoading(false); }
+  };
+
+  const forgotPassword = async () => {
+    const email = credentials.email.trim().toLowerCase();
+    if (!email) { setMessage("Enter your admin email first."); return; }
+    setLoading(true); setMessage("");
+    try { await sendPasswordReset(email); setMessage("Password reset email sent. Open the secure link in that email."); }
+    catch (error) { setMessage(error instanceof Error ? error.message : "Could not send the reset email."); }
     finally { setLoading(false); }
   };
 
@@ -100,7 +109,8 @@ export function AdminStudentsModal({ courses: storefront, onClose }: { courses: 
         <div className="text-center"><Lock className="mx-auto h-10 w-10 text-[#18c29c]" /><h3 className="mt-3 text-xl font-black text-white">Administrator login</h3><p className="mt-1 text-sm text-slate-400">Use a Supabase account assigned the admin role.</p></div>
         <input type="email" required autoComplete="username" value={credentials.email} onChange={(e) => setCredentials({ ...credentials, email: e.target.value })} placeholder="Admin email" className={field} />
         <input type="password" required autoComplete="current-password" value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} placeholder="Password" className={field} />
-        {message && <p className="text-sm text-red-300">{message}</p>}
+        <div className="flex justify-end"><button type="button" onClick={forgotPassword} disabled={loading} className="text-sm font-bold text-[#8df5d7] hover:text-white disabled:opacity-50">Forgot password?</button></div>
+        {message && <p className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-300">{message}</p>}
         <button disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#18c29c] py-3 font-black text-[#04110d] disabled:opacity-50">{loading && <Loader2 className="h-4 w-4 animate-spin" />} Sign in securely</button>
       </form> : <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <aside className="border-b border-white/10 bg-[#07111d] p-3 lg:w-60 lg:border-b-0 lg:border-r lg:p-4">

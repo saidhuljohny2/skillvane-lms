@@ -53,11 +53,13 @@ import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { AdminStudentsModal } from "@/app/components/modals/AdminStudentsModal";
 import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
 import { SupabaseLoginModal } from "@/app/components/modals/SupabaseLoginModal";
+import { PasswordRecoveryModal } from "@/app/components/modals/PasswordRecoveryModal";
 import {
   isSupabaseConfigured,
   getValidAccessToken,
   restoreStudentSession,
   signOutStudent,
+  hasPasswordRecoveryToken,
 } from "@/app/lib/supabase";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
 import { FinalCTA } from "@/app/components/landing/FinalCTA";
@@ -80,7 +82,6 @@ const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 const ADMIN_EMAIL = "saidhuljohny@gmail.com";
-const ADMIN_DEFAULT_PASSWORD = "SkillVane@1711";
 const OTP_VALIDITY_MS = 10 * 60 * 1000;
 const ENROLLMENT_COUPON_CODE = "SKILLVANE10";
 const ENROLLMENT_COUPON_DISCOUNT_PERCENT = 10;
@@ -1157,13 +1158,6 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-function getAdminPassword() {
-  return (
-    localStorage.getItem("skillvane_admin_password") ||
-    ADMIN_DEFAULT_PASSWORD
-  );
 }
 
 function getEmailJsErrorMessage(error: unknown) {
@@ -2758,6 +2752,7 @@ function CourseCard({
 
 // Main App
 export default function App() {
+  const [recoveringPassword] = useState(() => hasPasswordRecoveryToken());
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] =
@@ -3197,6 +3192,8 @@ export default function App() {
         onAdmin={() => setShowAdmin(true)}
         onLogout={handleLogout}
       />
+
+      {recoveringPassword && <PasswordRecoveryModal />}
 
       {!showDashboard && <SimpleChatbot whatsappLink={TRAINER_WHATSAPP_LINK} />}
 

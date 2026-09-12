@@ -176,6 +176,24 @@ export async function sendPasswordReset(email: string) {
   });
 }
 
+export function hasPasswordRecoveryToken() {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  return params.get("type") === "recovery" && Boolean(params.get("access_token"));
+}
+
+export async function completePasswordRecovery(password: string) {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const accessToken = params.get("access_token");
+  if (!accessToken || params.get("type") !== "recovery") {
+    throw new Error("This password recovery link is invalid or has expired.");
+  }
+  await request("/auth/v1/user", {
+    method: "PUT",
+    body: JSON.stringify({ password }),
+  }, accessToken);
+  window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.search}`);
+}
+
 export async function signOutStudent() {
   const session = readStoredSession();
   persistSession(null);
