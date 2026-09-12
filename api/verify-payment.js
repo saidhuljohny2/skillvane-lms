@@ -42,14 +42,41 @@ export default async function handler(request, response) {
   }
 
   try {
-    const courseIds = await supabaseServiceRequest("/rest/v1/rpc/complete_payment_enrollment", {
+    const orders = await supabaseServiceRequest(
+      `/rest/v1/payment_orders?order_id=eq.${encodeURIComponent(razorpayOrderId)}&select=order_id,student_id,course_ids,status,payment_id`,
+    );
+    const order = orders[0];
+    if (!order || order.student_id !== user.id) {
+      return response.status(403).json({ error: "This payment does not belong to your account." });
+    }
+    if (order.status === "paid" && order.payment_id !== razorpayPaymentId) {
+      return response.status(409).json({ error: "This order was already completed with another payment." });
+    }
+
+    const courseIds = Array.isArray(order.course_ids) ? order.course_ids : [];
+    if (!courseIds.length) {
+      return response.status(400).json({ error: "No courses were found for this order." });
+    }
+
+    await supabaseServiceRequest("/rest/v1/enrollments?on_conflict=student_id,course_id", {
       method: "POST",
-      body: JSON.stringify({
-        p_order_id: razorpayOrderId,
-        p_payment_id: razorpayPaymentId,
-        p_student_id: user.id,
-      }),
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(
+        courseIds.map((courseId) => ({ student_id: user.id, course_id: courseId })),
+      ),
     });
+    await supabaseServiceRequest(
+      `/rest/v1/payment_orders?order_id=eq.${encodeURIComponent(razorpayOrderId)}`,
+      {
+        method: "PATCH",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({
+          status: "paid",
+          payment_id: razorpayPaymentId,
+          verified_at: new Date().toISOString(),
+        }),
+      },
+    );
     return response.status(200).json({ verified: true, courseIds });
   } catch (error) {
     return response.status(503).json({ error: error.message });
