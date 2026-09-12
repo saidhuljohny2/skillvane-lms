@@ -108,12 +108,59 @@ async function refreshSession(session: SupabaseSession) {
 }
 
 export async function getValidAccessToken() {
+  return (await getValidSession()).access_token;
+}
+
+async function getValidSession() {
   let session = readStoredSession();
   if (!session) throw new Error("Please sign in before enrolling.");
   if (!session.expires_at || session.expires_at <= Math.floor(Date.now() / 1000) + 60) {
     session = await refreshSession(session);
   }
-  return session.access_token;
+  return session;
+}
+
+export async function loadLearningProgress() {
+  const session = await getValidSession();
+  const rows = await request<Array<{ course_id: string; module_index: number }>>(
+    "/rest/v1/learning_progress?select=course_id,module_index&order=course_id,module_index",
+    {},
+    session.access_token,
+  );
+  return rows.reduce<Record<string, number[]>>((progress, row) => {
+    (progress[row.course_id] ||= []).push(row.module_index);
+    return progress;
+  }, {});
+}
+
+export async function setLearningModuleComplete(
+  courseId: string,
+  moduleIndex: number,
+  completed: boolean,
+) {
+  const session = await getValidSession();
+  if (completed) {
+    await request(
+      "/rest/v1/learning_progress",
+      {
+        method: "POST",
+        headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+        body: JSON.stringify({
+          student_id: session.user.id,
+          course_id: courseId,
+          module_index: moduleIndex,
+        }),
+      },
+      session.access_token,
+    );
+    return;
+  }
+
+  await request(
+    `/rest/v1/learning_progress?student_id=eq.${encodeURIComponent(session.user.id)}&course_id=eq.${encodeURIComponent(courseId)}&module_index=eq.${moduleIndex}`,
+    { method: "DELETE", headers: { Prefer: "return=minimal" } },
+    session.access_token,
+  );
 }
 
 async function loadAuthenticatedStudent(session: SupabaseSession): Promise<AuthenticatedStudent> {

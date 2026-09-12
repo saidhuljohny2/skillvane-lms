@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Award,
   BookOpen,
@@ -18,6 +18,11 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { CertificatePreview } from "@/app/components/certificate/CertificatePreview";
 import { openCertificatePrintWindow } from "@/app/lib/certificate";
+import {
+  isSupabaseConfigured,
+  loadLearningProgress,
+  setLearningModuleComplete,
+} from "@/app/lib/supabase";
 import type { LoggedInStudent } from "@/app/types";
 import skillVaneLogo from "@/imports/logo1.png";
 
@@ -114,6 +119,45 @@ export function StudentDashboard({
       }
     },
   );
+  const [progressSync, setProgressSync] = useState<"syncing" | "synced" | "local">(
+    isSupabaseConfigured ? "syncing" : "local",
+  );
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    let active = true;
+    setProgressSync("syncing");
+    loadLearningProgress()
+      .then(async (remoteProgress) => {
+        if (!active) return;
+        const localProgress = completedModules;
+        const merged = { ...remoteProgress };
+        const pendingUploads: Promise<void>[] = [];
+        student.enrolledCourses.forEach((courseId) => {
+          const remoteModules = new Set(remoteProgress[courseId] || []);
+          const localModules = localProgress[courseId] || [];
+          localModules.forEach((moduleIndex) => {
+            remoteModules.add(moduleIndex);
+            if (!(remoteProgress[courseId] || []).includes(moduleIndex)) {
+              pendingUploads.push(
+                setLearningModuleComplete(courseId, moduleIndex, true),
+              );
+            }
+          });
+          merged[courseId] = [...remoteModules].sort((a, b) => a - b);
+        });
+        setCompletedModules(merged);
+        localStorage.setItem(progressStorageKey, JSON.stringify(merged));
+        await Promise.all(pendingUploads);
+        if (active) setProgressSync("synced");
+      })
+      .catch(() => {
+        if (active) setProgressSync("local");
+      });
+    return () => {
+      active = false;
+    };
+  }, [progressStorageKey, student.email]);
 
   const confirmAccess = (courseId: string) => {
     const next = { ...confirmedAccess, [courseId]: true };
@@ -123,14 +167,21 @@ export function StudentDashboard({
 
   const toggleModuleComplete = (courseId: string, moduleIndex: number) => {
     const completed = new Set(completedModules[courseId] || []);
-    if (completed.has(moduleIndex)) completed.delete(moduleIndex);
-    else completed.add(moduleIndex);
+    const willComplete = !completed.has(moduleIndex);
+    if (willComplete) completed.add(moduleIndex);
+    else completed.delete(moduleIndex);
     const next = {
       ...completedModules,
       [courseId]: [...completed].sort((a, b) => a - b),
     };
     setCompletedModules(next);
     localStorage.setItem(progressStorageKey, JSON.stringify(next));
+    if (isSupabaseConfigured) {
+      setProgressSync("syncing");
+      void setLearningModuleComplete(courseId, moduleIndex, willComplete)
+        .then(() => setProgressSync("synced"))
+        .catch(() => setProgressSync("local"));
+    }
   };
 
   const getCourseProgress = (course: Course) => {
@@ -284,7 +335,14 @@ export function StudentDashboard({
                         </h3>
                         <p className="mt-2 max-w-lg text-sm text-slate-300">
                           Complete each curriculum module as you learn. Your
-                          progress is saved on this device.
+                          progress follows you across devices.
+                        </p>
+                        <p className="mt-2 text-xs font-bold text-[#8bedd0]">
+                          {progressSync === "synced"
+                            ? "Cloud progress synced"
+                            : progressSync === "syncing"
+                              ? "Syncing progress..."
+                              : "Saved on this device until cloud sync resumes"}
                         </p>
                       </div>
                       <div className="flex flex-col items-center">
