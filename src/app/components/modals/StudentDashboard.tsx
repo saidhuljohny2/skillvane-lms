@@ -829,11 +829,10 @@ export function StudentDashboard({
                                 <button
                                   type="button"
                                   onClick={() => openCertificate(course)}
-                                  disabled={courseProgress < 100}
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] disabled:cursor-not-allowed disabled:opacity-40"
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] hover:bg-[#f2b84b]/15"
                                 >
                                   <Award className="h-4 w-4" />
-                                   {courseProgress === 100 ? "Certificate" : "Certificate at 100%"}
+                                  Generate Certificate
                                 </button>
                               </div>
                             ) : (
@@ -850,11 +849,10 @@ export function StudentDashboard({
                                 <button
                                   type="button"
                                   onClick={() => openCertificate(course)}
-                                  disabled={courseProgress < 100}
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] disabled:cursor-not-allowed disabled:opacity-40"
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] hover:bg-[#f2b84b]/15"
                                 >
                                   <Award className="h-4 w-4" />
-                                   {courseProgress === 100 ? "Generate Certificate" : "Certificate at 100%"}
+                                  Generate Certificate
                                 </button>
                               </div>
                             )}
@@ -961,7 +959,7 @@ export function StudentDashboard({
       </motion.div>
 
       {showOnboarding && enrolledCourses.length > 0 && (
-        <div className="fixed inset-0 z-[145] flex items-center justify-center bg-[#02060c]/85 p-4 backdrop-blur-lg"><motion.div initial={{ opacity: 0, scale: 0.97, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="w-full max-w-lg rounded-3xl border border-[#3b82f6]/25 bg-[#0b1522] p-6 shadow-2xl sm:p-8"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3b82f6]/15 text-[#93c5fd]"><Sparkles className="h-7 w-7" /></div><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#f2b84b]">Enrollment ready</p><h3 className="mt-2 text-2xl font-black text-white">Welcome to your learning space</h3><p className="mt-2 text-sm leading-6 text-slate-400">Everything you need is available from this dashboard.</p><div className="mt-5 grid gap-2 sm:grid-cols-2">{["Start or resume your first lesson","Open course recordings and materials","Track every completed module","Get your certificate at 100%"].map((item) => <div key={item} className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />{item}</div>)}</div><button type="button" onClick={() => { localStorage.setItem(onboardingKey, "1"); setShowOnboarding(false); setTab("courses"); }} className="mt-6 w-full rounded-xl bg-[#3b82f6] py-3 font-black text-white">Start learning</button></motion.div></div>
+        <div className="fixed inset-0 z-[145] flex items-center justify-center bg-[#02060c]/85 p-4 backdrop-blur-lg"><motion.div initial={{ opacity: 0, scale: 0.97, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="w-full max-w-lg rounded-3xl border border-[#3b82f6]/25 bg-[#0b1522] p-6 shadow-2xl sm:p-8"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3b82f6]/15 text-[#93c5fd]"><Sparkles className="h-7 w-7" /></div><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#f2b84b]">Enrollment ready</p><h3 className="mt-2 text-2xl font-black text-white">Welcome to your learning space</h3><p className="mt-2 text-sm leading-6 text-slate-400">Everything you need is available from this dashboard.</p><div className="mt-5 grid gap-2 sm:grid-cols-2">{["Start or resume your first lesson","Open course recordings and materials","Track every completed module","Generate your certificate at any time"].map((item) => <div key={item} className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />{item}</div>)}</div><button type="button" onClick={() => { localStorage.setItem(onboardingKey, "1"); setShowOnboarding(false); setTab("courses"); }} className="mt-6 w-full rounded-xl bg-[#3b82f6] py-3 font-black text-white">Start learning</button></motion.div></div>
       )}
 
       {certificateCourse && (
