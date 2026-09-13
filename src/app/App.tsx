@@ -369,7 +369,7 @@ const COURSES: Course[] = [
     accentTo: "#f59e0b",
     title: "Retailer GCP",
     subtitle: "Data Engineering Project",
-    price: 899,
+    price: 1,
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world retail/e-commerce dataset",
