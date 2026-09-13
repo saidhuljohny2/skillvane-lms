@@ -1,4 +1,5 @@
 import { requireSupabaseAdmin, supabaseServiceRequest } from "../server/supabase.js";
+import { grantDriveCourseAccess } from "../server/drive-access.js";
 
 function fail(response, error) {
   console.error("Admin API error", error);
@@ -36,7 +37,16 @@ export default async function handler(request, response) {
           headers: { Prefer: "resolution=merge-duplicates,return=representation" },
           body: JSON.stringify({ student_id: studentId, course_id: courseId }),
         });
-        return response.status(201).json({ item: rows[0] });
+        const profiles = await supabaseServiceRequest(
+          `/rest/v1/profiles?id=eq.${encodeURIComponent(studentId)}&select=email`,
+        );
+        let driveAccess = { configured: false, granted: false };
+        try {
+          driveAccess = await grantDriveCourseAccess(profiles[0]?.email, [courseId]);
+        } catch (error) {
+          console.error("Drive access grant failed", error);
+        }
+        return response.status(201).json({ item: rows[0], driveAccess });
       }
       const tables = { module: "course_modules", lesson: "course_lessons", resource: "lesson_resources" };
       const table = tables[entity];

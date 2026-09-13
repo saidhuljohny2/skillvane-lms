@@ -8,4 +8,7 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
-  
+
+  ## Automated restricted Google Drive access
+
+  Deploy `scripts/google-drive-enrollment.gs` as an Apps Script web app that executes as the owner. Add a Script Property named `DRIVE_WEBHOOK_SECRET`, then configure the same secret and the deployment URL in Vercel as `GOOGLE_DRIVE_ACCESS_SECRET` and `GOOGLE_DRIVE_ACCESS_WEBHOOK_URL`. Verified payments and admin-granted enrollments will add the student's registered Google email as a Viewer of the matching restricted course folder.
