@@ -89,14 +89,16 @@ const PROJECT_DRIVE_LIBRARIES: Record<string, { title: string; folderId: string 
   },
 };
 
+const RECORDINGS_GOOGLE_ACCOUNT = "saidhuljohny@gmail.com";
+
 function drivePreviewUrl(url?: string) {
   if (!url) return null;
   const fileId = url.match(/\/file\/d\/([^/]+)/)?.[1] || url.match(/[?&]id=([^&]+)/)?.[1];
-  return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+  return fileId ? `https://drive.google.com/file/d/${fileId}/preview?authuser=${encodeURIComponent(RECORDINGS_GOOGLE_ACCOUNT)}` : null;
 }
 
 function driveFolderPreviewUrl(folderId?: string) {
-  return folderId ? `https://drive.google.com/embeddedfolderview?id=${folderId}#list` : null;
+  return folderId ? `https://drive.google.com/embeddedfolderview?id=${folderId}&authuser=${encodeURIComponent(RECORDINGS_GOOGLE_ACCOUNT)}#list` : null;
 }
 
 interface Course {
