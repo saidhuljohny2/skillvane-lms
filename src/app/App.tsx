@@ -67,6 +67,7 @@ import { FinalCTA } from "@/app/components/landing/FinalCTA";
 import { BackToTop } from "@/app/components/landing/BackToTop";
 import { SimpleChatbot } from "@/app/components/landing/SimpleChatbot";
 import { Reveal } from "@/app/components/effects/Reveal";
+import { SiteStatus } from "@/app/components/system/SiteStatus";
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONFIG - Update these two values after setup (see guide below)
@@ -2801,12 +2802,16 @@ function CourseCard({
           <div className="grid grid-cols-[1fr_1.2fr] gap-2">
             <button
               onClick={() => onView(course)}
+              data-opening-message="Opening course details…"
+              data-opening-detail="Loading the curriculum, outcomes, and enrollment options."
               className={`rounded-xl border border-white/12 bg-white/[0.04] text-sm font-black text-white transition-all hover:border-white/25 hover:bg-white/[0.08] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
             >
               View course
             </button>
             <button
               onClick={() => onEnroll(course)}
+              data-opening-message="Preparing enrollment…"
+              data-opening-detail="Loading your secure enrollment details."
               className={`magnetic-button rounded-xl text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
               style={{ background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)` }}
             >
@@ -3253,6 +3258,7 @@ export default function App() {
     <div
       className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-[#f2b84b]/25"
     >
+      <SiteStatus />
       <Navbar
         logo={skillVaneLogo}
         scrollProgress={scrollProgress}

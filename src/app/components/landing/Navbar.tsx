@@ -108,6 +108,8 @@ export function Navbar({
             <button
               type="button"
               onClick={onAdmin}
+              data-opening-message="Opening admin console…"
+              data-opening-detail="Loading secure academy controls."
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 transition-all hover:bg-white/[0.04] hover:text-[#eab96e]"
             >
               <Lock className="h-4 w-4" />
@@ -126,6 +128,8 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onDashboard}
+                  data-opening-message="Opening your dashboard…"
+                  data-opening-detail="Loading your courses and learning progress."
                   className="magnetic-button flex items-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-[#ffffff] shadow-lg shadow-[#3b82f6]/10 hover:bg-[#60a5fa]"
                 >
                   <GraduationCap className="h-4 w-4" />
@@ -137,6 +141,8 @@ export function Navbar({
                 <button
                   type="button"
                   onClick={onLogin}
+                  data-opening-message="Opening secure sign in…"
+                  data-opening-detail="Preparing your account access."
                   className="flex items-center gap-2 rounded-lg border border-white/[0.09] px-4 py-2 text-sm font-semibold text-slate-300 hover:border-[#3b82f6]/30 hover:bg-white/[0.03] hover:text-white"
                 >
                   <LogIn className="h-4 w-4" />

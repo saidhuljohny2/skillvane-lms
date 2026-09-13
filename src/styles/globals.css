@@ -223,6 +223,12 @@ body {
   background-size: 1000px 100%;
 }
 
+@keyframes status-slide {
+  0% { transform: translateX(-110%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(310%); }
+}
+
 /* Fade in animation */
 @keyframes fadeIn {
   from {
