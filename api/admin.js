@@ -13,7 +13,7 @@ export default async function handler(request, response) {
     await requireSupabaseAdmin(request);
 
     if (request.method === "GET") {
-      const [profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources] = await Promise.all([
+      const [profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources, supportTickets, events] = await Promise.all([
         supabaseServiceRequest("/rest/v1/profiles?select=id,email,full_name,phone,created_at&order=created_at.desc"),
         supabaseServiceRequest("/rest/v1/enrollments?select=student_id,course_id"),
         supabaseServiceRequest("/rest/v1/learning_progress?select=student_id,course_id,module_index"),
@@ -23,8 +23,10 @@ export default async function handler(request, response) {
         supabaseServiceRequest("/rest/v1/course_modules?select=id,course_id,title,position&order=course_id,position"),
         supabaseServiceRequest("/rest/v1/course_lessons?select=id,module_id,title,description,video_url,duration_seconds,position,is_preview,is_published&order=module_id,position"),
         supabaseServiceRequest("/rest/v1/lesson_resources?select=id,lesson_id,title,resource_url,resource_type,position&order=lesson_id,position"),
+        supabaseServiceRequest("/rest/v1/support_tickets?select=id,student_id,subject,message,status,created_at,updated_at&order=created_at.desc").catch(() => []),
+        supabaseServiceRequest("/rest/v1/app_events?select=id,student_id,event_type,context,created_at&order=created_at.desc&limit=100").catch(() => []),
       ]);
-      return response.status(200).json({ profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources });
+      return response.status(200).json({ profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources, supportTickets, events });
     }
 
     if (request.method === "POST") {
@@ -69,13 +71,13 @@ export default async function handler(request, response) {
 
     if (request.method === "PATCH") {
       const { entity = "course", id, values } = request.body || {};
-      const tables = { course: "courses", module: "course_modules", lesson: "course_lessons", resource: "lesson_resources" };
+      const tables = { course: "courses", module: "course_modules", lesson: "course_lessons", resource: "lesson_resources", support_ticket: "support_tickets" };
       const table = tables[entity];
       if (!table || !id || !values || typeof values !== "object") return response.status(400).json({ error: "Valid content details are required." });
       const allowed = {
         course: ["title", "subtitle", "status"], module: ["title", "position"],
         lesson: ["title", "description", "video_url", "duration_seconds", "position", "is_preview", "is_published"],
-        resource: ["title", "resource_url", "resource_type", "position"],
+        resource: ["title", "resource_url", "resource_type", "position"], support_ticket: ["status"],
       }[entity];
       const safeValues = Object.fromEntries(Object.entries(values).filter(([key]) => allowed.includes(key)));
       if (!Object.keys(safeValues).length) return response.status(400).json({ error: "No editable fields were provided." });

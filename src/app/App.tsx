@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { lazy, Suspense, useState, useEffect, useRef, useMemo } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
 import skillVaneLogo from "@/imports/logo1.png";
@@ -50,8 +50,6 @@ import { motion } from "motion/react";
 import { Navbar } from "@/app/components/landing/Navbar";
 import { LandingHero } from "@/app/components/landing/LandingHero";
 import { SectionHeading } from "@/app/components/landing/SectionHeading";
-import { AdminStudentsModal } from "@/app/components/modals/AdminStudentsModal";
-import { StudentDashboard } from "@/app/components/modals/StudentDashboard";
 import { SupabaseLoginModal } from "@/app/components/modals/SupabaseLoginModal";
 import { PasswordRecoveryModal } from "@/app/components/modals/PasswordRecoveryModal";
 import {
@@ -68,6 +66,9 @@ import { BackToTop } from "@/app/components/landing/BackToTop";
 import { SimpleChatbot } from "@/app/components/landing/SimpleChatbot";
 import { Reveal } from "@/app/components/effects/Reveal";
 import { SiteStatus, setSiteStatus } from "@/app/components/system/SiteStatus";
+
+const AdminStudentsModal = lazy(() => import("@/app/components/modals/AdminStudentsModal").then((module) => ({ default: module.AdminStudentsModal })));
+const StudentDashboard = lazy(() => import("@/app/components/modals/StudentDashboard").then((module) => ({ default: module.StudentDashboard })));
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONFIG - Update these two values after setup (see guide below)
@@ -3720,18 +3721,20 @@ export default function App() {
       )}
 
       {showAdmin && (
-        <AdminStudentsModal
-          courses={COURSES}
-          onClose={() => setShowAdmin(false)}
-          onAccessCourses={(admin) => {
-            setShowAdmin(false);
-            setAdminCourseAccess(admin);
-          }}
-        />
+        <Suspense fallback={null}>
+          <AdminStudentsModal
+            courses={COURSES}
+            onClose={() => setShowAdmin(false)}
+            onAccessCourses={(admin) => {
+              setShowAdmin(false);
+              setAdminCourseAccess(admin);
+            }}
+          />
+        </Suspense>
       )}
 
       {adminCourseAccess && (
-        <StudentDashboard
+        <Suspense fallback={null}><StudentDashboard
           adminMode
           student={{
             name: adminCourseAccess.name,
@@ -3746,12 +3749,12 @@ export default function App() {
           }}
           onClose={() => setAdminCourseAccess(null)}
           onEnroll={() => undefined}
-        />
+        /></Suspense>
       )}
 
       {/* â”€â”€ Student Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showDashboard && currentStudent && (
-        <StudentDashboard
+        <Suspense fallback={null}><StudentDashboard
           student={currentStudent}
           courses={COURSES}
           onLogout={handleLogout}
@@ -3760,7 +3763,7 @@ export default function App() {
             setShowDashboard(false);
             handleEnroll(course);
           }}
-        />
+        /></Suspense>
       )}
     </div>
   );

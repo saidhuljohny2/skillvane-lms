@@ -128,6 +128,45 @@ export async function adminRequest<T>(path: string, init: RequestInit = {}) {
   return payload as T;
 }
 
+export interface StudentPayment {
+  order_id: string;
+  course_ids: string[];
+  amount_paise: number;
+  payment_id: string | null;
+  status: "created" | "paid" | "failed";
+  created_at: string;
+  verified_at: string | null;
+}
+
+export interface SupportTicket {
+  id: string;
+  subject: string;
+  message: string;
+  status: "open" | "in_progress" | "resolved";
+  created_at: string;
+  updated_at: string;
+}
+
+async function studentRequest<T>(init: RequestInit = {}) {
+  const accessToken = await getValidAccessToken();
+  const response = await fetch("/api/student", { ...init, headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}`, ...(init.headers || {}) } });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload?.error || "Student services are temporarily unavailable.");
+  return payload as T;
+}
+
+export function loadStudentServices() {
+  return studentRequest<{ payments: StudentPayment[]; tickets: SupportTicket[] }>();
+}
+
+export function recoverStudentPayment() {
+  return studentRequest<{ recovered: boolean; courseIds: string[]; paymentId?: string }>({ method: "POST", body: JSON.stringify({ action: "recover-payment" }) });
+}
+
+export function createSupportTicket(subject: string, message: string) {
+  return studentRequest<{ ticket: SupportTicket }>({ method: "POST", body: JSON.stringify({ action: "support", subject, message }) });
+}
+
 export interface PublishedLesson {
   id: string;
   title: string;

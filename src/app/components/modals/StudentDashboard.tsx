@@ -6,11 +6,13 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
+  CreditCard,
   Download,
   GraduationCap,
   LayoutGrid,
   LogOut,
   Mail,
+  MessageCircle,
   Play,
   ShoppingCart,
   Sparkles,
@@ -24,8 +26,13 @@ import {
   isSupabaseConfigured,
   loadLearningProgress,
   loadPublishedCourseContent,
+  loadStudentServices,
+  recoverStudentPayment,
+  createSupportTicket,
   setLearningModuleComplete,
   type PublishedModule,
+  type StudentPayment,
+  type SupportTicket,
 } from "@/app/lib/supabase";
 import type { LoggedInStudent } from "@/app/types";
 import skillVaneLogo from "@/imports/logo1.png";
@@ -143,7 +150,7 @@ function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
   return `https://wa.me/917305101711?text=${encodeURIComponent(message)}`;
 }
 
-type DashTab = "overview" | "courses" | "explore";
+type DashTab = "overview" | "courses" | "billing" | "explore";
 
 function usableResource(url?: string) {
   return url && !url.includes("REPLACE_WITH") ? url : null;
@@ -322,6 +329,13 @@ export function StudentDashboard({
     completionDate: new Date().toISOString().slice(0, 10),
   });
   const [certificateMessage, setCertificateMessage] = useState("");
+  const [payments, setPayments] = useState<StudentPayment[]>([]);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(false);
+  const [serviceMessage, setServiceMessage] = useState("");
+  const [supportForm, setSupportForm] = useState({ subject: "", message: "" });
+  const onboardingKey = `skillvane_onboarding_seen_${student.email}`;
+  const [showOnboarding, setShowOnboarding] = useState(() => !adminMode && !localStorage.getItem(onboardingKey));
   const enrolledCourses = adminMode ? courses : courses.filter((c) =>
     student.enrolledCourses.includes(c.id),
   );
@@ -390,6 +404,52 @@ export function StudentDashboard({
       active = false;
     };
   }, [adminMode, progressStorageKey, student.email]);
+
+  const refreshServices = async () => {
+    if (adminMode || !isSupabaseConfigured) return;
+    setServicesLoading(true);
+    try {
+      const result = await loadStudentServices();
+      setPayments(result.payments);
+      setTickets(result.tickets);
+    } catch (error) {
+      setServiceMessage(error instanceof Error ? error.message : "Could not load billing details.");
+    } finally {
+      setServicesLoading(false);
+    }
+  };
+
+  useEffect(() => { void refreshServices(); }, [adminMode, student.email]);
+
+  const recoverPayment = async () => {
+    setServicesLoading(true); setServiceMessage("Checking Razorpay for completed payments…");
+    try {
+      const result = await recoverStudentPayment();
+      setServiceMessage(result.recovered ? "Payment recovered. Reopen the dashboard to refresh your course access." : "No unlinked completed payment was found.");
+      await refreshServices();
+    } catch (error) { setServiceMessage(error instanceof Error ? error.message : "Payment recovery failed."); }
+    finally { setServicesLoading(false); }
+  };
+
+  const submitTicket = async () => {
+    setServicesLoading(true); setServiceMessage("");
+    try {
+      const result = await createSupportTicket(supportForm.subject, supportForm.message);
+      setTickets((current) => [result.ticket, ...current]);
+      setSupportForm({ subject: "", message: "" });
+      setServiceMessage("Support request sent. We’ll follow up using your registered email.");
+    } catch (error) { setServiceMessage(error instanceof Error ? error.message : "Could not send support request."); }
+    finally { setServicesLoading(false); }
+  };
+
+  const printReceipt = (payment: StudentPayment) => {
+    const receipt = window.open("", "_blank", "width=760,height=900");
+    if (!receipt) { setServiceMessage("Please allow pop-ups to open the receipt."); return; }
+    const safe = (value: string) => value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[character] || character);
+    const courseList = payment.course_ids.map((id) => courses.find((course) => course.id === id)?.title || id).map(safe).join(", ");
+    receipt.document.write(`<!doctype html><html><head><title>SkillVane receipt</title><style>body{font-family:Arial,sans-serif;color:#122033;padding:48px;max-width:720px;margin:auto}.top{display:flex;justify-content:space-between;border-bottom:3px solid #2563eb;padding-bottom:20px}h1{margin:0;color:#0b1726}.badge{color:#047857;font-weight:700}.box{margin-top:28px;border:1px solid #dbe5f1;border-radius:14px;padding:22px}.row{display:flex;justify-content:space-between;gap:24px;padding:10px 0;border-bottom:1px solid #edf2f7}.row:last-child{border:0}.muted{color:#64748b;font-size:13px}@media print{button{display:none}}</style></head><body><div class="top"><div><h1>SkillVane</h1><div class="muted">Payment receipt</div></div><div class="badge">${payment.status === "paid" ? "PAID" : safe(payment.status.toUpperCase())}</div></div><div class="box"><div class="row"><span>Student</span><b>${safe(student.name)}<br><span class="muted">${safe(student.email)}</span></b></div><div class="row"><span>Course</span><b>${courseList}</b></div><div class="row"><span>Date</span><b>${new Date(payment.verified_at || payment.created_at).toLocaleString("en-IN")}</b></div><div class="row"><span>Payment ID</span><b>${safe(payment.payment_id || payment.order_id)}</b></div><div class="row"><span>Amount paid</span><b>INR ${(payment.amount_paise / 100).toLocaleString("en-IN")}</b></div></div><p class="muted">This computer-generated receipt is available from your SkillVane account.</p><button onclick="window.print()">Print or save as PDF</button></body></html>`);
+    receipt.document.close();
+  };
 
   const confirmAccess = (courseId: string) => {
     const next = { ...confirmedAccess, [courseId]: true };
@@ -473,6 +533,7 @@ export function StudentDashboard({
   const tabs = [
     { id: "overview" as const, label: "Overview", icon: LayoutGrid },
     { id: "courses" as const, label: "My Courses", icon: BookOpen },
+    { id: "billing" as const, label: "Billing & Help", icon: CreditCard },
     { id: "explore" as const, label: "Explore", icon: ShoppingCart },
   ];
 
@@ -847,6 +908,18 @@ export function StudentDashboard({
                 </motion.div>
               )}
 
+              {tab === "billing" && (
+                <motion.div key="billing" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
+                  <div><h3 className="text-lg font-black text-white">Billing and support</h3><p className="mt-1 text-sm text-slate-400">Review payments, recover missing access, or contact the academy.</p></div>
+                  {serviceMessage && <div className="rounded-xl border border-[#3b82f6]/20 bg-[#3b82f6]/10 px-4 py-3 text-sm font-semibold text-[#bfdbfe]">{serviceMessage}</div>}
+                  <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h4 className="font-black text-white">Payment history</h4><p className="text-xs text-slate-500">Your SkillVane receipts and enrollment payments</p></div><button type="button" onClick={() => void recoverPayment()} disabled={servicesLoading} className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-2.5 text-xs font-black text-[#ffe4a3] disabled:opacity-50">Payment deducted but course missing?</button></div>
+                    <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[700px] text-left text-xs"><thead className="text-slate-500"><tr><th className="border-b border-white/10 py-2">Date</th><th className="border-b border-white/10 py-2">Courses</th><th className="border-b border-white/10 py-2">Payment ID</th><th className="border-b border-white/10 py-2">Amount</th><th className="border-b border-white/10 py-2">Status</th><th className="border-b border-white/10 py-2">Receipt</th></tr></thead><tbody>{payments.map((payment) => <tr key={payment.order_id}><td className="border-b border-white/[0.06] py-3 text-slate-300">{new Date(payment.verified_at || payment.created_at).toLocaleDateString("en-IN")}</td><td className="border-b border-white/[0.06] py-3 text-white">{payment.course_ids.map((id) => courses.find((course) => course.id === id)?.title || id).join(", ")}</td><td className="border-b border-white/[0.06] py-3 font-mono text-slate-400">{payment.payment_id || payment.order_id}</td><td className="border-b border-white/[0.06] py-3 font-bold text-white">₹{(payment.amount_paise / 100).toLocaleString("en-IN")}</td><td className="border-b border-white/[0.06] py-3"><span className={`rounded-md px-2 py-1 font-black uppercase ${payment.status === "paid" ? "bg-emerald-400/10 text-emerald-300" : "bg-amber-400/10 text-amber-200"}`}>{payment.status}</span></td><td className="border-b border-white/[0.06] py-3"><button type="button" onClick={() => printReceipt(payment)} className="rounded-lg border border-white/10 px-3 py-2 font-bold text-[#bfdbfe] hover:bg-white/5">View</button></td></tr>)}</tbody></table>{!payments.length && !servicesLoading && <p className="py-7 text-center text-sm text-slate-500">No payment records yet.</p>}</div>
+                  </section>
+                  <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]"><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><div className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-[#93c5fd]"/><h4 className="font-black text-white">Contact support</h4></div><input value={supportForm.subject} onChange={(event) => setSupportForm({ ...supportForm, subject: event.target.value })} placeholder="What do you need help with?" className="mt-4 w-full rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><textarea value={supportForm.message} onChange={(event) => setSupportForm({ ...supportForm, message: event.target.value })} placeholder="Describe the issue and include the course name." rows={5} className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><button type="button" onClick={() => void submitTicket()} disabled={servicesLoading || supportForm.subject.trim().length < 3 || supportForm.message.trim().length < 10} className="mt-3 w-full rounded-xl bg-[#3b82f6] py-3 text-sm font-black text-white disabled:opacity-40">Send support request</button></div><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><h4 className="font-black text-white">Your requests</h4><div className="mt-4 space-y-2">{tickets.map((ticket) => <div key={ticket.id} className="rounded-xl border border-white/[0.08] bg-black/10 p-3"><div className="flex items-center justify-between gap-2"><p className="font-bold text-white">{ticket.subject}</p><span className="rounded-md bg-[#3b82f6]/10 px-2 py-1 text-[10px] font-black uppercase text-[#bfdbfe]">{ticket.status.replace("_", " ")}</span></div><p className="mt-1 line-clamp-2 text-xs text-slate-500">{ticket.message}</p><p className="mt-2 text-[10px] text-slate-600">{new Date(ticket.created_at).toLocaleString("en-IN")}</p></div>)}{!tickets.length && <p className="text-sm text-slate-500">No support requests yet.</p>}</div></div></section>
+                </motion.div>
+              )}
+
               {tab === "explore" && (
                 <motion.div
                   key="explore"
@@ -928,6 +1001,10 @@ export function StudentDashboard({
           </button>
         </div>
       </motion.div>
+
+      {showOnboarding && enrolledCourses.length > 0 && (
+        <div className="fixed inset-0 z-[145] flex items-center justify-center bg-[#02060c]/85 p-4 backdrop-blur-lg"><motion.div initial={{ opacity: 0, scale: 0.97, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="w-full max-w-lg rounded-3xl border border-[#3b82f6]/25 bg-[#0b1522] p-6 shadow-2xl sm:p-8"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3b82f6]/15 text-[#93c5fd]"><Sparkles className="h-7 w-7" /></div><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#f2b84b]">Enrollment ready</p><h3 className="mt-2 text-2xl font-black text-white">Welcome to your learning space</h3><p className="mt-2 text-sm leading-6 text-slate-400">Everything you need is available from this dashboard.</p><div className="mt-5 grid gap-2 sm:grid-cols-2">{["Start or resume your first lesson","Open course recordings and materials","Track every completed module","Get your certificate at 100%"].map((item) => <div key={item} className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[0.035] p-3 text-sm text-slate-300"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />{item}</div>)}</div><button type="button" onClick={() => { localStorage.setItem(onboardingKey, "1"); setShowOnboarding(false); setTab("courses"); }} className="mt-6 w-full rounded-xl bg-[#3b82f6] py-3 font-black text-white">Start learning</button></motion.div></div>
+      )}
 
       {certificateCourse && (
         <div className="fixed inset-0 z-[140] flex items-end justify-center p-0 sm:items-center sm:p-4">
