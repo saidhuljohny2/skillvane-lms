@@ -11,4 +11,4 @@
 
   ## Automated restricted Google Drive access
 
-  Deploy `scripts/google-drive-enrollment.gs` as an Apps Script web app that executes as the owner. Add a Script Property named `DRIVE_WEBHOOK_SECRET`, then configure the same secret and the deployment URL in Vercel as `GOOGLE_DRIVE_ACCESS_SECRET` and `GOOGLE_DRIVE_ACCESS_WEBHOOK_URL`. Verified payments and admin-granted enrollments will add the student's registered Google email as a Viewer of the matching restricted course folder.
+  Deploy `scripts/google-drive-enrollment.gs` as an Apps Script web app that executes as the automation account. Add a Script Property named `DRIVE_WEBHOOK_SECRET`, then configure the same secret and deployment URL in Vercel as `GOOGLE_DRIVE_ACCESS_SECRET` and `GOOGLE_DRIVE_ACCESS_WEBHOOK_URL`. Every mapped course folder must grant that automation account Editor access, including folders owned by another Google account. Verified payments and admin-granted enrollments will then add the student's registered Google email as a Viewer of the matching restricted course folder.
