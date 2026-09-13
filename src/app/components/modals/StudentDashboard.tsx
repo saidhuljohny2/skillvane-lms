@@ -29,6 +29,7 @@ import {
 } from "@/app/lib/supabase";
 import type { LoggedInStudent } from "@/app/types";
 import skillVaneLogo from "@/imports/logo1.png";
+import { SELF_PACED_DRIVE_LESSONS } from "@/app/data/driveLessons";
 
 const FREE_LEARNING_PLAYLIST_URL =
   "https://www.youtube.com/playlist?list=PLk8wwChOsCPzoZHuQEiJqWVvhHFdFa6sy";
@@ -176,7 +177,7 @@ function LessonPlayer({
       resources: lesson.resources,
     })),
   );
-  const driveLessons = course.id === "project-banking" ? BANKING_DRIVE_LESSONS : [];
+  const driveLessons = course.id === "project-banking" ? BANKING_DRIVE_LESSONS : (SELF_PACED_DRIVE_LESSONS[course.id] || []);
   const driveLibrary = PROJECT_DRIVE_LIBRARIES[course.id];
   const libraryLessons = driveLibrary ? [{ module: driveLibrary.title, topics: ["Select any numbered recording from the secure course library."], videoUrl: course.driveLink || "", resources: [] }] : [];
   const modules = driveLessons.length ? driveLessons : libraryLessons.length ? libraryLessons : databaseLessons.length ? databaseLessons : (course.curriculum || []);
