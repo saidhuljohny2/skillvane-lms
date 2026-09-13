@@ -11,7 +11,6 @@ import {
   GraduationCap,
   LayoutGrid,
   LogOut,
-  Mail,
   MessageCircle,
   Play,
   ShoppingCart,
@@ -139,13 +138,13 @@ function getEnrolledCourseAccess(course: Course) {
   return null;
 }
 
-function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
+function getWhatsAppAccessHref(student: LoggedInStudent, course: Course) {
   const message = [
-    "Hi Admin, please provide Google Drive access for my course.",
+    "Hi SkillVane, I need help with my course access.",
     `Course: ${course.title}`,
     `Student Name: ${student.name}`,
     `Student Email ID: ${student.email}`,
-    `Please provide access to this email: ${student.email}`,
+    "Request details: ",
   ].join("\n");
   return `https://wa.me/917305101711?text=${encodeURIComponent(message)}`;
 }
@@ -196,6 +195,7 @@ function LessonPlayer({
   const isComplete = completedModules.includes(moduleIndex);
   const lessonVideoUrl = "videoUrl" in (module || {}) ? module.videoUrl : "";
   const embeddedDriveUrl = drivePreviewUrl(lessonVideoUrl) || driveFolderPreviewUrl(driveLibrary?.folderId);
+  const whatsappAccessHref = getWhatsAppAccessHref(student, course);
 
   const selectModule = (index: number) => {
     setModuleIndex(index);
@@ -268,6 +268,7 @@ function LessonPlayer({
                  {lessonVideoUrl ? <a href={lessonVideoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open course recordings</a>}
               </div>}
             </div>
+            <div className="flex flex-col gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-black text-white">Need help opening a recording?</p><p className="mt-1 text-xs text-slate-400">Contact SkillVane on WhatsApp. Your course and registered email are added automatically.</p></div><a href={whatsappAccessHref} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
 
             <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f2b84b]">What you will learn</p>
@@ -342,17 +343,7 @@ export function StudentDashboard({
   const availableCourses = adminMode ? [] : courses.filter(
     (c) => !student.enrolledCourses.includes(c.id),
   );
-  const accessStorageKey = `skillvane_drive_access_confirmed_${student.email}`;
   const progressStorageKey = `skillvane_learning_progress_${student.email}`;
-  const [confirmedAccess, setConfirmedAccess] = useState<Record<string, boolean>>(
-    () => {
-      try {
-        return JSON.parse(localStorage.getItem(accessStorageKey) || "{}");
-      } catch {
-        return {};
-      }
-    },
-  );
   const [completedModules, setCompletedModules] = useState<Record<string, number[]>>(
     () => {
       try {
@@ -449,12 +440,6 @@ export function StudentDashboard({
     const courseList = payment.course_ids.map((id) => courses.find((course) => course.id === id)?.title || id).map(safe).join(", ");
     receipt.document.write(`<!doctype html><html><head><title>SkillVane receipt</title><style>body{font-family:Arial,sans-serif;color:#122033;padding:48px;max-width:720px;margin:auto}.top{display:flex;justify-content:space-between;border-bottom:3px solid #2563eb;padding-bottom:20px}h1{margin:0;color:#0b1726}.badge{color:#047857;font-weight:700}.box{margin-top:28px;border:1px solid #dbe5f1;border-radius:14px;padding:22px}.row{display:flex;justify-content:space-between;gap:24px;padding:10px 0;border-bottom:1px solid #edf2f7}.row:last-child{border:0}.muted{color:#64748b;font-size:13px}@media print{button{display:none}}</style></head><body><div class="top"><div><h1>SkillVane</h1><div class="muted">Payment receipt</div></div><div class="badge">${payment.status === "paid" ? "PAID" : safe(payment.status.toUpperCase())}</div></div><div class="box"><div class="row"><span>Student</span><b>${safe(student.name)}<br><span class="muted">${safe(student.email)}</span></b></div><div class="row"><span>Course</span><b>${courseList}</b></div><div class="row"><span>Date</span><b>${new Date(payment.verified_at || payment.created_at).toLocaleString("en-IN")}</b></div><div class="row"><span>Payment ID</span><b>${safe(payment.payment_id || payment.order_id)}</b></div><div class="row"><span>Amount paid</span><b>INR ${(payment.amount_paise / 100).toLocaleString("en-IN")}</b></div></div><p class="muted">This computer-generated receipt is available from your SkillVane account.</p><button onclick="window.print()">Print or save as PDF</button></body></html>`);
     receipt.document.close();
-  };
-
-  const confirmAccess = (courseId: string) => {
-    const next = { ...confirmedAccess, [courseId]: true };
-    setConfirmedAccess(next);
-    localStorage.setItem(accessStorageKey, JSON.stringify(next));
   };
 
   const toggleModuleComplete = (courseId: string, moduleIndex: number) => {
@@ -704,10 +689,7 @@ export function StudentDashboard({
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/8 px-4 py-3 text-xs text-[#ffe4a3]">
-                    Drive access is sent to{" "}
-                    <span className="font-black text-white">{student.email}</span>
-                  </div>
+                  <div className="flex flex-col gap-3 rounded-xl border border-[#25D366]/20 bg-[#25D366]/[0.06] px-4 py-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between"><span>For any course or recording access issue, contact SkillVane using your registered email <b className="text-white">{student.email}</b>.</span><a href={`https://wa.me/917305101711?text=${encodeURIComponent(`Hi SkillVane, I need help with course access.\nStudent: ${student.name}\nRegistered email: ${student.email}\nRequest details: `)}`} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
                 </motion.div>
               )}
 
@@ -739,8 +721,7 @@ export function StudentDashboard({
                       {enrolledCourses.map((course) => {
                         const Icon = course.icon;
                         const access = getEnrolledCourseAccess(course);
-                        const driveHref = getDriveAccessRequestHref(student, course);
-                        const confirmed = Boolean(confirmedAccess[course.id]);
+                        const whatsappAccessHref = getWhatsAppAccessHref(student, course);
                         const courseProgress = getCourseProgress(course);
                         return (
                           <div
@@ -855,40 +836,17 @@ export function StudentDashboard({
                                    {courseProgress === 100 ? "Certificate" : "Certificate at 100%"}
                                 </button>
                               </div>
-                            ) : confirmed ? (
-                              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                                <div className="flex items-center gap-2 rounded-xl border border-[#3b82f6]/25 bg-[#3b82f6]/10 px-3 py-2.5 text-xs font-bold text-[#bfdbfe]">
-                                  <CheckCircle2 className="h-4 w-4" />
-                                  Access confirmed
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => openCertificate(course)}
-                                  disabled={courseProgress < 100}
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 py-2.5 text-sm font-black text-[#ffe4a3] disabled:cursor-not-allowed disabled:opacity-40"
-                                >
-                                  <Award className="h-4 w-4" />
-                                   {courseProgress === 100 ? "Certificate" : "Certificate at 100%"}
-                                </button>
-                              </div>
                             ) : (
-                              <div className="mt-3 space-y-2">
+                              <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                 <a
-                                  href={driveHref}
+                                  href={whatsappAccessHref}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] py-2.5 text-sm font-black text-white"
+                                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-black text-white"
                                 >
-                                  <Mail className="h-4 w-4" />
-                                  Request Drive Access
+                                  <MessageCircle className="h-4 w-4" />
+                                  WhatsApp Access Help
                                 </a>
-                                <button
-                                  type="button"
-                                  onClick={() => confirmAccess(course.id)}
-                                  className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-300"
-                                >
-                                  I received access
-                                </button>
                                 <button
                                   type="button"
                                   onClick={() => openCertificate(course)}

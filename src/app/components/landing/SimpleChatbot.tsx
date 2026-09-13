@@ -23,9 +23,9 @@ const CHAT_OPTIONS = [
       "You can download the curriculum from each course card. The live batch card includes Download Curriculum and Join Demo actions side by side.",
   },
   {
-    label: "Drive access",
+    label: "Course access",
     answer:
-      "After enrollment, request Google Drive access from your student dashboard. Access is usually provided to your registered email inbox within 24 hours.",
+      "For any course or recording access issue, open your student dashboard and use WhatsApp Access Help. It sends your course and registered email details directly to SkillVane at 7305101711.",
   },
   {
     label: "How to enroll",

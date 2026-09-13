@@ -733,18 +733,6 @@ function getEnrolledCourseAccess(course: Course) {
   return null;
 }
 
-function getDriveAccessRequestHref(student: LoggedInStudent, course: Course) {
-  const message = [
-    "Hi Admin, please provide Google Drive access for my course.",
-    `Course: ${course.title}`,
-    `Student Name: ${student.name}`,
-    `Access Email: ${student.email}`,
-    "I understand access will be provided to my mail inbox within 24 hours.",
-  ].join("\n");
-
-  return `https://wa.me/917305101711?text=${encodeURIComponent(message)}`;
-}
-
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Course Modal
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
