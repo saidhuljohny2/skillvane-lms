@@ -2344,18 +2344,19 @@ function InvoiceModal({
     null,
   );
 
+  const deliverInvoice = async () => {
+    setEmailSent(null);
+    try {
+      await sendInvoiceEmail(record);
+      setEmailSent(true);
+    } catch {
+      setEmailSent(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        await Promise.all([
-          saveToGoogleSheet(record),
-          sendInvoiceEmail(record),
-        ]);
-        setEmailSent(true);
-      } catch {
-        setEmailSent(false);
-      }
-    })();
+    void saveToGoogleSheet(record).catch(() => undefined);
+    void deliverInvoice();
   }, [record]);
 
   const copyPaymentId = () => {
@@ -2397,10 +2398,11 @@ function InvoiceModal({
             </div>
           )}
           {emailSent === false && (
-            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full">
-              Invoice email setup pending - see guide below
-            </div>
+            <button type="button" onClick={() => void deliverInvoice()} className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-yellow-500/10 px-3 py-1.5 text-xs font-bold text-yellow-300 hover:bg-yellow-500/20">
+              <Mail className="h-3.5 w-3.5" /> Invoice not delivered · Retry
+            </button>
           )}
+          {emailSent === null && <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-xs text-blue-300"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Sending invoice…</div>}
         </div>
 
         {/* Invoice body */}
