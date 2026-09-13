@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { requireSupabaseUser, supabaseServiceRequest } from "../server/supabase.js";
-import { grantDriveCourseAccess } from "../server/drive-access.js";
+import { grantAndTrackDriveAccess } from "../server/drive-access-status.js";
 
 export default async function handler(request, response) {
   if (request.method !== "POST") {
@@ -80,7 +80,7 @@ export default async function handler(request, response) {
     );
     let driveAccess = { configured: false, granted: false };
     try {
-      driveAccess = await grantDriveCourseAccess(user.email, courseIds);
+      driveAccess = await grantAndTrackDriveAccess(user.id, user.email, courseIds);
     } catch (error) {
       console.error("Drive access grant failed", error);
     }

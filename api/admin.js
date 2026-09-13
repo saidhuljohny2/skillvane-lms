@@ -1,5 +1,5 @@
 import { requireSupabaseAdmin, supabaseServiceRequest } from "../server/supabase.js";
-import { grantDriveCourseAccess } from "../server/drive-access.js";
+import { grantAndTrackDriveAccess } from "../server/drive-access-status.js";
 
 function fail(response, error) {
   console.error("Admin API error", error);
@@ -13,17 +13,18 @@ export default async function handler(request, response) {
     await requireSupabaseAdmin(request);
 
     if (request.method === "GET") {
-      const [profiles, enrollments, progress, payments, courses, modules, lessons, resources] = await Promise.all([
+      const [profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources] = await Promise.all([
         supabaseServiceRequest("/rest/v1/profiles?select=id,email,full_name,phone,created_at&order=created_at.desc"),
-        supabaseServiceRequest("/rest/v1/enrollments?select=student_id,course_id"),
+        supabaseServiceRequest("/rest/v1/enrollments?select=student_id,course_id,amount_paid_paise,enrolled_at"),
         supabaseServiceRequest("/rest/v1/learning_progress?select=student_id,course_id,module_index"),
         supabaseServiceRequest("/rest/v1/payment_orders?select=order_id,student_email,course_ids,amount_paise,payment_id,status,created_at,verified_at&order=created_at.desc"),
+        supabaseServiceRequest("/rest/v1/drive_access_grants?select=student_id,course_id,status,last_error,attempted_at,granted_at,updated_at").catch(() => []),
         supabaseServiceRequest("/rest/v1/courses?select=id,title,subtitle,status,updated_at&order=title"),
         supabaseServiceRequest("/rest/v1/course_modules?select=id,course_id,title,position&order=course_id,position"),
         supabaseServiceRequest("/rest/v1/course_lessons?select=id,module_id,title,description,video_url,duration_seconds,position,is_preview,is_published&order=module_id,position"),
         supabaseServiceRequest("/rest/v1/lesson_resources?select=id,lesson_id,title,resource_url,resource_type,position&order=lesson_id,position"),
       ]);
-      return response.status(200).json({ profiles, enrollments, progress, payments, courses, modules, lessons, resources });
+      return response.status(200).json({ profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources });
     }
 
     if (request.method === "POST") {
@@ -42,11 +43,20 @@ export default async function handler(request, response) {
         );
         let driveAccess = { configured: false, granted: false };
         try {
-          driveAccess = await grantDriveCourseAccess(profiles[0]?.email, [courseId]);
+          driveAccess = await grantAndTrackDriveAccess(studentId, profiles[0]?.email, [courseId]);
         } catch (error) {
           console.error("Drive access grant failed", error);
         }
         return response.status(201).json({ item: rows[0], driveAccess });
+      }
+      if (entity === "drive_access") {
+        const studentId = String(values?.student_id || "").trim();
+        const courseId = String(values?.course_id || "").trim();
+        if (!studentId || !courseId) return response.status(400).json({ error: "Student and course are required." });
+        const profiles = await supabaseServiceRequest(`/rest/v1/profiles?id=eq.${encodeURIComponent(studentId)}&select=email`);
+        if (!profiles[0]?.email) return response.status(404).json({ error: "Student was not found." });
+        const driveAccess = await grantAndTrackDriveAccess(studentId, profiles[0].email, [courseId]);
+        return response.status(200).json({ driveAccess });
       }
       const tables = { module: "course_modules", lesson: "course_lessons", resource: "lesson_resources" };
       const table = tables[entity];
