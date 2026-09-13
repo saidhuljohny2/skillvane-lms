@@ -3,9 +3,9 @@ const COURSE_PRICES = Object.freeze({
   "gcp-live": 14999,
   "gcp-recordings": 6999,
   "multi-cloud-recordings": 10999,
-  "python-de": 1,
+  "python-de": 599,
   "project-healthcare": 899,
-  "project-retail": 1,
+  "project-retail": 899,
   "project-banking": 899,
 });
 

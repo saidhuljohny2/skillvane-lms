@@ -250,7 +250,7 @@ const COURSES: Course[] = [
     accentTo: "#10b981",
     title: "Python for Data Engineering",
     subtitle: "Hands-On Foundation Course",
-    price: 1,
+    price: 599,
     originalPrice: 2000,
     highlights: [
       "Python fundamentals for data engineers",
@@ -369,7 +369,7 @@ const COURSES: Course[] = [
     accentTo: "#f59e0b",
     title: "Retailer GCP",
     subtitle: "Data Engineering Project",
-    price: 1,
+    price: 899,
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world retail/e-commerce dataset",
