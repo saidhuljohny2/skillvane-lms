@@ -67,7 +67,7 @@ import { FinalCTA } from "@/app/components/landing/FinalCTA";
 import { BackToTop } from "@/app/components/landing/BackToTop";
 import { SimpleChatbot } from "@/app/components/landing/SimpleChatbot";
 import { Reveal } from "@/app/components/effects/Reveal";
-import { SiteStatus } from "@/app/components/system/SiteStatus";
+import { SiteStatus, setSiteStatus } from "@/app/components/system/SiteStatus";
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONFIG - Update these two values after setup (see guide below)
@@ -2322,6 +2322,8 @@ function PaymentReviewModal({
             <button
               type="button"
               onClick={() => onPay(pricing)}
+              data-opening-message="Preparing secure payment…"
+              data-opening-detail="Connecting to Razorpay. Please wait and do not close this page."
               className="rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f8cff] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#3b82f6]/20 transition-transform hover:-translate-y-0.5"
             >
               Proceed to Payment
@@ -3001,6 +3003,10 @@ export default function App() {
     setShowDashboard(false);
     setPayLoading(primaryCourse.id);
     setPayError(null);
+    setSiteStatus({
+      message: "Preparing secure payment…",
+      detail: "Connecting to Razorpay. Please wait and do not close this page.",
+    });
 
     try {
       // Load Razorpay SDK
@@ -3038,6 +3044,10 @@ export default function App() {
             : `${courses.length} SkillVane courses`,
         image: "", // Optional: Add your logo URL
         handler: async (response: any) => {
+          setSiteStatus({
+            message: "Payment received…",
+            detail: "Verifying your payment securely. Please do not refresh this page.",
+          });
           let verification: { verified?: boolean; courseIds?: string[]; error?: string };
           try {
             const verificationResponse = await fetch("/api/verify-payment", {
@@ -3059,6 +3069,7 @@ export default function App() {
               );
             }
           } catch (error) {
+            setSiteStatus(null);
             setPayLoading(null);
             setPayError(
               error instanceof Error
@@ -3070,6 +3081,10 @@ export default function App() {
           }
 
           setPayLoading(null);
+          setSiteStatus({
+            message: "Activating your course…",
+            detail: "Payment verified. We’re adding the course to My Learning and preparing your invoice.",
+          });
 
           const record: EnrollmentRecord = {
             invoiceNo: generateInvoiceNo(),
@@ -3100,6 +3115,13 @@ export default function App() {
                 }
               : existing,
           );
+          setSiteStatus(
+            {
+              message: "Enrollment complete!",
+              detail: "Your course is ready and the payment invoice is being sent to your email.",
+            },
+            1400,
+          );
           setInvoice(record);
         },
         prefill: {
@@ -3124,6 +3146,7 @@ export default function App() {
         },
         modal: {
           ondismiss: () => {
+            setSiteStatus(null);
             setPayLoading(null);
             setPayError(
               "Payment cancelled. You can try again anytime.",
@@ -3143,6 +3166,7 @@ export default function App() {
 
       // Handle payment failures
       rzp.on("payment.failed", (resp: any) => {
+        setSiteStatus(null);
         setPayLoading(null);
         const errorMsg =
           resp.error?.description ||
@@ -3154,8 +3178,10 @@ export default function App() {
         setTimeout(() => setPayError(null), 8000);
       });
 
+      setSiteStatus(null);
       rzp.open();
     } catch (err: any) {
+      setSiteStatus(null);
       setPayLoading(null);
       const errorMsg =
         err.message || "Could not load payment gateway";

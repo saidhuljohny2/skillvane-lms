@@ -4,6 +4,10 @@ import skillVaneLogo from "@/imports/logo1.png";
 
 type OpeningState = { message: string; detail: string } | null;
 
+export function setSiteStatus(status: OpeningState, duration = 0) {
+  window.dispatchEvent(new CustomEvent("skillvane:status", { detail: { status, duration } }));
+}
+
 function LoadingMark() {
   return <div className="relative mx-auto h-20 w-20"><div className="absolute inset-0 rounded-3xl bg-[#3b82f6]/20 blur-xl" /><div className="absolute inset-0 animate-[spin_1.8s_linear_infinite] rounded-3xl border border-[#60a5fa]/30 border-t-[#f2b84b]" /><div className="absolute inset-2 flex items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"><img src={skillVaneLogo} alt="" className="h-full w-full object-contain" /></div></div>;
 }
@@ -27,10 +31,18 @@ export function SiteStatus() {
       setOpening({ message: trigger.dataset.openingMessage || "Opening securely…", detail: trigger.dataset.openingDetail || "Please wait while we prepare the next page." });
       window.setTimeout(() => setOpening(null), 1100);
     };
+    let statusTimer = 0;
+    const updateStatus = (event: Event) => {
+      const { status, duration } = (event as CustomEvent<{ status: OpeningState; duration: number }>).detail;
+      window.clearTimeout(statusTimer);
+      setOpening(status);
+      if (status && duration > 0) statusTimer = window.setTimeout(() => setOpening(null), duration);
+    };
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
     connection?.addEventListener?.("change", updateConnection);
     document.addEventListener("click", showOpening, true);
+    window.addEventListener("skillvane:status", updateStatus);
     updateConnection();
     return () => {
       window.clearTimeout(readyTimer);
@@ -38,6 +50,8 @@ export function SiteStatus() {
       window.removeEventListener("offline", updateConnection);
       connection?.removeEventListener?.("change", updateConnection);
       document.removeEventListener("click", showOpening, true);
+      window.removeEventListener("skillvane:status", updateStatus);
+      window.clearTimeout(statusTimer);
     };
   }, []);
 
