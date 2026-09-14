@@ -45,6 +45,7 @@ import {
   Youtube,
   Send,
   Linkedin,
+  Search,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Navbar } from "@/app/components/landing/Navbar";
@@ -2822,6 +2823,7 @@ export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] =
     useState<CourseCategory>("all");
+  const [courseSearch, setCourseSearch] = useState("");
   const [modalCourse, setModalCourse] = useState<Course | null>(
     null,
   );
@@ -3240,10 +3242,11 @@ export default function App() {
   ];
 
   const visibleCourses = COURSES.filter((course) => {
-    if (activeCategory === "all") return true;
-    return activeCategory === "live-batch"
+    const matchesCategory = activeCategory === "all" ? true : activeCategory === "live-batch"
       ? course.type === "live"
       : course.type !== "live";
+    const term = courseSearch.trim().toLowerCase();
+    return matchesCategory && (!term || `${course.title} ${course.subtitle} ${course.badge}`.toLowerCase().includes(term));
   });
 
   const faqs = [
@@ -3321,6 +3324,7 @@ export default function App() {
           </div>
 
           {/* Category tabs */}
+          <label className="relative mx-auto mb-4 block max-w-xl"><Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"/><input value={courseSearch} onChange={(event) => setCourseSearch(event.target.value)} placeholder="Search GCP, Azure, Python or projects" className="w-full rounded-xl border border-white/10 bg-[#0b1522] py-3 pl-11 pr-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#3b82f6]/50"/></label>
           <div className="mx-auto mb-9 flex w-fit max-w-full flex-wrap justify-center gap-1 rounded-xl border border-white/[0.08] bg-[#0b1522] p-1.5 shadow-xl shadow-black/10">
             {COURSE_CATEGORIES.map(({ label, value, icon: CategoryIcon }) => (
               <button
@@ -3460,6 +3464,8 @@ export default function App() {
                 <ImageWithFallback
                   src={instructorPhoto}
                   alt="SkillVane IT Academy - GCP Data Engineering Instructor"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover object-top"
                 />
               </div>

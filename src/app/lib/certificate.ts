@@ -3,6 +3,7 @@ export interface CertificateData {
   completionDate: string;
   logoUrl: string;
   courseName?: string;
+  certificateId?: string;
 }
 
 export function escapeHtml(value: string) {
@@ -66,7 +67,9 @@ export function getCertificateStampSvg(size = 120) {
 export function buildCertificatePrintHtml(data: CertificateData) {
   const name = data.studentName.trim();
   const date = formatCertificateDate(data.completionDate);
-  const id = buildCertificateId(name, data.completionDate);
+  const id = data.certificateId || buildCertificateId(name, data.completionDate);
+  const verifyUrl = `${window.location.origin}/verify.html?id=${encodeURIComponent(id)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(verifyUrl)}`;
   const stamp = getCertificateStampSvg(140);
   const courseName = data.courseName?.trim() || "GCP Data Engineering";
 
@@ -110,6 +113,7 @@ export function buildCertificatePrintHtml(data: CertificateData) {
     .brand h1 { margin: 0; font-size: 5.2mm; font-weight: 800; color: #07111f; letter-spacing: 0.3px; }
     .brand p { margin: 1mm 0 0; font-size: 2.8mm; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px; }
     .meta { text-align: right; font-size: 2.6mm; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; line-height: 1.6; }
+    .qr { width: 18mm; height: 18mm; margin-top: 2mm; }
     .body { position: relative; z-index: 2; margin-top: 10mm; text-align: center; }
     .eyebrow { font-size: 3.2mm; font-weight: 800; letter-spacing: 5px; text-transform: uppercase; color: #18a884; }
     .title { margin: 3mm 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16mm; font-weight: 700; color: #07111f; line-height: 1.05; }
@@ -154,7 +158,7 @@ export function buildCertificatePrintHtml(data: CertificateData) {
             <p>Industry-focused cloud training</p>
           </div>
         </div>
-        <div class="meta">Certificate ID<br/><span style="color:#07111f">${escapeHtml(id)}</span></div>
+        <div class="meta">Certificate ID<br/><span style="color:#07111f">${escapeHtml(id)}</span><br/><img class="qr" src="${escapeHtml(qrUrl)}" alt="Verify certificate"/></div>
       </header>
       <div class="body">
         <p class="eyebrow">Certificate of Completion</p>

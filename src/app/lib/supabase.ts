@@ -147,6 +147,9 @@ export interface SupportTicket {
   updated_at: string;
 }
 
+export interface Announcement { id: string; title: string; message: string; course_id: string | null; created_at: string }
+export interface StudentCertificate { id: string; course_id: string; course_name: string; completion_date: string; issued_at: string }
+
 async function studentRequest<T>(init: RequestInit = {}) {
   const accessToken = await getValidAccessToken();
   const response = await fetch("/api/student", { ...init, headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}`, ...(init.headers || {}) } });
@@ -156,7 +159,7 @@ async function studentRequest<T>(init: RequestInit = {}) {
 }
 
 export function loadStudentServices() {
-  return studentRequest<{ payments: StudentPayment[]; tickets: SupportTicket[] }>();
+  return studentRequest<{ payments: StudentPayment[]; tickets: SupportTicket[]; announcements: Announcement[]; certificates: StudentCertificate[] }>();
 }
 
 export function recoverStudentPayment() {
@@ -165,6 +168,18 @@ export function recoverStudentPayment() {
 
 export function createSupportTicket(subject: string, message: string) {
   return studentRequest<{ ticket: SupportTicket }>({ method: "POST", body: JSON.stringify({ action: "support", subject, message }) });
+}
+
+export function trackWhatsAppAccess(courseId: string, courseName: string) {
+  return studentRequest<{ ticket: SupportTicket }>({ method: "POST", body: JSON.stringify({ action: "access-request", courseId, courseName }) });
+}
+
+export function updateStudentProfile(fullName: string, phone: string) {
+  return studentRequest<{ saved: boolean }>({ method: "POST", body: JSON.stringify({ action: "profile", fullName, phone }) });
+}
+
+export function registerCertificate(courseId: string, courseName: string, studentName: string, completionDate: string) {
+  return studentRequest<{ certificate: { id: string } }>({ method: "POST", body: JSON.stringify({ action: "certificate", courseId, courseName, studentName, completionDate }) });
 }
 
 export interface PublishedLesson {

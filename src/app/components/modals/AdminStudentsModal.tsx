@@ -15,10 +15,12 @@ interface ContentLesson { id: string; module_id: string; title: string; descript
 interface ContentResource { id: string; lesson_id: string; title: string; resource_url: string; resource_type: string; position: number }
 interface SupportTicket { id: string; student_id: string; subject: string; message: string; status: "open" | "in_progress" | "resolved"; created_at: string; updated_at: string }
 interface AppEvent { id: number; student_id?: string; event_type: string; context: Record<string, unknown>; created_at: string }
-interface DashboardData { profiles: Profile[]; enrollments: Enrollment[]; progress: Progress[]; payments: Payment[]; driveAccess: DriveAccess[]; courses: CatalogCourse[]; modules: ContentModule[]; lessons: ContentLesson[]; resources: ContentResource[]; supportTickets: SupportTicket[]; events: AppEvent[] }
+interface Announcement { id: string; title: string; message: string; course_id?: string; is_published: boolean; created_at: string }
+interface Certificate { id: string; student_id: string; student_name: string; course_id: string; course_name: string; completion_date: string; issued_at: string }
+interface DashboardData { profiles: Profile[]; enrollments: Enrollment[]; progress: Progress[]; payments: Payment[]; driveAccess: DriveAccess[]; courses: CatalogCourse[]; modules: ContentModule[]; lessons: ContentLesson[]; resources: ContentResource[]; supportTickets: SupportTicket[]; events: AppEvent[]; announcements: Announcement[]; certificates: Certificate[] }
 type Tab = "overview" | "students" | "payments" | "support" | "courses";
 
-const emptyData: DashboardData = { profiles: [], enrollments: [], progress: [], payments: [], driveAccess: [], courses: [], modules: [], lessons: [], resources: [], supportTickets: [], events: [] };
+const emptyData: DashboardData = { profiles: [], enrollments: [], progress: [], payments: [], driveAccess: [], courses: [], modules: [], lessons: [], resources: [], supportTickets: [], events: [], announcements: [], certificates: [] };
 const field = "w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#3b82f6]/50";
 const tableHead = "whitespace-nowrap border-b border-r border-white/10 bg-[#102033] px-4 py-3 text-left text-[10px] font-black uppercase tracking-[0.12em] text-slate-400 last:border-r-0";
 const tableCell = "border-b border-r border-white/[0.07] px-4 py-3 align-top text-xs text-slate-300 last:border-r-0";
@@ -50,6 +52,7 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
   const [selectedStudent, setSelectedStudent] = useState<Profile | null>(null);
   const [paymentStatus, setPaymentStatus] = useState("all");
   const [paymentCourse, setPaymentCourse] = useState("all");
+  const [announcementDraft, setAnnouncementDraft] = useState({ title: "", message: "", courseId: "" });
 
   const load = async () => {
     setLoading(true);
@@ -102,6 +105,13 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
     const position = data.resources.filter((resource) => resource.lesson_id === resourceDraft.lessonId).length;
     await adminRequest("", { method: "POST", body: JSON.stringify({ entity: "resource", values: { lesson_id: resourceDraft.lessonId, title: resourceDraft.title.trim(), resource_url: resourceDraft.url.trim(), resource_type: resourceDraft.type, position } }) });
     setResourceDraft({ ...resourceDraft, title: "", url: "" }); await load();
+  };
+
+  const createAnnouncement = async () => {
+    if (announcementDraft.title.trim().length < 3 || announcementDraft.message.trim().length < 3) return;
+    setLoading(true);
+    try { await adminRequest("", { method: "POST", body: JSON.stringify({ entity: "announcement", values: { title: announcementDraft.title.trim(), message: announcementDraft.message.trim(), course_id: announcementDraft.courseId || null, is_published: true } }) }); setAnnouncementDraft({ title: "", message: "", courseId: "" }); await load(); setMessage("Announcement published."); }
+    catch (error) { setMessage(error instanceof Error ? error.message : "Could not publish announcement."); setLoading(false); }
   };
 
   const patchContent = async (entity: "module" | "lesson", id: string, values: Record<string, unknown>) => {
@@ -211,7 +221,7 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
               <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]"><div className="border-b border-white/10 px-5 py-4"><h4 className="font-black text-white">Recent activity</h4></div><div className="divide-y divide-white/[0.07]">{data.events.slice(0, 30).map((event) => <div key={event.id} className="p-4"><div className="flex items-center justify-between gap-3"><span className="rounded-md bg-[#3b82f6]/10 px-2 py-1 text-[10px] font-black uppercase text-[#bfdbfe]">{event.event_type.replace(/_/g, " ")}</span><time className="text-[10px] text-slate-600">{new Date(event.created_at).toLocaleString("en-IN")}</time></div><p className="mt-2 break-words text-xs text-slate-400">{Object.entries(event.context || {}).map(([key, value]) => `${key}: ${String(value)}`).join(" · ") || "Recorded system activity"}</p></div>)}{!data.events.length && <p className="p-8 text-center text-sm text-slate-500">No system events recorded yet.</p>}</div></div>
             </div>
           </section> : <section>
-            <h3 className="mb-1 text-lg font-black text-white">Course publishing</h3><p className="mb-4 text-sm text-slate-400">Edit catalog details and build course content.</p><div className="grid gap-3 md:grid-cols-2">{data.courses.map((course) => <article key={course.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><p className="text-[10px] font-black uppercase text-[#93c5fd]">{course.id}</p><h4 className="font-black text-white">{course.title}</h4><p className="text-sm text-slate-500">{course.subtitle}</p><div className="mt-4 flex items-center justify-between"><span className="text-xs font-black uppercase text-[#bfdbfe]">{course.status}</span><div className="flex gap-2"><button onClick={() => setContentCourse(course)} className="rounded-xl bg-[#3b82f6]/15 px-4 py-2 text-xs font-bold text-[#bfdbfe]">Content</button><button onClick={() => setEditing({ ...course })} className="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300">Edit</button></div></div></article>)}</div>
+<div className="mb-5 rounded-2xl border border-[#3b82f6]/20 bg-[#3b82f6]/[0.06] p-4"><h3 className="font-black text-white">Publish announcement</h3><div className="mt-3 grid gap-2 md:grid-cols-[1fr_1fr_0.8fr_auto]"><input value={announcementDraft.title} onChange={(event) => setAnnouncementDraft({ ...announcementDraft, title: event.target.value })} placeholder="Announcement title" className={field}/><input value={announcementDraft.message} onChange={(event) => setAnnouncementDraft({ ...announcementDraft, message: event.target.value })} placeholder="Message" className={field}/><select value={announcementDraft.courseId} onChange={(event) => setAnnouncementDraft({ ...announcementDraft, courseId: event.target.value })} className="rounded-xl border border-white/10 bg-[#0b1726] px-3 text-sm text-white"><option value="">All students</option>{storefront.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}</select><button type="button" onClick={() => void createAnnouncement()} className="rounded-xl bg-[#3b82f6] px-4 font-black text-white">Publish</button></div><p className="mt-2 text-xs text-slate-500">{data.announcements.length} announcements · {data.certificates.length} registered certificates</p></div>`r`n            <h3 className="mb-1 text-lg font-black text-white">Course publishing</h3><p className="mb-4 text-sm text-slate-400">Edit catalog details and build course content.</p><div className="grid gap-3 md:grid-cols-2">{data.courses.map((course) => <article key={course.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><p className="text-[10px] font-black uppercase text-[#93c5fd]">{course.id}</p><h4 className="font-black text-white">{course.title}</h4><p className="text-sm text-slate-500">{course.subtitle}</p><div className="mt-4 flex items-center justify-between"><span className="text-xs font-black uppercase text-[#bfdbfe]">{course.status}</span><div className="flex gap-2"><button onClick={() => setContentCourse(course)} className="rounded-xl bg-[#3b82f6]/15 px-4 py-2 text-xs font-bold text-[#bfdbfe]">Content</button><button onClick={() => setEditing({ ...course })} className="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300">Edit</button></div></div></article>)}</div>
           </section>}
         </main>
       </div>}

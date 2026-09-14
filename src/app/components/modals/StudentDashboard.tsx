@@ -28,7 +28,11 @@ import {
   loadStudentServices,
   recoverStudentPayment,
   createSupportTicket,
+  registerCertificate,
   setLearningModuleComplete,
+  trackWhatsAppAccess,
+  updateStudentProfile,
+  type Announcement,
   type PublishedModule,
   type StudentPayment,
   type SupportTicket,
@@ -268,7 +272,8 @@ function LessonPlayer({
                  {lessonVideoUrl ? <a href={lessonVideoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open course recordings</a>}
               </div>}
             </div>
-            <div className="flex flex-col gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-black text-white">Need help opening a recording?</p><p className="mt-1 text-xs text-slate-400">Contact SkillVane on WhatsApp. Your course and registered email are added automatically.</p></div><a href={whatsappAccessHref} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
+            <div className="grid grid-cols-2 gap-3"><button type="button" disabled={moduleIndex === 0} onClick={() => selectModule(moduleIndex - 1)} className="flex items-center justify-center gap-2 rounded-xl border border-white/10 py-3 text-sm font-black text-slate-300 disabled:opacity-35"><ChevronLeft className="h-4 w-4"/>Previous lesson</button><button type="button" disabled={moduleIndex >= modules.length - 1} onClick={() => selectModule(moduleIndex + 1)} className="flex items-center justify-center gap-2 rounded-xl bg-[#3b82f6] py-3 text-sm font-black text-white disabled:opacity-35">Next lesson<ChevronRight className="h-4 w-4"/></button></div>
+            <div className="flex flex-col gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-black text-white">Need help opening a recording?</p><p className="mt-1 text-xs text-slate-400">Contact SkillVane on WhatsApp. Your course and registered email are added automatically.</p></div><a href={whatsappAccessHref} onClick={() => void trackWhatsAppAccess(course.id, course.title)} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
 
             <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f2b84b]">What you will learn</p>
@@ -332,6 +337,8 @@ export function StudentDashboard({
   const [certificateMessage, setCertificateMessage] = useState("");
   const [payments, setPayments] = useState<StudentPayment[]>([]);
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [profileForm, setProfileForm] = useState({ fullName: student.name, phone: student.phone });
   const [servicesLoading, setServicesLoading] = useState(false);
   const [serviceMessage, setServiceMessage] = useState("");
   const [supportForm, setSupportForm] = useState({ subject: "", message: "" });
@@ -403,6 +410,7 @@ export function StudentDashboard({
       const result = await loadStudentServices();
       setPayments(result.payments);
       setTickets(result.tickets);
+      setAnnouncements(result.announcements || []);
     } catch (error) {
       setServiceMessage(error instanceof Error ? error.message : "Could not load billing details.");
     } finally {
@@ -479,24 +487,36 @@ export function StudentDashboard({
     setCertificateMessage("");
   };
 
-  const generateCertificate = () => {
+  const generateCertificate = async () => {
     if (!certificateCourse) return;
     if (!certificateForm.studentName.trim() || !certificateForm.completionDate) {
       setCertificateMessage("Please enter name and completion date.");
       return;
     }
 
+    setCertificateMessage("Registering certificate…");
+    let certificateId: string | undefined;
+    try { certificateId = (await registerCertificate(certificateCourse.id, certificateCourse.title, certificateForm.studentName, certificateForm.completionDate)).certificate.id; }
+    catch (error) { setCertificateMessage(error instanceof Error ? error.message : "Could not register certificate."); return; }
     const ok = openCertificatePrintWindow({
       studentName: certificateForm.studentName,
       completionDate: certificateForm.completionDate,
       courseName: certificateCourse.title,
       logoUrl: skillVaneLogo,
+      certificateId,
     });
     setCertificateMessage(
       ok
         ? "Certificate opened. Use Save as PDF in the print dialog."
         : "Please allow popups to generate the certificate.",
     );
+  };
+
+  const saveProfile = async () => {
+    setServicesLoading(true); setServiceMessage("");
+    try { await updateStudentProfile(profileForm.fullName, profileForm.phone); setServiceMessage("Profile updated successfully."); }
+    catch (error) { setServiceMessage(error instanceof Error ? error.message : "Could not update profile."); }
+    finally { setServicesLoading(false); }
   };
 
   const enrolledModuleCount = enrolledCourses.reduce(
@@ -662,6 +682,8 @@ export function StudentDashboard({
                     ))}
                   </div>
 
+                  {announcements.length > 0 && <section className="rounded-2xl border border-[#3b82f6]/20 bg-[#3b82f6]/[0.06] p-4"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#93c5fd]">Latest announcements</p><div className="mt-3 space-y-3">{announcements.filter((item) => !item.course_id || student.enrolledCourses.includes(item.course_id)).slice(0, 4).map((item) => <article key={item.id}><div className="flex justify-between gap-4"><h4 className="font-black text-white">{item.title}</h4><time className="shrink-0 text-[10px] text-slate-500">{new Date(item.created_at).toLocaleDateString("en-IN")}</time></div><p className="mt-1 text-sm text-slate-300">{item.message}</p></article>)}</div></section>}
+
                   <div className="rounded-2xl border border-red-400/20 bg-red-500/8 p-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-center gap-3">
@@ -689,7 +711,7 @@ export function StudentDashboard({
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 rounded-xl border border-[#25D366]/20 bg-[#25D366]/[0.06] px-4 py-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between"><span>For any course or recording access issue, contact SkillVane using your registered email <b className="text-white">{student.email}</b>.</span><a href={`https://wa.me/917305101711?text=${encodeURIComponent(`Hi SkillVane, I need help with course access.\nStudent: ${student.name}\nRegistered email: ${student.email}\nRequest details: `)}`} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
+                  <div className="flex flex-col gap-3 rounded-xl border border-[#25D366]/20 bg-[#25D366]/[0.06] px-4 py-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between"><span>For any course or recording access issue, contact SkillVane using your registered email <b className="text-white">{student.email}</b>.</span><a href={`https://wa.me/917305101711?text=${encodeURIComponent(`Hi SkillVane, I need help with course access.\nStudent: ${student.name}\nRegistered email: ${student.email}\nRequest details: `)}`} onClick={() => void trackWhatsAppAccess("general", "General course access")} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
                 </motion.div>
               )}
 
@@ -839,6 +861,7 @@ export function StudentDashboard({
                               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                 <a
                                   href={whatsappAccessHref}
+                                  onClick={() => void trackWhatsAppAccess(course.id, course.title)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-black text-white"
@@ -872,7 +895,7 @@ export function StudentDashboard({
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h4 className="font-black text-white">Payment history</h4><p className="text-xs text-slate-500">Your SkillVane receipts and enrollment payments</p></div><button type="button" onClick={() => void recoverPayment()} disabled={servicesLoading} className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-2.5 text-xs font-black text-[#ffe4a3] disabled:opacity-50">Payment deducted but course missing?</button></div>
                     <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[700px] text-left text-xs"><thead className="text-slate-500"><tr><th className="border-b border-white/10 py-2">Date</th><th className="border-b border-white/10 py-2">Courses</th><th className="border-b border-white/10 py-2">Payment ID</th><th className="border-b border-white/10 py-2">Amount</th><th className="border-b border-white/10 py-2">Status</th><th className="border-b border-white/10 py-2">Receipt</th></tr></thead><tbody>{payments.map((payment) => <tr key={payment.order_id}><td className="border-b border-white/[0.06] py-3 text-slate-300">{new Date(payment.verified_at || payment.created_at).toLocaleDateString("en-IN")}</td><td className="border-b border-white/[0.06] py-3 text-white">{payment.course_ids.map((id) => courses.find((course) => course.id === id)?.title || id).join(", ")}</td><td className="border-b border-white/[0.06] py-3 font-mono text-slate-400">{payment.payment_id || payment.order_id}</td><td className="border-b border-white/[0.06] py-3 font-bold text-white">₹{(payment.amount_paise / 100).toLocaleString("en-IN")}</td><td className="border-b border-white/[0.06] py-3"><span className={`rounded-md px-2 py-1 font-black uppercase ${payment.status === "paid" ? "bg-emerald-400/10 text-emerald-300" : "bg-amber-400/10 text-amber-200"}`}>{payment.status}</span></td><td className="border-b border-white/[0.06] py-3"><button type="button" onClick={() => printReceipt(payment)} className="rounded-lg border border-white/10 px-3 py-2 font-bold text-[#bfdbfe] hover:bg-white/5">View</button></td></tr>)}</tbody></table>{!payments.length && !servicesLoading && <p className="py-7 text-center text-sm text-slate-500">No payment records yet.</p>}</div>
                   </section>
-                  <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]"><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><div className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-[#93c5fd]"/><h4 className="font-black text-white">Contact support</h4></div><input value={supportForm.subject} onChange={(event) => setSupportForm({ ...supportForm, subject: event.target.value })} placeholder="What do you need help with?" className="mt-4 w-full rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><textarea value={supportForm.message} onChange={(event) => setSupportForm({ ...supportForm, message: event.target.value })} placeholder="Describe the issue and include the course name." rows={5} className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><button type="button" onClick={() => void submitTicket()} disabled={servicesLoading || supportForm.subject.trim().length < 3 || supportForm.message.trim().length < 10} className="mt-3 w-full rounded-xl bg-[#3b82f6] py-3 text-sm font-black text-white disabled:opacity-40">Send support request</button></div><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><h4 className="font-black text-white">Your requests</h4><div className="mt-4 space-y-2">{tickets.map((ticket) => <div key={ticket.id} className="rounded-xl border border-white/[0.08] bg-black/10 p-3"><div className="flex items-center justify-between gap-2"><p className="font-bold text-white">{ticket.subject}</p><span className="rounded-md bg-[#3b82f6]/10 px-2 py-1 text-[10px] font-black uppercase text-[#bfdbfe]">{ticket.status.replace("_", " ")}</span></div><p className="mt-1 line-clamp-2 text-xs text-slate-500">{ticket.message}</p><p className="mt-2 text-[10px] text-slate-600">{new Date(ticket.created_at).toLocaleString("en-IN")}</p></div>)}{!tickets.length && <p className="text-sm text-slate-500">No support requests yet.</p>}</div></div></section>
+                  <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><h4 className="font-black text-white">Student profile</h4><p className="mt-1 text-xs text-slate-500">Keep your certificate and support contact details current.</p><div className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]"><input value={profileForm.fullName} onChange={(event) => setProfileForm({ ...profileForm, fullName: event.target.value })} placeholder="Full name" className="rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none"/><input value={profileForm.phone} onChange={(event) => setProfileForm({ ...profileForm, phone: event.target.value })} placeholder="Phone number" className="rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none"/><button type="button" onClick={() => void saveProfile()} disabled={servicesLoading || profileForm.fullName.trim().length < 2} className="rounded-xl bg-[#3b82f6] px-5 py-3 text-sm font-black text-white disabled:opacity-40">Save profile</button></div><p className="mt-2 text-xs text-slate-500">Login email: {student.email}</p></section>`r`n                  <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]"><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><div className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-[#93c5fd]"/><h4 className="font-black text-white">Contact support</h4></div><input value={supportForm.subject} onChange={(event) => setSupportForm({ ...supportForm, subject: event.target.value })} placeholder="What do you need help with?" className="mt-4 w-full rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><textarea value={supportForm.message} onChange={(event) => setSupportForm({ ...supportForm, message: event.target.value })} placeholder="Describe the issue and include the course name." rows={5} className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-[#050d18] px-4 py-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><button type="button" onClick={() => void submitTicket()} disabled={servicesLoading || supportForm.subject.trim().length < 3 || supportForm.message.trim().length < 10} className="mt-3 w-full rounded-xl bg-[#3b82f6] py-3 text-sm font-black text-white disabled:opacity-40">Send support request</button></div><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"><h4 className="font-black text-white">Your requests</h4><div className="mt-4 space-y-2">{tickets.map((ticket) => <div key={ticket.id} className="rounded-xl border border-white/[0.08] bg-black/10 p-3"><div className="flex items-center justify-between gap-2"><p className="font-bold text-white">{ticket.subject}</p><span className="rounded-md bg-[#3b82f6]/10 px-2 py-1 text-[10px] font-black uppercase text-[#bfdbfe]">{ticket.status.replace("_", " ")}</span></div><p className="mt-1 line-clamp-2 text-xs text-slate-500">{ticket.message}</p><p className="mt-2 text-[10px] text-slate-600">{new Date(ticket.created_at).toLocaleString("en-IN")}</p></div>)}{!tickets.length && <p className="text-sm text-slate-500">No support requests yet.</p>}</div></div></section>
                 </motion.div>
               )}
 

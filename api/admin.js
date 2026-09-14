@@ -13,7 +13,7 @@ export default async function handler(request, response) {
     await requireSupabaseAdmin(request);
 
     if (request.method === "GET") {
-      const [profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources, supportTickets, events] = await Promise.all([
+      const [profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources, supportTickets, events, announcements, certificates] = await Promise.all([
         supabaseServiceRequest("/rest/v1/profiles?select=id,email,full_name,phone,created_at&order=created_at.desc"),
         supabaseServiceRequest("/rest/v1/enrollments?select=student_id,course_id"),
         supabaseServiceRequest("/rest/v1/learning_progress?select=student_id,course_id,module_index"),
@@ -25,8 +25,10 @@ export default async function handler(request, response) {
         supabaseServiceRequest("/rest/v1/lesson_resources?select=id,lesson_id,title,resource_url,resource_type,position&order=lesson_id,position"),
         supabaseServiceRequest("/rest/v1/support_tickets?select=id,student_id,subject,message,status,created_at,updated_at&order=created_at.desc").catch(() => []),
         supabaseServiceRequest("/rest/v1/app_events?select=id,student_id,event_type,context,created_at&order=created_at.desc&limit=100").catch(() => []),
+        supabaseServiceRequest("/rest/v1/announcements?select=id,title,message,course_id,is_published,created_at&order=created_at.desc").catch(() => []),
+        supabaseServiceRequest("/rest/v1/certificates?select=id,student_id,student_name,course_id,course_name,completion_date,issued_at&order=issued_at.desc").catch(() => []),
       ]);
-      return response.status(200).json({ profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources, supportTickets, events });
+      return response.status(200).json({ profiles, enrollments, progress, payments, driveAccess, courses, modules, lessons, resources, supportTickets, events, announcements, certificates });
     }
 
     if (request.method === "POST") {
@@ -60,7 +62,7 @@ export default async function handler(request, response) {
         const driveAccess = await grantAndTrackDriveAccess(studentId, profiles[0].email, [courseId]);
         return response.status(200).json({ driveAccess });
       }
-      const tables = { module: "course_modules", lesson: "course_lessons", resource: "lesson_resources" };
+      const tables = { module: "course_modules", lesson: "course_lessons", resource: "lesson_resources", announcement: "announcements" };
       const table = tables[entity];
       if (!table || !values || typeof values !== "object") return response.status(400).json({ error: "Valid content is required." });
       const rows = await supabaseServiceRequest(`/rest/v1/${table}`, {
