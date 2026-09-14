@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { Reveal, RevealStagger, RevealItem } from "@/app/components/effects/Reveal";
-import heroArtwork from "@/imports/skillvane-cloud-hero-v2.png";
+import heroArtwork from "@/imports/skillvane-cloud-hero-v2.webp";
 
 const STATS = [
   { icon: Users, val: "2500+", sub: "Learners" },

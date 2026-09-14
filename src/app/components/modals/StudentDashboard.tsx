@@ -195,6 +195,9 @@ function LessonPlayer({
     const saved = Number(localStorage.getItem(resumeKey));
     return Number.isInteger(saved) && saved >= 0 && saved < modules.length ? saved : 0;
   });
+  const notesKey = `skillvane_lesson_notes_${student.email}_${course.id}`;
+  const [lessonNotes, setLessonNotes] = useState<Record<number, string>>(() => { try { return JSON.parse(localStorage.getItem(notesKey) || "{}"); } catch { return {}; } });
+  const [showKnowledgeCheck, setShowKnowledgeCheck] = useState(false);
   const module = modules[moduleIndex];
   const isComplete = completedModules.includes(moduleIndex);
   const lessonVideoUrl = "videoUrl" in (module || {}) ? module.videoUrl : "";
@@ -203,6 +206,7 @@ function LessonPlayer({
 
   const selectModule = (index: number) => {
     setModuleIndex(index);
+    setShowKnowledgeCheck(false);
     localStorage.setItem(resumeKey, String(index));
   };
 
@@ -272,7 +276,6 @@ function LessonPlayer({
                  {lessonVideoUrl ? <a href={lessonVideoUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open lesson video</a> : usableResource(course.driveLink) && <a href={course.driveLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-xl bg-[#3b82f6] px-5 py-2.5 text-sm font-black text-white">Open course recordings</a>}
               </div>}
             </div>
-            <div className="grid grid-cols-2 gap-3"><button type="button" disabled={moduleIndex === 0} onClick={() => selectModule(moduleIndex - 1)} className="flex items-center justify-center gap-2 rounded-xl border border-white/10 py-3 text-sm font-black text-slate-300 disabled:opacity-35"><ChevronLeft className="h-4 w-4"/>Previous lesson</button><button type="button" disabled={moduleIndex >= modules.length - 1} onClick={() => selectModule(moduleIndex + 1)} className="flex items-center justify-center gap-2 rounded-xl bg-[#3b82f6] py-3 text-sm font-black text-white disabled:opacity-35">Next lesson<ChevronRight className="h-4 w-4"/></button></div>
             <div className="flex flex-col gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-black text-white">Need help opening a recording?</p><p className="mt-1 text-xs text-slate-400">Contact your course instructor. Your course and registered email are added automatically.</p></div><a href={whatsappAccessHref} onClick={() => void trackWhatsAppAccess(course.id, course.title)} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white"><MessageCircle className="h-4 w-4" />Contact Instructor</a></div>
 
             <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
@@ -292,6 +295,7 @@ function LessonPlayer({
                 </a>
               )}
               {"resources" in (module || {}) && module.resources?.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{module.resources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-[#3b82f6]/25 bg-[#3b82f6]/10 px-3 py-2 text-xs font-bold text-[#bfdbfe]"><Download className="mr-1 inline h-3 w-3" />{resource.title}</a>)}</div>}
+              <div className="mt-5 grid gap-4 lg:grid-cols-2"><div><label className="text-xs font-black uppercase tracking-wider text-slate-400">Personal lesson notes</label><textarea value={lessonNotes[moduleIndex] || ""} onChange={(event) => { const next = { ...lessonNotes, [moduleIndex]: event.target.value }; setLessonNotes(next); localStorage.setItem(notesKey, JSON.stringify(next)); }} rows={4} placeholder="Write key points, commands, or questions…" className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-[#050d18] p-3 text-sm text-white outline-none focus:border-[#3b82f6]/50"/><p className="mt-1 text-[10px] text-slate-500">Saved automatically on this device.</p></div><div className="rounded-xl border border-[#f2b84b]/20 bg-[#f2b84b]/[0.06] p-4"><p className="text-xs font-black uppercase tracking-wider text-[#ffe4a3]">Knowledge check</p><p className="mt-2 text-sm text-white">Can you explain the purpose and expected output of this lesson in your own words?</p>{showKnowledgeCheck ? <div className="mt-3 rounded-lg bg-emerald-400/10 p-3 text-xs text-emerald-200">Review every topic above and confirm you can apply it without following the video step by step.</div> : <button type="button" onClick={() => setShowKnowledgeCheck(true)} className="mt-3 rounded-lg border border-[#f2b84b]/30 px-3 py-2 text-xs font-black text-[#ffe4a3]">Show assessment guidance</button>}</div></div>
             </section>
 
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#08121f] p-4 sm:flex-row sm:items-center sm:justify-between">

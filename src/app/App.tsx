@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect, useRef, useMemo } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
-import instructorPhoto from "@/imports/IMG_20260518_113243.jpg.jpeg";
+import instructorPhoto from "@/imports/instructor.webp";
 import skillVaneLogo from "@/imports/logo1.png";
 import gcpDataEngineeringCurriculum from "@/imports/gcp-data-engineering-curriculum.pdf";
 import multiCloudDataEngineeringCurriculum from "@/imports/multi-cloud-data-engineer-curriculum.pdf";
