@@ -25,7 +25,7 @@ const CHAT_OPTIONS = [
   {
     label: "Course access",
     answer:
-      "For any course or recording access issue, open your student dashboard and use WhatsApp Access Help. It sends your course and registered email details directly to SkillVane at 7305101711.",
+      "For any course or recording access issue, open your student dashboard and select Contact Instructor. Your course and registered email details are added automatically.",
   },
   {
     label: "How to enroll",

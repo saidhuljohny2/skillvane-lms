@@ -273,7 +273,7 @@ function LessonPlayer({
               </div>}
             </div>
             <div className="grid grid-cols-2 gap-3"><button type="button" disabled={moduleIndex === 0} onClick={() => selectModule(moduleIndex - 1)} className="flex items-center justify-center gap-2 rounded-xl border border-white/10 py-3 text-sm font-black text-slate-300 disabled:opacity-35"><ChevronLeft className="h-4 w-4"/>Previous lesson</button><button type="button" disabled={moduleIndex >= modules.length - 1} onClick={() => selectModule(moduleIndex + 1)} className="flex items-center justify-center gap-2 rounded-xl bg-[#3b82f6] py-3 text-sm font-black text-white disabled:opacity-35">Next lesson<ChevronRight className="h-4 w-4"/></button></div>
-            <div className="flex flex-col gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-black text-white">Need help opening a recording?</p><p className="mt-1 text-xs text-slate-400">Contact SkillVane on WhatsApp. Your course and registered email are added automatically.</p></div><a href={whatsappAccessHref} onClick={() => void trackWhatsAppAccess(course.id, course.title)} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
+            <div className="flex flex-col gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-black text-white">Need help opening a recording?</p><p className="mt-1 text-xs text-slate-400">Contact your course instructor. Your course and registered email are added automatically.</p></div><a href={whatsappAccessHref} onClick={() => void trackWhatsAppAccess(course.id, course.title)} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-black text-white"><MessageCircle className="h-4 w-4" />Contact Instructor</a></div>
 
             <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f2b84b]">What you will learn</p>
@@ -711,7 +711,7 @@ export function StudentDashboard({
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 rounded-xl border border-[#25D366]/20 bg-[#25D366]/[0.06] px-4 py-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between"><span>For any course or recording access issue, contact SkillVane using your registered email <b className="text-white">{student.email}</b>.</span><a href={`https://wa.me/917305101711?text=${encodeURIComponent(`Hi SkillVane, I need help with course access.\nStudent: ${student.name}\nRegistered email: ${student.email}\nRequest details: `)}`} onClick={() => void trackWhatsAppAccess("general", "General course access")} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 font-black text-white"><MessageCircle className="h-4 w-4" />WhatsApp 7305101711</a></div>
+                  <div className="flex flex-col gap-3 rounded-xl border border-[#25D366]/20 bg-[#25D366]/[0.06] px-4 py-3 text-xs text-slate-300 sm:flex-row sm:items-center sm:justify-between"><span>For any course or recording access issue, contact your course instructor using your registered email <b className="text-white">{student.email}</b>.</span><a href={`https://wa.me/917305101711?text=${encodeURIComponent(`Hi SkillVane, I need help with course access.\nStudent: ${student.name}\nRegistered email: ${student.email}\nRequest details: `)}`} onClick={() => void trackWhatsAppAccess("general", "General course access")} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 font-black text-white"><MessageCircle className="h-4 w-4" />Contact Instructor</a></div>
                 </motion.div>
               )}
 
@@ -867,7 +867,7 @@ export function StudentDashboard({
                                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-black text-white"
                                 >
                                   <MessageCircle className="h-4 w-4" />
-                                  WhatsApp Access Help
+                                  Contact Instructor
                                 </a>
                                 <button
                                   type="button"
