@@ -1,4 +1,4 @@
-import skillVaneLogo from "@/imports/logo1.png";
+﻿import skillVaneLogo from "@/imports/logo1.png";
 import {
   buildCertificateId,
   formatCertificateDate,

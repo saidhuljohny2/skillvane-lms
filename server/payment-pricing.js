@@ -1,18 +1,11 @@
-const COURSE_PRICES = Object.freeze({
-  "multi-cloud-live": 22000,
-  "gcp-live": 14999,
-  "gcp-recordings": 6999,
-  "multi-cloud-recordings": 10999,
-  "python-de": 599,
-  "project-healthcare": 899,
-  "project-retail": 899,
-  "project-banking": 899,
-});
-
-const MULTI_COURSE_DISCOUNT_PERCENT = 10;
-const ENROLLMENT_COUPON_CODE = "SKILLVANE10";
-const ENROLLMENT_COUPON_DISCOUNT_PERCENT = 10;
-const ENROLLMENT_COUPON_EXPIRY = new Date("2026-06-30T00:00:00+05:30");
+import {
+  COURSE_PRICES,
+  ENROLLMENT_COUPON_CODE,
+  ENROLLMENT_COUPON_DISCOUNT_PERCENT,
+  MULTI_COURSE_DISCOUNT_PERCENT,
+  MULTI_COURSE_MIN_COUNT,
+  getCouponExpiryDate,
+} from "../shared/pricing-config.js";
 
 export function calculateOrderAmount(courseIds, couponCode = "") {
   if (!Array.isArray(courseIds) || courseIds.length === 0) {
@@ -32,14 +25,14 @@ export function calculateOrderAmount(courseIds, couponCode = "") {
 
   const originalAmount = prices.reduce((sum, price) => sum + price, 0);
   const multiCourseDiscount =
-    uniqueCourseIds.length >= 2
+    uniqueCourseIds.length >= MULTI_COURSE_MIN_COUNT
       ? Math.round((originalAmount * MULTI_COURSE_DISCOUNT_PERCENT) / 100)
       : 0;
   const afterMultiCourseDiscount = originalAmount - multiCourseDiscount;
   const normalizedCoupon = String(couponCode).trim().toUpperCase();
   const couponIsValid =
     normalizedCoupon === ENROLLMENT_COUPON_CODE &&
-    Date.now() <= ENROLLMENT_COUPON_EXPIRY.getTime();
+    Date.now() <= getCouponExpiryDate().getTime();
   const couponDiscount = couponIsValid
     ? Math.round(
         (afterMultiCourseDiscount * ENROLLMENT_COUPON_DISCOUNT_PERCENT) / 100,

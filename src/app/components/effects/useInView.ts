@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 
 export function useInView(threshold = 0.15, rootMargin = "0px 0px -8% 0px") {
   const ref = useRef<HTMLDivElement>(null);

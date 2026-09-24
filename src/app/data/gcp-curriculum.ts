@@ -1,4 +1,4 @@
-export const GCP_CURRICULUM: { module: string; topics: string[] }[] = [
+﻿export const GCP_CURRICULUM: { module: string; topics: string[] }[] = [
   {
     module: "GCP Cloud Basics",
     topics: [

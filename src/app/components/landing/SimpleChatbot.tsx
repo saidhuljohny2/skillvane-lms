@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { ArrowRight, Bot, MessageCircle, Send, X } from "lucide-react";
 
 const CHAT_OPTIONS = [

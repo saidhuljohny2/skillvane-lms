@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+﻿import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/app/components/effects/Reveal";
 
 export function FinalCTA({ scrollTo }: { scrollTo: (id: string) => void }) {

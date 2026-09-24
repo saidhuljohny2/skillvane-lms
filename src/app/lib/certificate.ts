@@ -1,4 +1,4 @@
-export interface CertificateData {
+﻿export interface CertificateData {
   studentName: string;
   completionDate: string;
   logoUrl: string;

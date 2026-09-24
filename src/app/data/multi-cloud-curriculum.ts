@@ -1,4 +1,4 @@
-export const MULTI_CLOUD_CURRICULUM: { module: string; topics: string[] }[] =
+﻿export const MULTI_CLOUD_CURRICULUM: { module: string; topics: string[] }[] =
   [
     {
       module: "Cloud Introduction",

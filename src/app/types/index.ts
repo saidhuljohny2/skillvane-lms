@@ -1,4 +1,4 @@
-export interface LoggedInStudent {
+﻿export interface LoggedInStudent {
   email: string;
   name: string;
   enrolledCourses: string[];

@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+﻿import { motion } from "motion/react";
 
 const orbs = [
   { size: 420, x: "8%", y: "12%", color: "rgba(24,194,156,0.22)", delay: 0 },

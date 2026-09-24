@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 import { Reveal } from "@/app/components/effects/Reveal";
 
 export function SectionHeading({

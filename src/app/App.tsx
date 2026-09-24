@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect, useRef, useMemo } from "react";
+﻿import { lazy, Suspense, useState, useEffect, useRef, useMemo } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/instructor.webp";
 import skillVaneLogo from "@/imports/logo1.png";
@@ -67,13 +67,19 @@ import { BackToTop } from "@/app/components/landing/BackToTop";
 import { SimpleChatbot } from "@/app/components/landing/SimpleChatbot";
 import { Reveal } from "@/app/components/effects/Reveal";
 import { SiteStatus, setSiteStatus } from "@/app/components/system/SiteStatus";
+import {
+  COURSE_PRICES,
+  ENROLLMENT_COUPON_CODE,
+  ENROLLMENT_COUPON_DISCOUNT_PERCENT,
+  MULTI_COURSE_DISCOUNT_PERCENT,
+  MULTI_COURSE_MIN_COUNT,
+  getCouponExpiryDate,
+} from "../../shared/pricing-config";
 
 const AdminStudentsModal = lazy(() => import("@/app/components/modals/AdminStudentsModal").then((module) => ({ default: module.AdminStudentsModal })));
 const StudentDashboard = lazy(() => import("@/app/components/modals/StudentDashboard").then((module) => ({ default: module.StudentDashboard })));
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // CONFIG - Update these two values after setup (see guide below)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Paste your Google Apps Script deployment URL here after setup:
 const GOOGLE_SHEET_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
@@ -87,16 +93,8 @@ const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 const ADMIN_EMAIL = "saidhuljohny@gmail.com";
 const OTP_VALIDITY_MS = 10 * 60 * 1000;
-const ENROLLMENT_COUPON_CODE = "SKILLVANE10";
-const ENROLLMENT_COUPON_DISCOUNT_PERCENT = 10;
-const ENROLLMENT_COUPON_START_DATE = "2026-06-23T00:00:00+05:30";
-const ENROLLMENT_COUPON_VALID_DAYS = 7;
-const MULTI_COURSE_DISCOUNT_PERCENT = 10;
-const MULTI_COURSE_MIN_COUNT = 2;
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // COURSE DATA - Add a new course here and it appears on the site
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type CourseType = "live" | "recording" | "course" | "project";
 type CourseCategory = "all" | "live-batch" | "self-paced";
 
@@ -125,7 +123,6 @@ interface Course {
 }
 
 const COURSES: Course[] = [
-  // â”€â”€ Course 1 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "multi-cloud-live",
     type: "live",
@@ -135,7 +132,7 @@ const COURSES: Course[] = [
     accentTo: "#3bc9db",
     title: "New Batch: Multi-Cloud Data Engineer Program",
     subtitle: "GCP + Azure · Case Studies & Real-world Projects",
-    price: 22000,
+    price: COURSE_PRICES["multi-cloud-live"],
     originalPrice: 25000,
     duration: "4 months live sessions",
     timings: "8:00 PM to 9:00 PM",
@@ -158,7 +155,6 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_LIVE_NOTES_LINK", // Replace with GCP live batch notes link
   },
 
-  // â”€â”€ Course 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "gcp-live",
     type: "live",
@@ -168,7 +164,7 @@ const COURSES: Course[] = [
     accentTo: "#f97316",
     title: "New Batch: GCP Data Engineering",
     subtitle: "Full Course · Live Batch",
-    price: 14999,
+    price: COURSE_PRICES["gcp-live"],
     originalPrice: 18000,
     duration: "3 months",
     timings: "9:30 PM to 10:30 PM",
@@ -200,7 +196,7 @@ const COURSES: Course[] = [
     accentTo: "#a855f7",
     title: "GCP Data Engineering",
     subtitle: "Course · Recordings",
-    price: 6999,
+    price: COURSE_PRICES["gcp-recordings"],
     originalPrice: 7500,
     highlights: [
       "Latest batch recordings (full GCP course)",
@@ -226,7 +222,7 @@ const COURSES: Course[] = [
     accentTo: "#22d3ee",
     title: "Multi-Cloud Data Engineer Program",
     subtitle: "GCP + Azure · Self-Paced Recordings",
-    price: 10999,
+    price: COURSE_PRICES["multi-cloud-recordings"],
     originalPrice: 15000,
     highlights: [
       "Full GCP + Azure program recordings",
@@ -243,7 +239,6 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/REPLACE_WITH_MULTI_CLOUD_RECORDINGS_NOTES_LINK",
   },
 
-  // â”€â”€ Course 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "python-de",
     type: "course",
@@ -253,7 +248,7 @@ const COURSES: Course[] = [
     accentTo: "#10b981",
     title: "Python for Data Engineering",
     subtitle: "Hands-On Foundation Course",
-    price: 599,
+    price: COURSE_PRICES["python-de"],
     originalPrice: 2000,
     highlights: [
       "Python fundamentals for data engineers",
@@ -301,7 +296,6 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/1VsxvQYeTeCd1WuDxeDHJ3iQ-HUd9wS-h",
   },
 
-  // â”€â”€ Course 4 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "project-healthcare",
     type: "project",
@@ -311,7 +305,7 @@ const COURSES: Course[] = [
     accentTo: "#f87171",
     title: "Health Care GCP",
     subtitle: "Data Engineering Project",
-    price: 899,
+    price: COURSE_PRICES["project-healthcare"],
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world healthcare dataset",
@@ -322,7 +316,6 @@ const COURSES: Course[] = [
       "Architecture walkthrough & code review",
     ],
     curriculum: [
-      // â”€â”€ PASTE YOUR CURRICULUM HERE â”€â”€
       {
         module: "Project Overview & Architecture",
         topics: [
@@ -362,7 +355,6 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/1QO-fMXUP3DGkyJ9SWMfEjmvFGJnnEd4E",
   },
 
-  // â”€â”€ Course 5 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "project-retail",
     type: "project",
@@ -372,7 +364,7 @@ const COURSES: Course[] = [
     accentTo: "#f59e0b",
     title: "Retailer GCP",
     subtitle: "Data Engineering Project",
-    price: 899,
+    price: COURSE_PRICES["project-retail"],
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world retail/e-commerce dataset",
@@ -383,7 +375,6 @@ const COURSES: Course[] = [
       "Architecture walkthrough & code review",
     ],
     curriculum: [
-      // â”€â”€ PASTE YOUR CURRICULUM HERE â”€â”€
       {
         module: "Project Overview & Architecture",
         topics: [
@@ -423,7 +414,6 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/1pFg_ZlTOX75ijqYxCusHvcVXmjuLGXlR",
   },
 
-  // â”€â”€ Course 6 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "project-banking",
     type: "project",
@@ -433,7 +423,7 @@ const COURSES: Course[] = [
     accentTo: "#22c55e",
     title: "Banking GCP",
     subtitle: "Data Engineering Project",
-    price: 899,
+    price: COURSE_PRICES["project-banking"],
     originalPrice: 3000,
     highlights: [
       "End-to-end real-world banking data platform",
@@ -500,7 +490,7 @@ const COURSES: Course[] = [
     accentTo: "#8b5cf6",
     title: "Traffic GCP + Databricks",
     subtitle: "Data Engineering Project",
-    price: 899,
+    price: COURSE_PRICES["project-traffic"],
     originalPrice: 3000,
     highlights: [
       "End-to-end traffic data lakehouse project",
@@ -542,14 +532,11 @@ const COURSES: Course[] = [
       "https://drive.google.com/drive/folders/19yHS4lPRjX7B7jQdc0O5YUrD2XxrQBHv",
   },
 
-  // â”€â”€ ADD A NEW COURSE HERE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Copy any block above, change the id, content, price, and colors.
   // The card will appear automatically on the site.
 ];
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Static data
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FREE_LEARNING_PLAYLIST_URL =
   "https://www.youtube.com/playlist?list=PLk8wwChOsCPzoZHuQEiJqWVvhHFdFa6sy";
 
@@ -566,23 +553,13 @@ const CATEGORY_LABELS: Record<CourseCategory, string> = {
   "self-paced": "Self-paced",
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatINR(n: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
   }).format(n);
-}
-
-function getCouponExpiryDate() {
-  const startDate = new Date(ENROLLMENT_COUPON_START_DATE);
-  startDate.setDate(
-    startDate.getDate() + ENROLLMENT_COUPON_VALID_DAYS,
-  );
-  return startDate;
 }
 
 function getDefaultPricing(course: Course): PaymentPricing {
@@ -734,9 +711,7 @@ function getEnrolledCourseAccess(course: Course) {
   return null;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Course Modal
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CourseModal({
   course,
   onClose,
@@ -981,9 +956,7 @@ function CourseModal({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface StudentDetails {
   name: string;
   email: string;
@@ -1044,9 +1017,7 @@ interface PaymentPricing {
   couponCode?: string;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function generateInvoiceNo() {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -1196,9 +1167,7 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
   });
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Login/Signup Modal
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -1830,9 +1799,7 @@ function LoginModal({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Enrollment Form Modal
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function EnrollmentFormModal({
   course,
   onClose,
@@ -2026,9 +1993,7 @@ function EnrollmentFormModal({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Invoice Modal
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PaymentReviewModal({
   course,
   allCourses,
@@ -2534,9 +2499,7 @@ function InvoiceModal({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Course Card
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CourseCard({
   course,
   onEnroll,
@@ -3294,7 +3257,6 @@ export default function App() {
 
       {!showDashboard && <SimpleChatbot whatsappLink={TRAINER_WHATSAPP_LINK} />}
 
-      {/* â”€â”€ Floating Contact Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <LandingHero scrollTo={scrollTo} />
 
       {/* Courses */}
@@ -3387,7 +3349,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* â”€â”€ Instructor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section
         id="free-learning"
         className="section-shell relative overflow-hidden border-y border-white/[0.07] py-16 sm:py-24"
@@ -3559,7 +3520,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="faq" className="relative overflow-hidden bg-[#07111d] py-16 sm:py-24">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(242,184,75,0.1),transparent_38%)]" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
@@ -3672,7 +3632,6 @@ export default function App() {
         />
       )}
 
-      {/* â”€â”€ Enrollment Form Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {formCourse && (
         <EnrollmentFormModal
           course={formCourse}
@@ -3698,7 +3657,6 @@ export default function App() {
         />
       )}
 
-      {/* â”€â”€ Invoice / Success Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */} 
       {invoice && (
         <InvoiceModal
           record={invoice}
@@ -3706,7 +3664,6 @@ export default function App() {
         />
       )}
 
-      {/* â”€â”€ Login Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showLogin && (
         <SupabaseLoginModal
           onClose={() => setShowLogin(false)}
@@ -3746,7 +3703,6 @@ export default function App() {
         /></Suspense>
       )}
 
-      {/* â”€â”€ Student Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showDashboard && currentStudent && (
         <Suspense fallback={null}><StudentDashboard
           student={currentStudent}
@@ -3762,5 +3718,4 @@ export default function App() {
     </div>
   );
 }
-
 

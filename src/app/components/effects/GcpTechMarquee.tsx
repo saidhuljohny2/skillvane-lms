@@ -1,4 +1,4 @@
-const TECH = [
+﻿const TECH = [
   "BigQuery",
   "Dataflow",
   "Cloud Composer",

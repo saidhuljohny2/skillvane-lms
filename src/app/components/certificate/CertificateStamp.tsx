@@ -1,4 +1,4 @@
-export function CertificateStamp({
+﻿export function CertificateStamp({
   size = 88,
   className = "",
 }: {
