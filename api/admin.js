@@ -62,6 +62,22 @@ export default async function handler(request, response) {
         const driveAccess = await grantAndTrackDriveAccess(studentId, profiles[0].email, [courseId]);
         return response.status(200).json({ driveAccess });
       }
+      if (entity === "certificate") {
+        const studentName = String(values?.student_name || "").trim().slice(0, 120);
+        const courseId = String(values?.course_id || "").trim().slice(0, 100);
+        const courseName = String(values?.course_name || "").trim().slice(0, 160);
+        const completionDate = String(values?.completion_date || "").trim();
+        if (studentName.length < 2 || !courseId || !courseName || !/^\d{4}-\d{2}-\d{2}$/.test(completionDate) || Number.isNaN(Date.parse(`${completionDate}T00:00:00Z`))) {
+          return response.status(400).json({ error: "Enter a recipient name, course, and valid completion date." });
+        }
+        const certificateId = `SV-${courseId.replace(/[^a-z0-9]/gi, "").slice(0, 8).toUpperCase()}-${crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()}`;
+        const rows = await supabaseServiceRequest("/rest/v1/certificates", {
+          method: "POST",
+          headers: { Prefer: "return=representation" },
+          body: JSON.stringify({ id: certificateId, student_id: null, student_name: studentName, course_id: courseId, course_name: courseName, completion_date: completionDate, issued_at: new Date().toISOString() }),
+        });
+        return response.status(201).json({ certificate: rows[0] || { id: certificateId } });
+      }
       const tables = { module: "course_modules", lesson: "course_lessons", resource: "lesson_resources", announcement: "announcements" };
       const table = tables[entity];
       if (!table || !values || typeof values !== "object") return response.status(400).json({ error: "Valid content is required." });
