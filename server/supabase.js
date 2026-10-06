@@ -12,7 +12,9 @@ async function parseResponse(response) {
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     console.error("Supabase request failed", response.status, payload?.code || payload?.message || "unknown");
-    throw new Error("The enrollment database is temporarily unavailable.");
+    const error = new Error(payload?.message || payload?.msg || "The enrollment database is temporarily unavailable.");
+    error.statusCode = response.status >= 400 && response.status < 500 ? response.status : 502;
+    throw error;
   }
   return payload;
 }

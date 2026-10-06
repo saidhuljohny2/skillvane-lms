@@ -129,12 +129,14 @@ export function AdminStudentsModal({ courses: storefront, onClose, onAccessCours
     try {
       const result = await adminRequest<{ certificate: { id: string } }>("", { method: "POST", body: JSON.stringify({ entity: "certificate", values: { student_name: studentName, course_id: course.id, course_name: course.title, completion_date: certificateDraft.completionDate } }) });
       const opened = openCertificatePrintWindow({ studentName, completionDate: certificateDraft.completionDate, courseName: course.title, certificateId: result.certificate.id, logoUrl: skillVaneLogo });
-      await load();
+      setData(await adminRequest<DashboardData>(""));
       setMessage(opened ? "Certificate registered and opened for printing or PDF download." : "Certificate registered. Allow popups to open the printable certificate.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not generate certificate.");
       setLoading(false);
+      return;
     }
+    setLoading(false);
   };
 
   const patchContent = async (entity: "module" | "lesson", id: string, values: Record<string, unknown>) => {
