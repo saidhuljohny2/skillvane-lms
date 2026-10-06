@@ -52,16 +52,15 @@ export function LandingHero({
           <Reveal delay={0.06}>
             <div>
               <h1 className="max-w-2xl text-[2.5rem] font-black leading-[1.02] tracking-[-0.045em] text-white min-[390px]:text-[2.8rem] sm:text-6xl lg:text-[3.75rem]">
-                Build a career in{" "}
+                Build your future in{" "}
                 <span className="bg-gradient-to-r from-[#60a5fa] via-[#8bc8ff] to-[#eab96e] bg-clip-text text-transparent">
-                  Multi-Cloud Data Engineering
+                  Data Engineering
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">
-                Learn GCP and Azure through guided classes, recordings, and
-                portfolio-ready projects, taught by{" "}
+                Learn to build reliable data pipelines, process information at scale, and turn data into insight through guided classes and practical, portfolio-ready projects, taught by{" "}
                 <span className="font-bold text-white">Shaik Saidhul</span>,
-                with practical case studies and career guidance.
+                with real-world case studies and career guidance.
               </p>
 
               <button
