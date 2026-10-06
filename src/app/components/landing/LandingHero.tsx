@@ -1,4 +1,4 @@
-﻿import { motion } from "motion/react";
+import { motion } from "motion/react";
 import {
   ArrowRight,
   Award,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { Reveal, RevealStagger, RevealItem } from "@/app/components/effects/Reveal";
-import heroArtwork from "@/imports/skillvane-cloud-hero-v2.webp";
+import coursePoster from "@/imports/gcp-data-engineering-course-poster.png";
 
 const STATS = [
   { icon: Users, val: "2500+", sub: "Learners" },
@@ -26,7 +26,7 @@ export function LandingHero({
   scrollTo: (id: string) => void;
 }) {
   return (
-    <section className="hero-solid relative overflow-hidden bg-[#090b12] lg:min-h-[100svh]">
+    <section className="hero-solid relative overflow-hidden bg-[#090b12]">
       <HeroBackground />
 
       <div
@@ -38,7 +38,7 @@ export function LandingHero({
         }}
       />
 
-      <div className="relative mx-auto grid max-w-[90rem] items-center gap-10 px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:pb-20 lg:pt-32">
+      <div className="relative mx-auto max-w-[96rem] px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-8">
         <div className="relative z-10 order-1 lg:order-1">
           <Reveal>
             <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-[#3b82f6]/20 bg-[#3b82f6]/[0.07] px-3 py-2 sm:mb-7">
@@ -114,25 +114,20 @@ export function LandingHero({
             ))}
           </RevealStagger>
         </div>
-
-        <Reveal delay={0.1} className="relative order-2 lg:order-2">
-          <div className="group relative mx-auto w-full max-w-[720px] overflow-hidden rounded-[2rem] border border-white/10 bg-[#0d1420] shadow-[0_30px_90px_rgba(0,0,0,.45)]">
-            <img src={heroArtwork} alt="Cloud data architecture with connected pipelines" className="aspect-[16/10] w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#090b12] via-transparent to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#93c5fd]">Your multi-cloud learning map</p>
-              <div className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
-              {["BigQuery", "Dataflow", "ADF", "Synapse", "Databricks"].map(
-                (tag) => (
-                  <span
-                    key={tag}
-                  className="glass-pill px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-400 sm:px-3 sm:text-[10px]"
-                  >
-                    {tag}
-                  </span>
-                ),
-              )}
+        <Reveal delay={0.1} className="mt-10 sm:mt-12">
+          <div className="grid items-center gap-7 rounded-[1.75rem] border border-white/10 bg-[#0d1420]/90 p-3 shadow-[0_30px_90px_rgba(0,0,0,.45)] sm:gap-9 sm:p-5 lg:grid-cols-[minmax(0,1fr)_18rem] lg:p-6 xl:grid-cols-[minmax(0,1fr)_21rem]">
+            <div className="overflow-hidden rounded-2xl bg-white shadow-[0_16px_60px_rgba(0,0,0,.35)]">
+              <img src={coursePoster} alt="SkillVane GCP Data Engineering course poster with course topics, projects, schedule, and enrollment details" className="block h-auto w-full" />
+            </div>
+            <div className="px-2 pb-3 sm:px-3 lg:px-1">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#93c5fd]">New GCP batch</p>
+              <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">Build your GCP data engineering skills</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-400">Explore hands-on training across BigQuery, Dataflow, Dataproc, Airflow, and more, with projects and interview preparation.</p>
+              <div className="mt-5 flex flex-col gap-3">
+                <button type="button" onClick={() => scrollTo("courses")} className="magnetic-button group inline-flex items-center justify-center gap-2 rounded-xl bg-[#3b82f6] px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-[#3b82f6]/15 hover:bg-[#60a5fa]">Explore GCP course <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" /></button>
+                <button type="button" onClick={() => scrollTo("free-learning")} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-6 py-3.5 text-sm font-bold text-white hover:border-white/20 hover:bg-white/[0.06]"><Play className="h-4 w-4 text-[#eab96e]" />Try a free lesson</button>
               </div>
+              <div className="mt-5 flex flex-wrap gap-2">{["Live classes", "Hands-on labs", "Career guidance"].map((item) => <span key={item} className="glass-pill px-3 py-1.5 text-[10px] font-bold text-slate-300">{item}</span>)}</div>
             </div>
           </div>
         </Reveal>
@@ -153,3 +148,4 @@ export function LandingHero({
     </section>
   );
 }
+
