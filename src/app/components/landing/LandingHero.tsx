@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { HeroBackground } from "@/app/components/effects/HeroBackground";
 import { Reveal, RevealStagger, RevealItem } from "@/app/components/effects/Reveal";
-import coursePoster from "@/imports/gcp-data-engineering-course-poster.png";
+import coursePoster from "@/imports/GCP Data Engineering Career Course Poster.png";
 
 const STATS = [
   { icon: Users, val: "2500+", sub: "Learners" },
