@@ -2,7 +2,7 @@
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import instructorPhoto from "@/imports/instructor.webp";
 import skillVaneLogo from "@/imports/logo1.png";
-import gcpDataEngineeringCurriculum from "@/imports/gcp-data-engineering-curriculum.pdf";
+import gcpDataEngineeringCurriculum from "@/imports/GCP Data Engineer Curriculum.pdf";
 import multiCloudDataEngineeringCurriculum from "@/imports/multi-cloud-data-engineer-curriculum.pdf";
 import { GCP_CURRICULUM } from "@/app/data/gcp-curriculum";
 import { MULTI_CLOUD_CURRICULUM } from "@/app/data/multi-cloud-curriculum";

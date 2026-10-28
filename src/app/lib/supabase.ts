@@ -40,10 +40,18 @@ function authHeaders(accessToken?: string) {
 
 async function request<T>(path: string, init: RequestInit = {}, accessToken?: string) {
   if (!isSupabaseConfigured) throw new Error("Student login is being configured. Please try again shortly.");
-  const response = await fetch(`${supabaseUrl}${path}`, {
-    ...init,
-    headers: { ...authHeaders(accessToken), ...(init.headers || {}) },
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${supabaseUrl}${path}`, {
+      ...init,
+      headers: { ...authHeaders(accessToken), ...(init.headers || {}) },
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error("Could not connect to the login service. Check the Supabase URL and make sure this site’s domain is allowed in Supabase Auth.");
+    }
+    throw error;
+  }
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     const message = payload?.msg || payload?.message || payload?.error_description || payload?.error;
