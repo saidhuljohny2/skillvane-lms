@@ -54,11 +54,11 @@ import { SectionHeading } from "@/app/components/landing/SectionHeading";
 import { SupabaseLoginModal } from "@/app/components/modals/SupabaseLoginModal";
 import { PasswordRecoveryModal } from "@/app/components/modals/PasswordRecoveryModal";
 import {
-  isSupabaseConfigured,
   getValidAccessToken,
   restoreStudentSession,
   signOutStudent,
-  hasPasswordRecoveryToken,
+  readAuthCallback,
+  clearAuthCallbackUrl,
   type AdminSession,
 } from "@/app/lib/supabase";
 import { TestimonialMarquee } from "@/app/components/effects/TestimonialMarquee";
@@ -87,12 +87,10 @@ const GOOGLE_SHEET_WEBHOOK_URL =
 // Paste your EmailJS credentials here after setup:
 const EMAILJS_SERVICE_ID = "service_huss9yj";
 const EMAILJS_INVOICE_TEMPLATE_ID = "template_jqy6yhj";
-const EMAILJS_PASSWORD_OTP_TEMPLATE_ID = "template_fx61y3u";
 const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 const ADMIN_EMAIL = "saidhuljohny@gmail.com";
-const OTP_VALIDITY_MS = 10 * 60 * 1000;
 
 // COURSE DATA - Add a new course here and it appears on the site
 type CourseType = "live" | "recording" | "course" | "project";
@@ -970,12 +968,6 @@ interface LoggedInStudent {
   enrolledCourses: string[]; // Array of course IDs
 }
 
-interface StoredStudent extends LoggedInStudent {
-  phone?: string;
-  password: string;
-  createdAt?: string;
-}
-
 interface EnrollmentRecord {
   invoiceNo: string;
   paymentId: string;
@@ -1165,638 +1157,6 @@ async function sendInvoiceEmail(record: EnrollmentRecord) {
     }),
     academy_name: "SkillVane IT Academy",
   });
-}
-
-// Login/Signup Modal
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-function getEmailJsErrorMessage(error: unknown) {
-  if (typeof error === "object" && error) {
-    const detail =
-      "text" in error
-        ? String((error as { text?: unknown }).text || "")
-        : "message" in error
-          ? String((error as { message?: unknown }).message || "")
-          : "";
-    if (detail) return detail;
-  }
-  if (error instanceof Error) return error.message;
-  return "EmailJS could not send the OTP.";
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-async function sendOtpEmail(
-  toEmail: string,
-  toName: string,
-  otp: string,
-  purpose: string,
-) {
-  if (EMAILJS_SERVICE_ID === "YOUR_EMAILJS_SERVICE_ID") return;
-  if (
-    !EMAILJS_PASSWORD_OTP_TEMPLATE_ID ||
-    EMAILJS_PASSWORD_OTP_TEMPLATE_ID === "template_password_otp"
-  ) {
-    throw new Error("Password OTP EmailJS template is not configured.");
-  }
-  await loadEmailJs();
-  const ejs = (window as any).emailjs;
-  ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_PASSWORD_OTP_TEMPLATE_ID, {
-    to_name: toName,
-    to_email: toEmail,
-    email: toEmail,
-    user_email: toEmail,
-    reply_to: toEmail,
-    otp,
-    passcode: otp,
-    verification_code: otp,
-    purpose,
-    academy_name: "SkillVane IT Academy",
-    message: `Your SkillVane ${purpose} OTP is ${otp}. It is valid for 10 minutes.`,
-  });
-}
-
-function LoginModal({
-  onClose,
-  onLogin,
-}: {
-  onClose: () => void;
-  onLogin: (student: LoggedInStudent) => void;
-}) {
-  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
-  const [otpState, setOtpState] = useState<{
-    email: string;
-    code: string;
-    expiresAt: number;
-    verified: boolean;
-    purpose: "login" | "reset";
-  } | null>(null);
-  const [otpInput, setOtpInput] = useState("");
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    name: "",
-    phone: "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>(
-    {},
-  );
-  const [loading, setLoading] = useState(false);
-
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (
-      !form.email ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
-    )
-      e.email = "Valid email is required";
-    if (mode === "signup" || (mode === "reset" && otpState?.verified)) {
-      if (!form.password || form.password.length < 6)
-        e.password = "Password must be at least 6 characters";
-    }
-    if (mode === "signup") {
-      if (!form.name.trim()) e.name = "Name is required";
-      if (!form.phone || !/^[6-9]\d{9}$/.test(form.phone))
-        e.phone = "Valid 10-digit mobile number required";
-    }
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const loadStudents = (): Record<string, StoredStudent> => {
-    try {
-      return JSON.parse(localStorage.getItem("skillvane_students") || "{}");
-    } catch {
-      return {};
-    }
-  };
-
-  const completeStudentLogin = (student: StoredStudent) => {
-    const loggedStudent: LoggedInStudent = {
-      email: student.email,
-      name: student.name,
-      enrolledCourses: student.enrolledCourses || [],
-    };
-    localStorage.setItem(
-      "skillvane_current_student",
-      JSON.stringify(loggedStudent),
-    );
-    onLogin(loggedStudent);
-  };
-
-  const sendStudentLoginOtp = async () => {
-    const email = form.email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrors({ email: "Valid email is required" });
-      return;
-    }
-
-    const students = loadStudents();
-    const student = students[email];
-    if (!student) {
-      setErrors({ email: "No student found with this email." });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const code = generateOtp();
-      await sendOtpEmail(
-        email,
-        student.name || "Student",
-        code,
-        "student login",
-      );
-      setOtpState({
-        email,
-        code,
-        expiresAt: Date.now() + OTP_VALIDITY_MS,
-        verified: false,
-        purpose: "login",
-      });
-      setOtpInput("");
-      setErrors({
-        general: "Login OTP sent to your registered email.",
-      });
-    } catch (error) {
-      console.error("Student login OTP email failed:", error);
-      setErrors({
-        general: `Unable to send OTP: ${getEmailJsErrorMessage(error)}`,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyStudentLoginOtp = () => {
-    if (!otpState || otpState.purpose !== "login") return;
-    if (Date.now() > otpState.expiresAt) {
-      setErrors({ general: "OTP expired. Please send a new OTP." });
-      setOtpState(null);
-      return;
-    }
-    if (otpInput.trim() !== otpState.code) {
-      setErrors({ general: "Invalid OTP. Please check your email." });
-      return;
-    }
-
-    const student = loadStudents()[otpState.email];
-    if (!student) {
-      setErrors({ email: "No student found with this email." });
-      return;
-    }
-    setOtpState({ ...otpState, verified: true });
-    completeStudentLogin(student);
-  };
-
-  const sendStudentResetOtp = async () => {
-    const email = form.email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrors({ email: "Valid email is required" });
-      return;
-    }
-
-    const students = loadStudents();
-    const student = students[email];
-    if (!student) {
-      setErrors({ email: "No student found with this email." });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const code = generateOtp();
-      await sendOtpEmail(
-        email,
-        student.name || "Student",
-        code,
-        "password reset",
-      );
-      setOtpState({
-        email,
-        code,
-        expiresAt: Date.now() + OTP_VALIDITY_MS,
-        verified: false,
-        purpose: "reset",
-      });
-      setOtpInput("");
-      setErrors({
-        general: "OTP sent to your registered email. Please check your inbox.",
-      });
-    } catch (error) {
-      console.error("Student OTP email failed:", error);
-      setErrors({
-        general: `Unable to send OTP: ${getEmailJsErrorMessage(error)}`,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyStudentOtp = () => {
-    if (!otpState) return;
-    if (Date.now() > otpState.expiresAt) {
-      setErrors({ general: "OTP expired. Please send a new OTP." });
-      setOtpState(null);
-      return;
-    }
-    if (otpInput.trim() !== otpState.code) {
-      setErrors({ general: "Invalid OTP. Please check your email." });
-      return;
-    }
-    setOtpState({ ...otpState, verified: true });
-    setErrors({
-      general:
-        otpState.purpose === "reset"
-          ? "OTP verified. Set your new password."
-          : "OTP verified.",
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    setLoading(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Get existing students from localStorage
-      const students = loadStudents();
-
-      if (mode === "reset") {
-        if (!otpState?.verified) {
-          setErrors({ general: "Please verify the OTP before resetting." });
-          setLoading(false);
-          return;
-        }
-
-        const student = students[otpState.email];
-        if (!student) {
-          setErrors({ email: "No student found with this email." });
-          setLoading(false);
-          return;
-        }
-
-        students[otpState.email] = {
-          ...student,
-          password: form.password,
-        };
-        localStorage.setItem(
-          "skillvane_students",
-          JSON.stringify(students),
-        );
-        setErrors({
-          general:
-            "Password reset successful. You can login with the new password.",
-        });
-        setMode("login");
-        setForm({ ...form, password: "" });
-        setOtpState(null);
-        setOtpInput("");
-        setLoading(false);
-        return;
-      }
-
-      if (mode === "signup") {
-        // Check if user already exists
-        const email = form.email.trim().toLowerCase();
-        if (students[email]) {
-          setErrors({
-            email: "Email already registered. Please login.",
-          });
-          setLoading(false);
-          return;
-        }
-
-        // Create new student account
-        students[email] = {
-          email,
-          name: form.name,
-          phone: form.phone,
-          password: form.password, // In production, hash this!
-          enrolledCourses: [],
-          createdAt: new Date().toISOString(),
-        };
-        localStorage.setItem(
-          "skillvane_students",
-          JSON.stringify(students),
-        );
-
-        // Auto-login after signup
-        const loggedStudent: LoggedInStudent = {
-          email,
-          name: form.name,
-          enrolledCourses: [],
-        };
-        localStorage.setItem(
-          "skillvane_current_student",
-          JSON.stringify(loggedStudent),
-        );
-        onLogin(loggedStudent);
-      } else {
-        // Login with OTP
-        const email = form.email.trim().toLowerCase();
-        const student = students[email];
-        if (!student) {
-          setErrors({ email: "No student found with this email." });
-          setLoading(false);
-          return;
-        }
-        if (
-          !otpState?.verified ||
-          otpState.purpose !== "login" ||
-          otpState.email !== email
-        ) {
-          setErrors({ general: "Please verify your login OTP first." });
-          setLoading(false);
-          return;
-        }
-        completeStudentLogin(student);
-      }
-    } catch (error) {
-      setErrors({
-        general: "Something went wrong. Please try again.",
-      });
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div
-        className="absolute inset-0 bg-[#02060c]/86 backdrop-blur-lg"
-        onClick={onClose}
-      />
-      <div className="relative w-full overflow-hidden rounded-t-2xl border border-white/[0.09] bg-[#0a1522] shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:max-w-md sm:rounded-[1.5rem]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(45,212,166,0.1),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(234,185,110,0.055),transparent_36%)]" />
-        {/* Header */}
-        <div className="relative px-5 py-4 flex items-center justify-between border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#3b82f6] shadow-lg shadow-[#3b82f6]/10">
-              <Lock className="h-5 w-5 text-[#ffffff]" />
-            </div>
-            <div>
-            <h2
-              className="font-black text-white text-xl"
-              style={{
-                fontFamily:
-                  "'Space Grotesk', system-ui, sans-serif",
-              }}
-            >
-              {mode === "login"
-                ? "Welcome Back"
-                : mode === "signup"
-                  ? "Create Account"
-                  : "Reset Password"}
-            </h2>
-            <p className="text-xs text-slate-400">
-              {mode === "login"
-                ? "Login with OTP sent to your email"
-                : mode === "signup"
-                  ? "Sign up to get started"
-                  : "Verify OTP sent to your email"}
-            </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="relative px-5 py-5 space-y-4"
-        >
-          {errors.general && (
-            <div
-              className={`p-3 rounded-lg border text-sm ${
-                /sent|verified|successful/i.test(errors.general)
-                  ? "bg-[#3b82f6]/10 border-[#3b82f6]/30 text-[#bfdbfe]"
-                  : "bg-red-500/10 border-red-500/30 text-red-300"
-              }`}
-            >
-              {errors.general}
-            </div>
-          )}
-
-          {mode === "signup" && (
-            <div>
-              <label className="block text-sm font-semibold text-slate-200 mb-1.5">
-                Full Name
-              </label>
-              <input
-                value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-                placeholder="Enter your full name"
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
-              />
-              {errors.name && (
-                <p className="text-xs text-red-300 mt-1">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-semibold text-slate-200 mb-1.5">
-              Email
-            </label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => {
-                setForm({ ...form, email: e.target.value.toLowerCase() });
-                setOtpState(null);
-                setOtpInput("");
-              }}
-              placeholder="your.email@example.com"
-              className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
-            />
-            {errors.email && (
-              <p className="text-xs text-red-300 mt-1">
-                {errors.email}
-              </p>
-            )}
-          </div>
-
-          {mode === "signup" && (
-            <div>
-              <label className="block text-sm font-semibold text-slate-200 mb-1.5">
-                Phone
-              </label>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={(e) =>
-                  setForm({ ...form, phone: e.target.value })
-                }
-                placeholder="10-digit mobile number"
-                className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
-              />
-              {errors.phone && (
-                <p className="text-xs text-red-300 mt-1">
-                  {errors.phone}
-                </p>
-              )}
-            </div>
-          )}
-
-          {mode === "login" && (
-            <div className="grid gap-3">
-              <button
-                type="button"
-                onClick={sendStudentLoginOtp}
-                disabled={loading}
-                className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-colors hover:bg-[#f2b84b]/16 disabled:opacity-50"
-              >
-                {otpState?.purpose === "login"
-                  ? "Resend Login OTP"
-                  : "Send Login OTP"}
-              </button>
-
-              {otpState?.purpose === "login" && (
-                <div className="grid gap-2">
-                  <label className="block text-sm font-semibold text-slate-200">
-                    Email OTP
-                  </label>
-                  <div className="grid grid-cols-[1fr_auto] gap-2">
-                    <input
-                      inputMode="numeric"
-                      value={otpInput}
-                      onChange={(e) => setOtpInput(e.target.value)}
-                      placeholder="6-digit OTP"
-                      className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 transition-all focus:border-[#3b82f6]/40 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/10"
-                    />
-                    <button
-                      type="button"
-                      onClick={verifyStudentLoginOtp}
-                      className="rounded-xl bg-[#3b82f6] px-4 py-3 text-sm font-black text-[#ffffff]"
-                    >
-                      Verify
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {mode === "reset" && (
-            <div className="grid gap-3">
-              <button
-                type="button"
-                onClick={sendStudentResetOtp}
-                disabled={loading}
-                className="rounded-xl border border-[#f2b84b]/30 bg-[#f2b84b]/10 px-4 py-3 text-sm font-black text-[#ffe4a3] transition-colors hover:bg-[#f2b84b]/16 disabled:opacity-50"
-              >
-                {otpState ? "Resend OTP" : "Send OTP to Email"}
-              </button>
-
-              {otpState && !otpState.verified && (
-                <div className="grid gap-2">
-                  <label className="block text-sm font-semibold text-slate-200">
-                    Email OTP
-                  </label>
-                  <div className="grid grid-cols-[1fr_auto] gap-2">
-                    <input
-                      inputMode="numeric"
-                      value={otpInput}
-                      onChange={(e) => setOtpInput(e.target.value)}
-                      placeholder="6-digit OTP"
-                      className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#3b82f6]/60 transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={verifyStudentOtp}
-                      className="rounded-xl bg-white/[0.08] px-4 py-3 text-sm font-black text-white hover:bg-white/[0.12]"
-                    >
-                      Verify
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {((mode === "signup") || (mode === "reset" && otpState?.verified)) && (
-          <div>
-            <label className="block text-sm font-semibold text-slate-200 mb-1.5">
-              {mode === "reset" ? "New Password" : "Password"}
-            </label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
-              placeholder={
-                mode === "login"
-                  ? "Enter your password"
-                  : "Create a password (min 6 chars)"
-              }
-              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#3b82f6]/60 transition-all"
-            />
-            {errors.password && (
-              <p className="text-xs text-red-300 mt-1">
-                {errors.password}
-              </p>
-            )}
-          </div>
-          )}
-
-          {mode !== "login" && (
-            <button
-              type="submit"
-              disabled={loading || (mode === "reset" && !otpState?.verified)}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] text-white font-black text-sm hover:shadow-xl hover:shadow-[#3b82f6]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              {loading
-                ? "Please wait..."
-                : mode === "signup"
-                  ? "Sign Up"
-                  : "Save New Password"}
-            </button>
-          )}
-
-          <div className="flex flex-col items-center gap-2 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setMode(mode === "login" ? "signup" : "login");
-                setErrors({});
-                setOtpState(null);
-                setOtpInput("");
-              }}
-              className="text-sm text-slate-400 hover:text-[#93c5fd] transition-colors"
-            >
-              {mode === "login"
-                ? "Don't have an account? Sign up"
-                : mode === "signup"
-                  ? "Already have an account? Login"
-                  : "Back to login"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
 }
 
 // Enrollment Form Modal
@@ -2781,7 +2141,7 @@ function CourseCard({
 
 // Main App
 export default function App() {
-  const [recoveringPassword] = useState(() => hasPasswordRecoveryToken());
+  const [authCallback] = useState(() => readAuthCallback());
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] =
@@ -2808,30 +2168,28 @@ export default function App() {
   // Authentication state
   const [currentStudent, setCurrentStudent] =
     useState<LoggedInStudent | null>(null);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
+  const [showLogin, setShowLogin] = useState(() => !authCallback && new URLSearchParams(window.location.search).get("login") === "student");
+  const [showAdmin, setShowAdmin] = useState(() => !authCallback && new URLSearchParams(window.location.search).get("login") === "admin");
   const [showDashboard, setShowDashboard] = useState(false);
   const [adminCourseAccess, setAdminCourseAccess] = useState<AdminSession | null>(null);
 
-  // Restore the server-backed student session. Keep the legacy session only
-  // when Supabase has not been configured yet.
+  // Remove obsolete browser-only credentials; only Supabase can restore login.
   useEffect(() => {
-    if (isSupabaseConfigured) {
-      restoreStudentSession().then((student) => {
-        if (student) setCurrentStudent(student);
-      });
-      return;
-    }
-    const studentData = localStorage.getItem(
-      "skillvane_current_student",
-    );
-    if (studentData) {
+    for (const key of ["skillvane_students", "skillvane_current_student"]) {
       try {
-        setCurrentStudent(JSON.parse(studentData));
-      } catch (e) {
-        localStorage.removeItem("skillvane_current_student");
+        localStorage.removeItem(key);
+      } catch {
+        // Storage may be blocked by browser privacy settings.
       }
     }
+    if (authCallback) {
+      clearAuthCallbackUrl();
+      return;
+    }
+    if (new URLSearchParams(window.location.search).get("login") === "admin") return;
+    restoreStudentSession().then((student) => {
+      if (student) setCurrentStudent(student);
+    });
   }, []);
 
   useEffect(() => {
@@ -2905,7 +2263,6 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("skillvane_current_student");
     void signOutStudent();
     setCurrentStudent(null);
     setShowDashboard(false);
@@ -2918,28 +2275,6 @@ export default function App() {
     if (/^[6-9]\d{9}$/.test(student.phone || "")) {
       return { name: student.name, email: student.email, phone: student.phone! };
     }
-    try {
-      const studentsData = localStorage.getItem("skillvane_students");
-      const students: Record<string, any> = studentsData
-        ? JSON.parse(studentsData)
-        : {};
-      const saved = students[student.email];
-
-      if (
-        saved?.name &&
-        saved?.email &&
-        /^[6-9]\d{9}$/.test(saved.phone || "")
-      ) {
-        return {
-          name: saved.name,
-          email: saved.email,
-          phone: saved.phone,
-        };
-      }
-    } catch (err) {
-      console.error("Could not load saved student details:", err);
-    }
-
     return null;
   };
 
@@ -3253,7 +2588,7 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {recoveringPassword && <PasswordRecoveryModal />}
+      {authCallback && <PasswordRecoveryModal callback={authCallback} />}
 
       {!showDashboard && <SimpleChatbot whatsappLink={TRAINER_WHATSAPP_LINK} />}
 

@@ -70,13 +70,17 @@ function normalizeSession(payload: SupabaseSession): SupabaseSession {
   return { ...payload, expires_at: expiresAt };
 }
 
+export const MIN_PASSWORD_LENGTH = 8;
+
 export async function signUpStudent(email: string, password: string, fullName: string, phone: string) {
-  const payload = await request<{ user: SupabaseUser; session?: SupabaseSession | null }>("/auth/v1/signup", {
+  if (password.length < MIN_PASSWORD_LENGTH) throw new Error("Use at least 8 characters.");
+  const payload = await request<Partial<SupabaseSession> & { user: SupabaseUser; session?: SupabaseSession | null }>(`/auth/v1/signup?redirect_to=${encodeURIComponent(`${window.location.origin}/?auth-callback=signup`)}`, {
     method: "POST",
     body: JSON.stringify({ email, password, data: { full_name: fullName, phone } }),
   });
-  if (payload.session) persistSession(normalizeSession(payload.session));
-  return payload;
+  const session = payload.session || (payload.access_token && payload.refresh_token ? normalizeSession(payload as SupabaseSession) : null);
+  if (session) persistSession(normalizeSession(session));
+  return { ...payload, session };
 }
 
 export async function signInStudent(email: string, password: string) {
@@ -231,34 +235,57 @@ export async function loadPublishedCourseContent(courseId: string): Promise<Publ
   })).filter((module) => module.lessons.length > 0);
 }
 
-export async function sendPasswordReset(email: string) {
-  const returnUrl = `${window.location.origin}/?password-recovery=1`;
-  await request(`/auth/v1/recover?redirect_to=${encodeURIComponent(returnUrl)}`, {
-    method: "POST",
-    body: JSON.stringify({ email }),
+export async function resendConfirmation(email: string) {
+  await request(`/auth/v1/resend?redirect_to=${encodeURIComponent(`${window.location.origin}/?auth-callback=signup`)}`, {
+    method: "POST", body: JSON.stringify({ type: "signup", email }),
   });
 }
 
-export function hasPasswordRecoveryToken() {
-  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const query = new URLSearchParams(window.location.search);
-  return Boolean(
-    hash.get("access_token") && (hash.get("type") === "recovery" || query.get("password-recovery") === "1"),
-  );
+export async function sendPasswordReset(email: string, destination: "student" | "admin" = "student") {
+  const returnUrl = `${window.location.origin}/?password-recovery=1&login=${destination}`;
+  await request(`/auth/v1/recover?redirect_to=${encodeURIComponent(returnUrl)}`, {
+    method: "POST", body: JSON.stringify({ email }),
+  });
 }
 
-export async function completePasswordRecovery(password: string) {
+export interface AuthCallback {
+  kind: "recovery" | "invite" | "signup";
+  accessToken: string;
+  error: string;
+  destination: "student" | "admin";
+}
+
+export function readAuthCallback(): AuthCallback | null {
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const query = new URLSearchParams(window.location.search);
-  const accessToken = hash.get("access_token") || query.get("access_token");
-  if (!accessToken) {
-    throw new Error("This password recovery link is invalid or has expired.");
-  }
-  await request("/auth/v1/user", {
-    method: "PUT",
-    body: JSON.stringify({ password }),
+  const type = hash.get("type") || query.get("auth-callback");
+  const kind = type === "invite" ? "invite" : type === "recovery" || query.has("password-recovery") ? "recovery" : "signup";
+  if (!hash.has("access_token") && !hash.has("error") && !hash.has("error_code") && !query.has("auth-callback") && !query.has("password-recovery")) return null;
+  return {
+    kind,
+    accessToken: hash.get("access_token") || "",
+    error: hash.has("error") || hash.has("error_code") || !hash.has("access_token") ? "This email link is invalid or has expired. Request a new link." : "",
+    destination: query.get("login") === "admin" ? "admin" : "student",
+  };
+}
+
+export function clearAuthCallbackUrl() {
+  const url = new URL(window.location.href);
+  for (const key of ["auth-callback", "password-recovery", "access_token", "refresh_token", "login"]) url.searchParams.delete(key);
+  url.hash = "";
+  window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
+}
+
+export async function completePasswordRecovery(password: string, accessToken: string): Promise<"student" | "admin"> {
+  if (password.length < MIN_PASSWORD_LENGTH) throw new Error("Use at least 8 characters.");
+  if (!accessToken) throw new Error("This email link is invalid or has expired. Request a new link.");
+  const user = await request<SupabaseUser>("/auth/v1/user", {
+    method: "PUT", body: JSON.stringify({ password }),
   }, accessToken);
-  window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.search}`);
+  const profiles = await request<Array<{ role: string }>>(`/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`, {}, accessToken).catch(() => []);
+  persistSession(null);
+  await request("/auth/v1/logout", { method: "POST" }, accessToken).catch(() => undefined);
+  return profiles[0]?.role === "admin" ? "admin" : "student";
 }
 
 export async function signOutStudent() {
@@ -294,7 +321,11 @@ async function getValidSession() {
   let session = readStoredSession();
   if (!session) throw new Error("Please sign in before enrolling.");
   if (!session.expires_at || session.expires_at <= Math.floor(Date.now() / 1000) + 60) {
-    session = await refreshSession(session);
+    try { session = await refreshSession(session); }
+    catch {
+      persistSession(null);
+      throw new Error("Your login session expired. Please sign in again.");
+    }
   }
   return session;
 }

@@ -33,6 +33,30 @@ export default async function handler(request, response) {
 
     if (request.method === "POST") {
       const { entity, values } = request.body || {};
+      if (entity === "student_invite" || entity === "student_password_reset") {
+        // Use a configured destination, never a redirect supplied by the browser.
+        const siteUrl = new URL(process.env.SITE_URL || "https://skillvane.vercel.app");
+        if (siteUrl.protocol !== "https:" && siteUrl.hostname !== "localhost") throw new Error("SITE_URL must use HTTPS.");
+        let email;
+        if (entity === "student_password_reset") {
+          const studentId = String(values?.student_id || "");
+          if (!/^[0-9a-f-]{36}$/i.test(studentId)) return response.status(400).json({ error: "A valid student is required." });
+          const profiles = await supabaseServiceRequest(`/rest/v1/profiles?id=eq.${encodeURIComponent(studentId)}&select=email,role`);
+          if (!profiles[0] || profiles[0].role !== "student") return response.status(404).json({ error: "Student was not found." });
+          email = profiles[0].email;
+        } else {
+          email = String(values?.email || "").trim().toLowerCase();
+          if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return response.status(400).json({ error: "Enter a valid email address." });
+        }
+        const redirect = new URL(entity === "student_invite" ? "/?auth-callback=invite" : "/?password-recovery=1&login=student", siteUrl);
+        const endpoint = entity === "student_invite" ? "invite" : "recover";
+        await supabaseServiceRequest(`/auth/v1/${endpoint}?redirect_to=${encodeURIComponent(redirect.href)}`, {
+          method: "POST",
+          body: JSON.stringify({ email, ...(entity === "student_invite" ? { data: { full_name: String(values?.full_name || "").trim().slice(0, 120) } } : {}) }),
+        });
+        return response.status(200).json({ sent: true });
+      }
+
       if (entity === "enrollment") {
         const studentId = String(values?.student_id || "").trim();
         const courseId = String(values?.course_id || "").trim();

@@ -1,33 +1,40 @@
 import { useState } from "react";
-import { CheckCircle2, KeyRound, Loader2 } from "lucide-react";
-import { completePasswordRecovery } from "@/app/lib/supabase";
+import { completePasswordRecovery, MIN_PASSWORD_LENGTH, type AuthCallback } from "@/app/lib/supabase";
 
-export function PasswordRecoveryModal() {
+export function PasswordRecoveryModal({ callback }: { callback: AuthCallback }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(callback.error);
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
+  const [destination, setDestination] = useState(callback.destination);
+  const confirmed = callback.kind === "signup" && !callback.error;
+  const field = "w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-white outline-none focus:border-blue-400";
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (password.length < 8) { setMessage("Use at least 8 characters."); return; }
+    if (password.length < MIN_PASSWORD_LENGTH) { setMessage("Use at least 8 characters."); return; }
     if (password !== confirm) { setMessage("The passwords do not match."); return; }
     setLoading(true); setMessage("");
-    try { await completePasswordRecovery(password); setComplete(true); }
-    catch (error) { setMessage(error instanceof Error ? error.message : "Could not update the password."); }
+    try {
+      setDestination(await completePasswordRecovery(password, callback.accessToken));
+      setPassword(""); setConfirm(""); setComplete(true);
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Could not update the password. Request a fresh email link and try again."); }
     finally { setLoading(false); }
   };
 
   return <div className="fixed inset-0 z-[220] flex items-center justify-center bg-[#02060c]/95 p-4 backdrop-blur-lg">
-    <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0b1522] p-6 shadow-2xl">
-      {complete ? <div className="text-center"><CheckCircle2 className="mx-auto h-12 w-12 text-[#3b82f6]" /><h2 className="mt-4 text-2xl font-black text-white">Password updated</h2><p className="mt-2 text-sm text-slate-400">You can now sign in to the admin console with your new password.</p><button onClick={() => window.location.assign("/")} className="mt-6 w-full rounded-xl bg-[#3b82f6] py-3 font-black text-[#ffffff]">Return to SkillVane</button></div> : <form onSubmit={submit} className="space-y-4">
-        <div className="text-center"><KeyRound className="mx-auto h-11 w-11 text-[#3b82f6]" /><h2 className="mt-4 text-2xl font-black text-white">Create a new password</h2><p className="mt-2 text-sm text-slate-400">Choose a strong password for your SkillVane account.</p></div>
-        <input type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New password" className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-white outline-none focus:border-[#3b82f6]/50" />
-        <input type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm new password" className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-white outline-none focus:border-[#3b82f6]/50" />
-        {message && <p className="text-sm text-red-300">{message}</p>}
-        <button disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3b82f6] py-3 font-black text-[#ffffff] disabled:opacity-50">{loading && <Loader2 className="h-4 w-4 animate-spin" />} Update password</button>
+    <div role="dialog" aria-modal="true" aria-labelledby="auth-link-title" className="max-h-[95dvh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/10 bg-[#0b1522] p-6 shadow-2xl">
+      <h2 id="auth-link-title" className="text-2xl font-black text-white">{complete ? "Password updated" : callback.error ? "Email link expired or invalid" : confirmed ? "Email confirmed" : callback.kind === "invite" ? "Welcome to SkillVane" : "Create a new password"}</h2>
+      {complete || confirmed ? <p className="mt-3 text-sm text-slate-300">{confirmed ? "Your email is confirmed. Sign in to continue." : "Your password has been saved. Sign in with your new password."}</p> : callback.error ? <p className="mt-3 text-sm text-slate-300">{callback.kind === "invite" ? "Ask your administrator to send a new invitation." : "Return to login and use Forgot password to request a new link. For email confirmation, use Resend email confirmation on the login screen."}</p> : <form onSubmit={submit} className="mt-5 space-y-4">
+        <p className="text-sm text-slate-400">{callback.kind === "invite" ? "Set a password to finish creating your account." : "Choose a new password for your account."}</p>
+        <label className="block text-sm text-slate-200">New password<input type="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} value={password} onChange={(e) => setPassword(e.target.value)} className={field} /></label>
+        <p className="text-xs text-slate-400">Use at least 8 characters.</p>
+        <label className="block text-sm text-slate-200">Confirm new password<input type="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} value={confirm} onChange={(e) => setConfirm(e.target.value)} className={field} /></label>
+        <button disabled={loading} className="w-full rounded-xl bg-[#3b82f6] py-3 font-black text-white disabled:opacity-50">{loading ? "Saving…" : "Save password"}</button>
       </form>}
+      {message && <p role="alert" className="mt-3 text-sm text-red-300">{message}</p>}
+      <a href={`/?login=${destination}`} className="mt-5 block text-center font-bold text-blue-300">{destination === "admin" ? "Go to admin login" : "Go to student login"}</a>
     </div>
   </div>;
 }

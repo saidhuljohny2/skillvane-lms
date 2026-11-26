@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Lock, X } from "lucide-react";
 import {
   isSupabaseConfigured,
+  MIN_PASSWORD_LENGTH,
   sendPasswordReset,
+  resendConfirmation,
   signInStudent,
   signUpStudent,
   type AuthenticatedStudent,
@@ -29,6 +31,15 @@ export function SupabaseLoginModal({
     setIsError(false);
   };
 
+  const resendEmail = async () => {
+    const email = form.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setMessage("Enter your email first."); setIsError(true); return; }
+    setLoading(true); setIsError(false); setMessage("");
+    try { await resendConfirmation(email); setMessage("If confirmation is needed, a new link has been sent. Check your email."); }
+    catch (error) { setMessage(error instanceof Error ? error.message : "Could not resend confirmation."); setIsError(true); }
+    finally { setLoading(false); }
+  };
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     const email = form.email.trim().toLowerCase();
@@ -40,8 +51,8 @@ export function SupabaseLoginModal({
       setIsError(true);
       return;
     }
-    if (mode !== "reset" && form.password.length < 6) {
-      setMessage("Password must be at least 6 characters.");
+    if ((mode === "signup" && form.password.length < MIN_PASSWORD_LENGTH) || (mode === "login" && !form.password)) {
+      setMessage(mode === "signup" ? "Password must be at least 8 characters." : "Enter your password.");
       setIsError(true);
       return;
     }
@@ -55,7 +66,7 @@ export function SupabaseLoginModal({
     try {
       if (mode === "reset") {
         await sendPasswordReset(email);
-        setMessage("Password reset link sent. Check your email.");
+        setMessage("If an account exists for this email, a reset link has been sent. Check your inbox and spam folder.");
         return;
       }
       if (mode === "signup") {
@@ -79,7 +90,7 @@ export function SupabaseLoginModal({
   return (
     <div className="fixed inset-0 z-[120] flex items-end justify-center p-0 sm:items-center sm:p-4">
       <button aria-label="Close login" className="absolute inset-0 bg-[#02060c]/86 backdrop-blur-lg" onClick={onClose} />
-      <div className="relative w-full overflow-hidden rounded-t-2xl border border-white/[0.09] bg-[#0a1522] shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:max-w-md sm:rounded-[1.5rem]">
+      <div className="relative max-h-[95dvh] w-full overflow-y-auto rounded-t-2xl border border-white/[0.09] bg-[#0a1522] shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:max-w-md sm:rounded-[1.5rem]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(45,212,166,0.1),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(234,185,110,0.055),transparent_36%)]" />
         <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4">
           <div className="flex items-center gap-3">
@@ -118,7 +129,7 @@ export function SupabaseLoginModal({
           )}
           {mode !== "reset" && (
             <label className="block text-sm font-semibold text-slate-200">Password
-              <input type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Minimum 6 characters" className="mt-1.5 w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#3b82f6]/40 focus:outline-none" />
+              <input type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={mode === "signup" ? MIN_PASSWORD_LENGTH : undefined} placeholder={mode === "signup" ? "Minimum 8 characters" : "Enter your password"} className="mt-1.5 w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#3b82f6]/40 focus:outline-none" />
             </label>
           )}
           <button type="submit" disabled={loading || !isSupabaseConfigured} className="w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#2f80ed] py-3 text-sm font-black text-white transition-all hover:shadow-xl hover:shadow-[#3b82f6]/20 disabled:cursor-not-allowed disabled:opacity-50">
@@ -129,6 +140,7 @@ export function SupabaseLoginModal({
             {mode === "login" && <button type="button" onClick={() => changeMode("signup")} className="text-slate-400 hover:text-[#93c5fd]">Create an account</button>}
             {mode === "login" && <button type="button" onClick={() => changeMode("reset")} className="text-slate-400 hover:text-[#93c5fd]">Forgot password?</button>}
           </div>
+          <button type="button" disabled={loading || !isSupabaseConfigured} onClick={() => void resendEmail()} className="block w-full text-center text-xs text-blue-300 disabled:opacity-50">Resend email confirmation</button>
           <p className="text-center text-[11px] text-slate-500">Authentication protected by Supabase.</p>
         </form>
       </div>
