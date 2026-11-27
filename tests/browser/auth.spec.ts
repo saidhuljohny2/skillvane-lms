@@ -118,3 +118,32 @@ test('student signs in, requests password change, and logs out', async ({ page }
   await expect.poll(() => page.evaluate(() => localStorage.getItem('skillvane_supabase_session'))).toBeNull();
   await expect(page.getByRole('button', { name: 'Login', exact: true }).first()).toBeVisible();
 });
+
+test('catalog displays saved titles and disables enrollment for missing resources', async ({ page }) => {
+ await page.route('https://auth.test/rest/v1/courses?**', route => route.fulfill({ json: [{ id:'python-de',title:'Updated Python Program',subtitle:'Saved catalog subtitle',status:'published',sale_enabled:false,delivery_mode:'drive',drive_url:'',notes_url:'',live_url:'' }] }));
+ await page.goto('/');
+ await expect(page.getByRole('heading',{name:'Updated Python Program',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Enrollment opening soon',exact:true})).toBeDisabled();
+ await expect(page.getByRole('heading',{name:'GCP Data Engineering',exact:true})).toHaveCount(0);
+});
+
+test('admin course edits send the API envelope and refresh the storefront', async ({ page }) => {
+ let course:any={ id:'python-de', title:'Python Program', subtitle:'Catalog subtitle', status:'published', sale_enabled:true, delivery_mode:'drive', drive_url:'https://drive.google.com/drive/folders/abcdefghijk', notes_url:'https://drive.google.com/drive/folders/abcdefghijk', live_url:'', certificate_module_count:4 };
+ let saved:any;
+ await page.addInitScript(() => localStorage.setItem('skillvane_supabase_session',JSON.stringify({access_token:'admin-token',refresh_token:'refresh',expires_at:Math.floor(Date.now()/1000)+3600,user:{id:'admin-id'}})));
+ await page.route('https://auth.test/rest/v1/profiles?**',route=>route.fulfill({json:[{id:'admin-id',email:'admin@example.test',full_name:'Admin',role:'admin'}]}));
+ await page.route('https://auth.test/rest/v1/courses?**',route=>route.fulfill({json:[course]}));
+ await page.route('**/api/admin',route=>{
+  if(route.request().method()==='PATCH') { saved=route.request().postDataJSON();course={...course,...saved.values};return route.fulfill({json:{saved:true}}); }
+  return route.fulfill({json:{profiles:[],enrollments:[],progress:[],payments:[],driveAccess:[],courses:[course],modules:[],lessons:[],resources:[],supportTickets:[],events:[],announcements:[],certificates:[],deliveries:[]}});
+ });
+ await page.goto('/?login=admin');
+ await page.getByRole('button',{name:'Courses',exact:true}).last().click();
+ await page.getByRole('button',{name:'Edit',exact:true}).click();
+ await page.getByLabel('Course title',{exact:true}).fill('Renamed Python Program');
+ await page.getByRole('button',{name:'Save changes',exact:true}).click();
+ await expect(page.getByText('Course settings saved.',{exact:true})).toBeVisible();
+ expect(saved.entity).toBe('course');expect(saved.id).toBe('python-de');expect(saved.values.title).toBe('Renamed Python Program');
+ await page.getByRole('button',{name:'Close admin console',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Renamed Python Program',exact:true})).toBeVisible();
+});

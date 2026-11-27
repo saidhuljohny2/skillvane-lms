@@ -24,6 +24,7 @@ import { CertificatePreview } from "@/app/components/certificate/CertificatePrev
 import { openCertificatePrintWindow } from "@/app/lib/certificate";
 import {
   isSupabaseConfigured,
+  adminRequest,
   loadLearningProgress,
   loadPublishedCourseContent,
   loadStudentServices,
@@ -111,6 +112,7 @@ function driveFolderPreviewUrl(folderId?: string) {
 }
 
 interface Course {
+  saleEnabled?: boolean;
   id: string;
   type: string;
   badge: string;
@@ -353,7 +355,7 @@ export function StudentDashboard({
     student.enrolledCourses.includes(c.id),
   );
   const availableCourses = adminMode ? [] : courses.filter(
-    (c) => !student.enrolledCourses.includes(c.id),
+    (c) => c.saleEnabled && !student.enrolledCourses.includes(c.id),
   );
   const progressStorageKey = `skillvane_learning_progress_${student.email}`;
   const [completedModules, setCompletedModules] = useState<Record<string, number[]>>(
@@ -500,16 +502,14 @@ export function StudentDashboard({
     }
 
     setCertificateMessage("Registering certificate…");
-    let certificateId: string | undefined;
-    try { certificateId = (await registerCertificate(certificateCourse.id, certificateCourse.title, certificateForm.studentName, certificateForm.completionDate)).certificate.id; }
-    catch (error) { setCertificateMessage(error instanceof Error ? error.message : "Could not register certificate."); return; }
-    const ok = openCertificatePrintWindow({
-      studentName: certificateForm.studentName,
-      completionDate: certificateForm.completionDate,
-      courseName: certificateCourse.title,
-      logoUrl: skillVaneLogo,
-      certificateId,
-    });
+    let certificate: { id: string; student_name: string; course_name: string; completion_date: string };
+    try {
+      certificate = adminMode
+        ? (await adminRequest<{ certificate: typeof certificate }>("", { method: "POST", body: JSON.stringify({ entity: "certificate", values: { student_name: certificateForm.studentName, course_id: certificateCourse.id, course_name: certificateCourse.title, completion_date: certificateForm.completionDate } }) })).certificate
+        : (await registerCertificate(certificateCourse.id)).certificate;
+    } catch (error) { setCertificateMessage(error instanceof Error ? error.message : "Could not register certificate."); return; }
+    setCertificateForm({ studentName: certificate.student_name, completionDate: certificate.completion_date });
+    const ok = openCertificatePrintWindow({ studentName: certificate.student_name, completionDate: certificate.completion_date, courseName: certificate.course_name, logoUrl: skillVaneLogo, certificateId: certificate.id });
     setCertificateMessage(
       ok
         ? "Certificate opened. Use Save as PDF in the print dialog."
@@ -1012,7 +1012,7 @@ export function StudentDashboard({
                   {certificateCourse.title}
                 </h3>
                 <p className="text-sm text-slate-400">
-                  Edit the certificate name and completion date before generating.
+                  {adminMode ? "Edit the certificate details before generating." : "Your profile name and saved course completion date are verified when the certificate is issued."}
                 </p>
               </div>
               <button
@@ -1032,6 +1032,7 @@ export function StudentDashboard({
                   </span>
                   <input
                     value={certificateForm.studentName}
+                    readOnly={!adminMode}
                     onChange={(e) =>
                       setCertificateForm({
                         ...certificateForm,
@@ -1052,6 +1053,7 @@ export function StudentDashboard({
                     <input
                       type="date"
                       value={certificateForm.completionDate}
+                      readOnly={!adminMode}
                       onChange={(e) =>
                         setCertificateForm({
                           ...certificateForm,

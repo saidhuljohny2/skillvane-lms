@@ -21,11 +21,13 @@ async function saveStatus(studentId, courseIds, status, error = null) {
 export async function grantAndTrackDriveAccess(studentId, email, courseIds) {
   try {
     const result = await grantDriveCourseAccess(email, courseIds);
-    const status = result.granted ? "granted" : "pending";
     try {
-      await saveStatus(studentId, courseIds, status);
+      for (const courseId of courseIds) {
+        const granted = result.folders?.includes(courseId);
+        await saveStatus(studentId, [courseId], granted ? "granted" : result.configured ? "failed" : "pending", granted ? null : result.errors?.[courseId] || "Drive integration is not configured.");
+      }
     } catch (trackingError) {
-      console.error("Drive access was completed but its status could not be saved", trackingError);
+      console.error("Drive access status could not be saved", trackingError);
     }
     return result;
   } catch (error) {

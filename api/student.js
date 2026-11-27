@@ -1,3 +1,4 @@
+import { completeVerifiedPayment, razorpayRequest } from "../server/payments.js";
 import { requireSupabaseUser, supabaseServiceRequest } from "../server/supabase.js";
 
 function recordEvent(studentId, eventType, context = {}) {
@@ -8,21 +9,17 @@ function recordEvent(studentId, eventType, context = {}) {
 }
 
 async function recoverPayments(user) {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  if (!keyId || !keySecret) throw new Error("Payment recovery is temporarily unavailable.");
-  const orders = await supabaseServiceRequest(`/rest/v1/payment_orders?student_id=eq.${encodeURIComponent(user.id)}&status=eq.created&select=order_id,course_ids&order=created_at.desc&limit=10`);
+  const orders = await supabaseServiceRequest(`/rest/v1/payment_orders?student_id=eq.${encodeURIComponent(user.id)}&status=eq.created&select=order_id&order=created_at.desc&limit=10`);
+  const recovered = [];
   for (const order of orders) {
-    const result = await fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(order.order_id)}/payments`, { headers: { Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}` } });
-    const payload = await result.json().catch(() => ({}));
-    const payment = payload?.items?.find((item) => item.status === "captured");
+    const payload = await razorpayRequest(`/orders/${encodeURIComponent(order.order_id)}/payments`);
+    const payment = payload.items?.find(item => item.status === "captured");
     if (!payment) continue;
-    const courseIds = Array.isArray(order.course_ids) ? order.course_ids : [];
-    await supabaseServiceRequest("/rest/v1/enrollments?on_conflict=student_id,course_id", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(courseIds.map((courseId) => ({ student_id: user.id, course_id: courseId, payment_id: payment.id, amount_paid_paise: Math.round(payment.amount / Math.max(courseIds.length, 1)) }))) });
-    await supabaseServiceRequest(`/rest/v1/payment_orders?order_id=eq.${encodeURIComponent(order.order_id)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ status: "paid", payment_id: payment.id, verified_at: new Date().toISOString() }) });
-    await recordEvent(user.id, "payment_recovered", { order_id: order.order_id, payment_id: payment.id, course_ids: courseIds });
-    return { recovered: true, courseIds, paymentId: payment.id };
+    const result = await completeVerifiedPayment(order.order_id, payment.id, user.id);
+    recovered.push(...result.courseIds);
+    await recordEvent(user.id, "payment_recovered", { order_id: order.order_id, payment_id: payment.id });
   }
+  if (recovered.length) return { recovered: true, courseIds: [...new Set(recovered)] };
   await recordEvent(user.id, "payment_recovery_checked", { recovered: false });
   return { recovered: false, courseIds: [] };
 }
@@ -41,6 +38,13 @@ export default async function handler(request, response) {
     }
     if (request.method === "POST") {
       const action = String(request.body?.action || "");
+      if (action === "invoice-status") {
+        const orderId = String(request.body?.orderId || "");
+        const orders = await supabaseServiceRequest(`/rest/v1/payment_orders?order_id=eq.${encodeURIComponent(orderId)}&student_id=eq.${user.id}&select=order_id`);
+        if (!orders[0]) return response.status(404).json({ error: "Invoice was not found." });
+        const jobs = await supabaseServiceRequest(`/rest/v1/delivery_jobs?order_id=eq.${encodeURIComponent(orderId)}&kind=eq.invoice&select=status`);
+        return response.status(200).json({ status: jobs[0]?.status || "pending" });
+      }
       if (action === "recover-payment") return response.status(200).json(await recoverPayments(user));
       if (action === "support") {
         const subject = String(request.body?.subject || "").trim();
@@ -66,15 +70,14 @@ export default async function handler(request, response) {
         return response.status(200).json({ saved: true });
       }
       if (action === "certificate") {
-        const courseId = String(request.body?.courseId || "").trim().slice(0, 100);
-        const courseName = String(request.body?.courseName || "").trim().slice(0, 160);
-        const studentName = String(request.body?.studentName || "").trim().slice(0, 120);
-        const completionDate = String(request.body?.completionDate || "").slice(0, 10);
-        if (!courseId || !courseName || !studentName || !/^\d{4}-\d{2}-\d{2}$/.test(completionDate)) return response.status(400).json({ error: "Complete certificate details are required." });
-        const certificateId = `SV-${courseId.replace(/[^a-z0-9]/gi, "").slice(0, 8).toUpperCase()}-${user.id.replaceAll("-", "").slice(0, 8).toUpperCase()}`;
-        const rows = await supabaseServiceRequest("/rest/v1/certificates?on_conflict=student_id,course_id", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=representation" }, body: JSON.stringify({ id: certificateId, student_id: user.id, student_name: studentName, course_id: courseId, course_name: courseName, completion_date: completionDate, issued_at: new Date().toISOString() }) });
-        await recordEvent(user.id, "certificate_generated", { certificate_id: certificateId, course_id: courseId });
-        return response.status(201).json({ certificate: rows[0] || { id: certificateId } });
+        const courseId = String(request.body?.courseId || "").trim();
+        if (!courseId || courseId.length > 100) return response.status(400).json({ error: "A valid course is required." });
+        const rows = await supabaseServiceRequest("/rest/v1/rpc/issue_student_certificate", {
+          method: "POST", body: JSON.stringify({ p_student_id: user.id, p_course_id: courseId }),
+        });
+        if (!rows[0]) throw new Error("Certificate could not be issued.");
+        await recordEvent(user.id, "certificate_generated", { certificate_id: rows[0].id, course_id: courseId });
+        return response.status(201).json({ certificate: rows[0] });
       }
       return response.status(400).json({ error: "Unknown student action." });
     }

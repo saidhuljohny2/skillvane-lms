@@ -55,6 +55,9 @@ import { SupabaseLoginModal } from "@/app/components/modals/SupabaseLoginModal";
 import { PasswordRecoveryModal } from "@/app/components/modals/PasswordRecoveryModal";
 import {
   getValidAccessToken,
+  loadCourseCatalog,
+  loadInvoiceDelivery,
+  type CatalogCourse,
   restoreStudentSession,
   signOutStudent,
   readAuthCallback,
@@ -79,20 +82,11 @@ import {
 const AdminStudentsModal = lazy(() => import("@/app/components/modals/AdminStudentsModal").then((module) => ({ default: module.AdminStudentsModal })));
 const StudentDashboard = lazy(() => import("@/app/components/modals/StudentDashboard").then((module) => ({ default: module.StudentDashboard })));
 
-// CONFIG - Update these two values after setup (see guide below)
-// Paste your Google Apps Script deployment URL here after setup:
-const GOOGLE_SHEET_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbwNJMNfBQKYE4WoXJJDCSqOzJvmRYbx-VqNTYr3BdFpvwcxNiqW3puqQJHsSk30gRKj/exec";
-
-// Paste your EmailJS credentials here after setup:
-const EMAILJS_SERVICE_ID = "service_huss9yj";
-const EMAILJS_INVOICE_TEMPLATE_ID = "template_jqy6yhj";
-const EMAILJS_PUBLIC_KEY = "xC4HlrScSivWvpXtz";
 const TRAINER_WHATSAPP_LINK =
   "https://wa.me/917305101711?text=Hi%20Trainer%2C%20I%20have%20a%20question%20about%20SkillVane%20courses.%20Please%20guide%20me.";
 const ADMIN_EMAIL = "saidhuljohny@gmail.com";
 
-// COURSE DATA - Add a new course here and it appears on the site
+// Course presentation metadata. Publish availability and resources in the database catalog.
 type CourseType = "live" | "recording" | "course" | "project";
 type CourseCategory = "all" | "live-batch" | "self-paced";
 
@@ -117,10 +111,12 @@ interface Course {
   tag?: string;
   zoomLink?: string; // For live batch courses
   driveLink?: string; // For recording courses
+  saleEnabled?: boolean;
+  status?: string;
   notesLink?: string; // Notes/material handout link for enrolled students
 }
 
-const COURSES: Course[] = [
+const BASE_COURSES: Course[] = [
   {
     id: "multi-cloud-live",
     type: "live",
@@ -149,8 +145,6 @@ const COURSES: Course[] = [
     ],
     curriculum: MULTI_CLOUD_CURRICULUM,
     zoomLink: "https://meet.google.com/tvb-vzfp-qpm", // Add your Zoom meeting link here
-    notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_LIVE_NOTES_LINK", // Replace with GCP live batch notes link
   },
 
   {
@@ -181,8 +175,6 @@ const COURSES: Course[] = [
     ],
     curriculum: GCP_CURRICULUM,
     zoomLink: "https://meet.google.com/tvb-vzfp-qpm",
-    notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_GCP_LIVE_NOTES_LINK",
   },
 
   {
@@ -231,10 +223,6 @@ const COURSES: Course[] = [
       "Community access for doubt resolution",
     ],
     curriculum: MULTI_CLOUD_CURRICULUM,
-    driveLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_MULTI_CLOUD_RECORDINGS_LINK",
-    notesLink:
-      "https://drive.google.com/drive/folders/REPLACE_WITH_MULTI_CLOUD_RECORDINGS_NOTES_LINK",
   },
 
   {
@@ -935,6 +923,7 @@ function CourseModal({
           )}
 
           <button
+            disabled={!course.saleEnabled}
             onClick={() => onEnroll(course)}
             className="w-full py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 active:scale-[0.99] transition-all shadow-lg"
             style={{
@@ -942,7 +931,7 @@ function CourseModal({
               boxShadow: `0 8px 30px ${course.accentFrom}40`,
             }}
           >
-            Enroll Now - {formatINR(course.price)}
+            {course.saleEnabled ? `Enroll Now - ${formatINR(course.price)}` : "Enrollment opening soon"}
           </button>
           <p className="text-center text-xs text-white/30 mt-2.5">
             Secure payment via Razorpay - UPI - Net Banking -
@@ -969,6 +958,7 @@ interface LoggedInStudent {
 }
 
 interface EnrollmentRecord {
+  orderId?: string;
   invoiceNo: string;
   paymentId: string;
   student: StudentDetails;
@@ -1010,12 +1000,6 @@ interface PaymentPricing {
 }
 
 // Helpers
-function generateInvoiceNo() {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `SV-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
-}
-
 function saveEnrollmentLedger(record: EnrollmentRecord) {
   const splits = splitPricingAcrossCourses(record.courses, {
     courses: record.courses,
@@ -1074,88 +1058,6 @@ async function loadRazorpay(): Promise<void> {
     s.onerror = () =>
       reject(new Error("Failed to load Razorpay SDK"));
     document.head.appendChild(s);
-  });
-}
-
-async function loadEmailJs(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if ((window as any).emailjs) {
-      resolve();
-      return;
-    }
-    const s = document.createElement("script");
-    s.src =
-      "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("EmailJS not loaded"));
-    document.body.appendChild(s);
-  });
-}
-
-async function saveToGoogleSheet(record: EnrollmentRecord) {
-  if (
-    GOOGLE_SHEET_WEBHOOK_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL"
-  )
-    return;
-  await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      invoice_no: record.invoiceNo,
-      payment_id: record.paymentId,
-      name: record.student.name,
-      email: record.student.email,
-      phone: record.student.phone,
-      course: record.courses.map((c) => c.title).join(" | "),
-      course_type:
-        record.courses.length === 1
-          ? record.courses[0].subtitle
-          : `${record.courses.length} courses`,
-      course_id: record.courses.map((c) => c.id).join(","),
-      original_amount: record.originalAmount,
-      discount_amount: record.discountAmount,
-      multi_course_discount: record.multiCourseDiscount ?? 0,
-      coupon_code: record.couponCode || "",
-      amount: record.amountPaid,
-      drive_access_required: Boolean(record.course.driveLink),
-      drive_link: record.course.driveLink || "",
-      drive_access_email: record.student.email,
-      notes_access_required: Boolean(record.course.notesLink),
-      notes_link: record.course.notesLink || "",
-      notes_access_email: record.student.email,
-      paid_at: record.paidAt.toISOString(),
-    }),
-  });
-}
-
-async function sendInvoiceEmail(record: EnrollmentRecord) {
-  if (EMAILJS_SERVICE_ID === "YOUR_EMAILJS_SERVICE_ID") return;
-  await loadEmailJs();
-  const ejs = (window as any).emailjs;
-  ejs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  await ejs.send(EMAILJS_SERVICE_ID, EMAILJS_INVOICE_TEMPLATE_ID, {
-    to_name: record.student.name,
-    to_email: record.student.email,
-    invoice_no: record.invoiceNo,
-    payment_id: record.paymentId,
-    course_name:
-      record.courses.length === 1
-        ? `${record.courses[0].title} - ${record.courses[0].subtitle}`
-        : record.courses.map((c) => c.title).join(", "),
-    amount: formatINR(record.amountPaid),
-    original_amount: formatINR(record.originalAmount),
-    discount_amount: formatINR(record.discountAmount),
-    multi_course_discount: formatINR(record.multiCourseDiscount ?? 0),
-    coupon_code: record.couponCode || "No coupon",
-    paid_at: record.paidAt.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    academy_name: "SkillVane IT Academy",
   });
 }
 
@@ -1658,24 +1560,13 @@ function InvoiceModal({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const [emailSent, setEmailSent] = useState<boolean | null>(
-    null,
-  );
-
-  const deliverInvoice = async () => {
-    setEmailSent(null);
-    try {
-      await sendInvoiceEmail(record);
-      setEmailSent(true);
-    } catch {
-      setEmailSent(false);
-    }
+  const [deliveryStatus, setDeliveryStatus] = useState("pending");
+  const checkDelivery = async () => {
+    if (!record.orderId) return;
+    try { setDeliveryStatus((await loadInvoiceDelivery(record.orderId)).status); }
+    catch { setDeliveryStatus("unavailable"); }
   };
-
-  useEffect(() => {
-    void saveToGoogleSheet(record).catch(() => undefined);
-    void deliverInvoice();
-  }, [record]);
+  useEffect(() => { void checkDelivery(); }, [record.orderId]);
 
   const copyPaymentId = () => {
     navigator.clipboard.writeText(record.paymentId).then(() => {
@@ -1709,18 +1600,8 @@ function InvoiceModal({
             Welcome to SkillVane IT Academy,{" "}
             {record.student.name.split(" ")[0]}!
           </p>
-          {emailSent === true && (
-            <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
-              <Mail className="w-3.5 h-3.5" /> Invoice sent to{" "}
-              {record.student.email}
-            </div>
-          )}
-          {emailSent === false && (
-            <button type="button" onClick={() => void deliverInvoice()} className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-yellow-500/10 px-3 py-1.5 text-xs font-bold text-yellow-300 hover:bg-yellow-500/20">
-              <Mail className="h-3.5 w-3.5" /> Invoice not delivered · Retry
-            </button>
-          )}
-          {emailSent === null && <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-xs text-blue-300"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Sending invoice…</div>}
+          <p className="mt-3 text-xs text-blue-200">{deliveryStatus === "sent" ? "Invoice email sent." : "Your invoice is saved. Email delivery is queued or awaiting retry."}</p>
+          {deliveryStatus !== "sent" && <button type="button" onClick={() => void checkDelivery()} className="mt-2 text-xs text-blue-300">Refresh email status</button>}
         </div>
 
         {/* Invoice body */}
@@ -2124,13 +2005,14 @@ function CourseCard({
               View course
             </button>
             <button
-              onClick={() => onEnroll(course)}
+              disabled={!course.saleEnabled}
+            onClick={() => onEnroll(course)}
               data-opening-message="Preparing enrollment…"
               data-opening-detail="Loading your secure enrollment details."
               className={`magnetic-button rounded-xl text-sm font-black text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.99] ${isFeaturedLiveBatch ? "py-3.5" : "py-3"}`}
               style={{ background: `linear-gradient(135deg, ${course.accentFrom} 0%, ${course.accentTo} 100%)` }}
             >
-              Enroll now
+              {course.saleEnabled ? "Enroll now" : "Enrollment opening soon"}
             </button>
           </div>
         </div>
@@ -2141,6 +2023,17 @@ function CourseCard({
 
 // Main App
 export default function App() {
+  const [catalog, setCatalog] = useState<CatalogCourse[]>([]);
+  const [catalogError, setCatalogError] = useState("");
+  const refreshCatalog = () => loadCourseCatalog().then(rows => { setCatalog(rows); setCatalogError(""); }).catch(() => setCatalogError("Course availability could not be loaded. Please try again shortly."));
+  useEffect(() => { void refreshCatalog(); }, []);
+  const COURSES = BASE_COURSES.map(course => {
+    const remote = catalog.find(row => row.id === course.id);
+    return { ...course, title: remote?.title || course.title, subtitle: remote?.subtitle || course.subtitle,
+      status: remote?.status || "unavailable", saleEnabled: remote?.sale_enabled === true,
+      driveLink: remote?.drive_url || undefined, notesLink: remote?.notes_url || undefined, zoomLink: remote?.live_url || undefined };
+  });
+
   const [authCallback] = useState(() => readAuthCallback());
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -2188,7 +2081,7 @@ export default function App() {
     }
     if (new URLSearchParams(window.location.search).get("login") === "admin") return;
     restoreStudentSession().then((student) => {
-      if (student) setCurrentStudent(student);
+      if (student) { setCurrentStudent(student); void refreshCatalog(); }
     });
   }, []);
 
@@ -2257,6 +2150,7 @@ export default function App() {
 
   // Authentication handlers
   const handleLogin = (student: LoggedInStudent) => {
+    void refreshCatalog();
     setCurrentStudent(student);
     setShowLogin(false);
     setShowDashboard(true);
@@ -2337,13 +2231,13 @@ export default function App() {
             message: "Payment received…",
             detail: "Verifying your payment securely. Please do not refresh this page.",
           });
-          let verification: { verified?: boolean; courseIds?: string[]; error?: string };
+          let verification: { verified?: boolean; courseIds?: string[]; error?: string; invoiceNo?: string };
           try {
             const verificationResponse = await fetch("/api/verify-payment", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${await getValidAccessToken()}`,
               },
               body: JSON.stringify({
                 razorpayOrderId: response.razorpay_order_id,
@@ -2376,7 +2270,8 @@ export default function App() {
           });
 
           const record: EnrollmentRecord = {
-            invoiceNo: generateInvoiceNo(),
+            invoiceNo: verification.invoiceNo || `SV-${order.orderId}`,
+            orderId: order.orderId,
             paymentId: response.razorpay_payment_id,
             student,
             course: primaryCourse,
@@ -2407,7 +2302,7 @@ export default function App() {
           setSiteStatus(
             {
               message: "Enrollment complete!",
-              detail: "Your course is ready and the payment invoice is being sent to your email.",
+              detail: "Your enrollment is saved. Resource access and invoice delivery are being processed.",
             },
             1400,
           );
@@ -2484,6 +2379,11 @@ export default function App() {
   };
 
   const handleEnroll = (course: Course) => {
+    if (!course.saleEnabled || course.status !== "published") {
+      setPayError("This course is not currently open for enrollment. Please contact the instructor.");
+      return;
+    }
+
     setModalCourse(null);
 
     if (!currentStudent) {
@@ -2540,6 +2440,7 @@ export default function App() {
   ];
 
   const visibleCourses = COURSES.filter((course) => {
+    if (course.status !== "published") return false;
     const matchesCategory = activeCategory === "all" ? true : activeCategory === "live-batch"
       ? course.type === "live"
       : course.type !== "live";
@@ -2641,8 +2542,8 @@ export default function App() {
                 <span className="relative z-10 rounded-full bg-black/18 px-2 py-0.5 text-[10px] font-black">
                   {
                     value === "all"
-                      ? COURSES.length
-                      : COURSES.filter((course) =>
+                      ? COURSES.filter(course => course.status === "published").length
+                      : COURSES.filter(course => course.status === "published").filter((course) =>
                           value === "live-batch"
                             ? course.type === "live"
                             : course.type !== "live",
@@ -2662,7 +2563,8 @@ export default function App() {
 
           {/* Course grid */}
           <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-5 md:grid-cols-2 lg:gap-6">
-            {visibleCourses.map((course, index) => (
+            {catalogError && <p role="alert" className="text-amber-200">{catalogError}</p>}
+                {visibleCourses.map((course, index) => (
               <Reveal
                 key={course.id}
                 className={course.type === "live" ? "h-full" : "self-start"}
@@ -2978,7 +2880,7 @@ export default function App() {
       {paymentReview && (
         <PaymentReviewModal
           course={paymentReview.course}
-          allCourses={COURSES}
+          allCourses={COURSES.filter(course => course.status === "published" && course.saleEnabled)}
           enrolledCourseIds={currentStudent?.enrolledCourses ?? []}
           student={paymentReview.student}
           onClose={() => setPaymentReview(null)}
@@ -3010,7 +2912,7 @@ export default function App() {
         <Suspense fallback={null}>
           <AdminStudentsModal
             courses={COURSES}
-            onClose={() => setShowAdmin(false)}
+            onClose={() => { setShowAdmin(false); void refreshCatalog(); }}
             onAccessCourses={(admin) => {
               setShowAdmin(false);
               setAdminCourseAccess(admin);

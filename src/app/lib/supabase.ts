@@ -190,8 +190,21 @@ export function updateStudentProfile(fullName: string, phone: string) {
   return studentRequest<{ saved: boolean }>({ method: "POST", body: JSON.stringify({ action: "profile", fullName, phone }) });
 }
 
-export function registerCertificate(courseId: string, courseName: string, studentName: string, completionDate: string) {
-  return studentRequest<{ certificate: { id: string } }>({ method: "POST", body: JSON.stringify({ action: "certificate", courseId, courseName, studentName, completionDate }) });
+export function registerCertificate(courseId: string) {
+  return studentRequest<{ certificate: { id: string; student_name: string; course_name: string; completion_date: string } }>({ method: "POST", body: JSON.stringify({ action: "certificate", courseId }) });
+}
+
+export interface CatalogCourse {
+  id: string; title: string; subtitle: string; status: string; sale_enabled: boolean;
+  delivery_mode: string; drive_url: string; notes_url: string; live_url: string;
+}
+export async function loadCourseCatalog() {
+  const stored = readStoredSession();
+  const token = stored && stored.expires_at && stored.expires_at > Date.now() / 1000 ? stored.access_token : undefined;
+  return request<CatalogCourse[]>("/rest/v1/courses?select=id,title,subtitle,status,sale_enabled,delivery_mode,drive_url,notes_url,live_url", {}, token);
+}
+export function loadInvoiceDelivery(orderId: string) {
+  return studentRequest<{ status: string }>({ method: "POST", body: JSON.stringify({ action: "invoice-status", orderId }) });
 }
 
 export interface PublishedLesson {

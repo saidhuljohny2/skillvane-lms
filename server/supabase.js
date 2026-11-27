@@ -29,6 +29,7 @@ export async function requireSupabaseUser(request) {
   }
   const response = await fetch(`${url}/auth/v1/user`, {
     headers: { apikey: publishableKey, Authorization: authorization },
+    signal: AbortSignal.timeout(10000),
   });
   if (!response.ok) {
     const error = new Error("Your login session expired. Please sign in again.");
@@ -62,6 +63,7 @@ export async function requireSupabaseAdmin(request) {
 export async function supabaseServiceRequest(path, init = {}) {
   const { url, serviceKey } = getConfig();
   const response = await fetch(`${url}${path}`, {
+    signal: AbortSignal.timeout(10000),
     ...init,
     headers: {
       apikey: serviceKey,

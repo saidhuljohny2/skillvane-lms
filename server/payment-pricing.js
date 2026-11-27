@@ -18,7 +18,7 @@ export function calculateOrderAmount(courseIds, couponCode = "") {
   }
 
   const prices = uniqueCourseIds.map((courseId) => {
-    const price = COURSE_PRICES[courseId];
+    const price = typeof courseId === "string" && Object.hasOwn(COURSE_PRICES, courseId) ? COURSE_PRICES[courseId] : null;
     if (!price) throw new Error("One or more selected courses are unavailable.");
     return price;
   });

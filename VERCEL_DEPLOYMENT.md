@@ -13,7 +13,7 @@ https://github.com/saidhuljohny2/skillvane-lms.git
    - Framework: Vite
    - Build command: `npm run build`
    - Output directory: `dist`
-   - Install command: `npm install`
+   - Install command: `pnpm install --frozen-lockfile`
 4. Deploy the project.
 
 If using Razorpay, add these in Vercel Project Settings > Environment Variables:
@@ -21,7 +21,6 @@ If using Razorpay, add these in Vercel Project Settings > Environment Variables:
 ```text
 RAZORPAY_KEY_ID
 RAZORPAY_KEY_SECRET
-VITE_RAZORPAY_KEY
 ```
 
 ## 2. Claim A Free Domain
